@@ -111,7 +111,12 @@ class OverpassApi {
             "Keine gültigen Sub-District-Level zum Abfragen für Stadt ID $cityRelationId (Admin-Level der Stadt: $adminLevel).",
           );
           // Gebe die bereits gesammelten Stadtpolygone zurück
-          return {'query': combinedQuery, 'result': combinedResult, 'cityPolygons': cityPolygons, 'subDistrictPolygons': subDistrictPolygons};
+          return {
+            'query': combinedQuery,
+            'result': combinedResult,
+            'cityPolygons': cityPolygons,
+            'subDistrictPolygons': subDistrictPolygons,
+          };
         }
         subDistrictLevelPattern = levels.join("|");
         subDistrictLevelsForLogging = levels.join(", ");
@@ -148,7 +153,7 @@ out geom;
               subdistrictDecodedBody['remark'].toString().contains('Error')) {
             print('Overpass API error for subdistrict query: ${subdistrictDecodedBody['remark']}');
           }
-          
+
           // Bezirkspolygone parsen und speichern
           subDistrictPolygons.addAll(_parseGeometriesToPolygons(subdistrictResultBody, isSubDistrict: true));
           print("Anzahl gefundener Polygone für Unterbezirke: ${subDistrictPolygons.length}");
@@ -165,7 +170,12 @@ out geom;
     }
 
     // Gebe die getrennten Listen zurück
-    return {'query': combinedQuery, 'result': combinedResult, 'cityPolygons': cityPolygons, 'subDistrictPolygons': subDistrictPolygons};
+    return {
+      'query': combinedQuery,
+      'result': combinedResult,
+      'cityPolygons': cityPolygons,
+      'subDistrictPolygons': subDistrictPolygons,
+    };
   }
 
   /// Parst den JSON-String einer Overpass API-Antwort und extrahiert Polygone.
@@ -390,24 +400,3 @@ out geom;
     }
   }
 }
-
-// Beispielhafte Verwendung (kann in deiner main.dart oder einer Testdatei platziert werden):
-/*
-void main() async {
-  final api = OverpassApi();
-  try {
-    // Für eine Stadt wie "München" wäre admin_level=6 passender.
-    // Die Methode holt jetzt auch die Bezirke für admin_level 7 und 8 dazu.
-    final cityData = await api.getCityOutline("München", adminLevel: 6); 
-    print("München Outline und Bezirke (${cityData['polygons'].length} Polygone) Abfrage: ${cityData['query']}");
-    // print("Result: ${cityData['result']}"); // Kann sehr lang sein
-
-    // Beispiel für Köln
-    // final cologneData = await api.getCityOutline("Köln", adminLevel: 6);
-    // print("Köln Outline und Bezirke (${cologneData['polygons'].length} Polygone) Abfrage: ${cologneData['query']}");
-
-  } catch (e) {
-    print("Ein Fehler ist aufgetreten: $e");
-  }
-}
-*/
