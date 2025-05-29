@@ -110,7 +110,6 @@ out geom;
     //   }
     // }
 
-
     print("Anzahl der Elemente von der API: ${elements.length}");
 
     for (var element in elements) {
@@ -128,20 +127,23 @@ out geom;
                 (member['role'] == 'outer' || member['role'] == '') && // Leere Rolle auch oft für äußere Ringe
                 member['geometry'] != null &&
                 member['geometry'] is List) {
-              
               List<LatLng> memberPoints = [];
               for (var pt in member['geometry']) {
                 if (pt is Map && pt['lat'] != null && pt['lon'] != null) {
                   try {
                     memberPoints.add(LatLng(pt['lat'].toDouble(), pt['lon'].toDouble()));
                   } catch (e) {
-                    print("Fehler beim Konvertieren von Lat/Lng für Relation-Member-Way: $e, Punkt: $pt, Member-Ref: ${member['ref']}");
+                    print(
+                      "Fehler beim Konvertieren von Lat/Lng für Relation-Member-Way: $e, Punkt: $pt, Member-Ref: ${member['ref']}",
+                    );
                   }
                 }
               }
               if (memberPoints.isNotEmpty) {
                 outerWaySegments.add(memberPoints);
-                print("  Relation ${element['id']}: Outer-Way-Segment (Ref: ${member['ref']}) mit ${memberPoints.length} Punkten hinzugefügt.");
+                print(
+                  "  Relation ${element['id']}: Outer-Way-Segment (Ref: ${member['ref']}) mit ${memberPoints.length} Punkten hinzugefügt.",
+                );
               }
             }
           }
@@ -151,25 +153,29 @@ out geom;
           print("  Relation ${element['id']}: Versuche ${outerWaySegments.length} Outer-Way-Segmente zu verbinden.");
           List<List<LatLng>> connectedPolygonsPoints = _connectWaySegments(outerWaySegments);
           for (var polygonPoints in connectedPolygonsPoints) {
-            if (polygonPoints.length > 1) { // Ein Polygon braucht mindestens 2 Punkte für eine Linie, 3 für eine Fläche
-               polygons.add(
+            if (polygonPoints.length > 1) {
+              // Ein Polygon braucht mindestens 2 Punkte für eine Linie, 3 für eine Fläche
+              polygons.add(
                 Polygon(
                   points: polygonPoints,
-                  borderColor: const Color(0xFFDD0000), // Dunkelrot für verbundene Relationspolygone
+                  borderColor: const Color(0xFFDD0000),
+                  // Dunkelrot für verbundene Relationspolygone
                   borderStrokeWidth: 3.0,
-                  isFilled: true, // Ändere dies zu true, um den Effekt besser zu sehen
+                  isFilled: true,
+                  // Ändere dies zu true, um den Effekt besser zu sehen
                   color: const Color(0x44DD0000), // Leicht gefüllt
                 ),
               );
               print("  Relation ${element['id']}: Verbundenes Polygon mit ${polygonPoints.length} Punkten erstellt.");
             } else {
-              print("  Relation ${element['id']}: Konnte kein valides Polygon aus Segmenten erstellen (zu wenige Punkte nach Verbindung: ${polygonPoints.length}).");
+              print(
+                "  Relation ${element['id']}: Konnte kein valides Polygon aus Segmenten erstellen (zu wenige Punkte nach Verbindung: ${polygonPoints.length}).",
+              );
             }
           }
         } else {
-           print("  Relation ${element['id']}: Keine Outer-Way-Segmente mit Geometrie gefunden.");
+          print("  Relation ${element['id']}: Keine Outer-Way-Segmente mit Geometrie gefunden.");
         }
-
       } else if (element['type'] == 'way' && element['geometry'] != null && element['geometry'] is List) {
         // Direkte Ways (nicht Teil einer Relation, die wir hier speziell behandeln)
         // werden weiterhin als einzelne Polygone/Linien gezeichnet.
@@ -184,11 +190,12 @@ out geom;
             }
           }
         }
-        if (currentWayPoints.length > 1) { // Eine Linie braucht mindestens 2 Punkte
+        if (currentWayPoints.length > 1) {
+          // Eine Linie braucht mindestens 2 Punkte
           polygons.add(
             Polygon(
               points: currentWayPoints,
-              borderColor: const Color(0xFF00AAFF), 
+              borderColor: const Color(0xFF00AAFF),
               borderStrokeWidth: 1.5, // Dünner für einzelne Ways
               isFilled: false, // Normalerweise nicht gefüllt
               // color: const Color(0x5500AAFF), // Optional füllen
@@ -230,18 +237,21 @@ out geom;
             currentChain.addAll(nextSegment.sublist(1));
             foundAtIndex = i;
             break;
-          } else if (nextSegment.last.latitude == lastPoint.latitude && nextSegment.last.longitude == lastPoint.longitude) {
+          } else if (nextSegment.last.latitude == lastPoint.latitude &&
+              nextSegment.last.longitude == lastPoint.longitude) {
             currentChain.addAll(nextSegment.reversed.toList().sublist(1));
             foundAtIndex = i;
             break;
           }
           // Versuche, am Anfang der Kette anzufügen
-          else if (nextSegment.last.latitude == firstPoint.latitude && nextSegment.last.longitude == firstPoint.longitude) {
-            currentChain.insertAll(0, nextSegment.sublist(0, nextSegment.length -1));
+          else if (nextSegment.last.latitude == firstPoint.latitude &&
+              nextSegment.last.longitude == firstPoint.longitude) {
+            currentChain.insertAll(0, nextSegment.sublist(0, nextSegment.length - 1));
             foundAtIndex = i;
             break;
-          } else if (nextSegment.first.latitude == firstPoint.latitude && nextSegment.first.longitude == firstPoint.longitude) {
-             currentChain.insertAll(0, nextSegment.reversed.toList().sublist(0, nextSegment.length - 1));
+          } else if (nextSegment.first.latitude == firstPoint.latitude &&
+              nextSegment.first.longitude == firstPoint.longitude) {
+            currentChain.insertAll(0, nextSegment.reversed.toList().sublist(0, nextSegment.length - 1));
             foundAtIndex = i;
             break;
           }
@@ -252,7 +262,7 @@ out geom;
           segmentAddedInIteration = true;
         }
       } while (segmentAddedInIteration && remainingSegments.isNotEmpty);
-      
+
       // Schließe das Polygon, wenn der erste und letzte Punkt nicht identisch sind und es mehr als 2 Punkte gibt
       // OSM-Daten für geschlossene Wege haben oft identische Start- und Endknoten.
       // Wenn sie nicht identisch sind nach dem Verbinden, und es ein Polygon sein soll,
@@ -263,12 +273,12 @@ out geom;
       connectedPolygons.add(currentChain);
       print("  _connectWaySegments: Einen verbundenen Pfad mit ${currentChain.length} Punkten erstellt.");
     }
-    
+
     if (remainingSegments.isNotEmpty) {
-        print("  _connectWaySegments: Warnung - ${remainingSegments.length} Segmente konnten nicht verbunden werden.");
-        // Füge die verbleibenden, nicht verbundenen Segmente als einzelne Polygone/Linien hinzu,
-        // damit sie nicht verloren gehen.
-        // connectedPolygons.addAll(remainingSegments.where((seg) => seg.length > 1));
+      print("  _connectWaySegments: Warnung - ${remainingSegments.length} Segmente konnten nicht verbunden werden.");
+      // Füge die verbleibenden, nicht verbundenen Segmente als einzelne Polygone/Linien hinzu,
+      // damit sie nicht verloren gehen.
+      // connectedPolygons.addAll(remainingSegments.where((seg) => seg.length > 1));
     }
 
     return connectedPolygons;

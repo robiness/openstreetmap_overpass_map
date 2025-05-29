@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:overpass_map/overpass_api.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:overpass_map/overpass_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -73,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
       _isLoading = true;
       _error = null;
       // _cityData und _sentQuery werden hier explizit auf null gesetzt, um alte Daten zu löschen
-      _cityData = null; 
+      _cityData = null;
       _sentQuery = null;
       _polygons = []; // Polygone zurücksetzen
     });
@@ -106,10 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(widget.title)),
       body: Column(
         children: [
           Padding(
@@ -117,29 +114,15 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ElevatedButton(
-                  onPressed: () => _fetchCityData("Berlin", 4),
-                  child: const Text('Berlin (4)'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _fetchCityData("Köln", 6),
-                  child: const Text('Köln (6)'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _fetchCityData("Bonn", 6),
-                  child: const Text('Bonn (6)'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _fetchCityData("Bornheim", 8),
-                  child: const Text('Bornheim (8)'),
-                ),
+                ElevatedButton(onPressed: () => _fetchCityData("Berlin", 4), child: const Text('Berlin (4)')),
+                ElevatedButton(onPressed: () => _fetchCityData("Köln", 6), child: const Text('Köln (6)')),
+                ElevatedButton(onPressed: () => _fetchCityData("Bonn", 6), child: const Text('Bonn (6)')),
+                ElevatedButton(onPressed: () => _fetchCityData("Bornheim", 8), child: const Text('Bornheim (8)')),
               ],
             ),
           ),
           if (_isLoading)
-            const Expanded(
-              child: Center(child: CircularProgressIndicator()),
-            )
+            const Expanded(child: Center(child: CircularProgressIndicator()))
           else if (_error != null)
             Expanded(
               child: Center(
@@ -158,9 +141,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: FlutterMap(
                 mapController: _mapController,
                 options: MapOptions(
-                  initialCenter: _polygons.isNotEmpty && _polygons.first.points.isNotEmpty 
-                               ? _polygons.first.points.first 
-                               : const LatLng(51.5, -0.09), // Standard-Fallback
+                  initialCenter: _polygons.isNotEmpty && _polygons.first.points.isNotEmpty
+                      ? _polygons.first.points.first
+                      : const LatLng(51.5, -0.09), // Standard-Fallback
                   initialZoom: _polygons.isNotEmpty ? 10.0 : 6.0, // Zoom anpassen, wenn Polygone da sind
                 ),
                 children: [
@@ -168,17 +151,15 @@ class _MyHomePageState extends State<MyHomePage> {
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'dev.fleaflet.flutter_map.example', // Wichtig für OSM Tile Usage Policy
                   ),
-                  if (_polygons.isNotEmpty)
-                    PolygonLayer(
-                      polygons: _polygons,
-                    ),
+                  if (_polygons.isNotEmpty) PolygonLayer(polygons: _polygons),
                 ],
               ),
             ),
           // Optional: Bereich für Query und JSON-Antwort (wieder einkommentiert)
           if (!_isLoading && _error == null && (_sentQuery != null || _cityData != null))
             Container(
-              height: MediaQuery.of(context).size.height * 0.25, // Höhe angepasst auf 25%
+              height: MediaQuery.of(context).size.height * 0.25,
+              // Höhe angepasst auf 25%
               padding: const EdgeInsets.all(8.0),
               margin: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -193,10 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Gesendete Abfrage:",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                          ),
+                          const Text("Gesendete Abfrage:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.all(4.0),
@@ -204,7 +182,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(3.0),
                             ),
-                            child: SelectableText( // Geändert zu SelectableText
+                            child: SelectableText(
+                              // Geändert zu SelectableText
                               _sentQuery!,
                               style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
                             ),
@@ -216,10 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Rohe JSON Antwort:",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                          ),
+                          const Text("Rohe JSON Antwort:", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.all(4.0),
@@ -227,7 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(3.0),
                             ),
-                            child: SelectableText( // Geändert zu SelectableText
+                            child: SelectableText(
+                              // Geändert zu SelectableText
                               _cityData!,
                               style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
                               maxLines: 10, // Begrenzt die angezeigte Höhe, aber scrollbar durch SingleChildScrollView
