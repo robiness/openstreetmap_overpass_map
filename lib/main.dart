@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:overpass_map/overpass_api.dart'; // Import der OverpassApi Klasse
+import 'package:overpass_map/overpass_api.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   runApp(const MyApp());
@@ -57,23 +59,41 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final OverpassApi _api = OverpassApi();
   String? _cityData;
-  String? _sentQuery; // Hinzugefügt, um die gesendete Abfrage zu speichern
+  String? _sentQuery;
+  List<Polygon> _polygons = []; // Zum Speichern der geparsten Polygone
   bool _isLoading = false;
   String? _error;
+  MapController _mapController = MapController(); // Für die Kartensteuerung
+
+  // Stelle sicher, dass _cityData und _sentQuery im State vorhanden sind und verwendet werden
+  // (sollten bereits aus vorherigen Schritten vorhanden sein)
 
   Future<void> _fetchCityData(String cityName, int adminLevel) async {
     setState(() {
       _isLoading = true;
       _error = null;
-      _cityData = null;
-      _sentQuery = null; // Zurücksetzen beim neuen Laden
+      // _cityData und _sentQuery werden hier explizit auf null gesetzt, um alte Daten zu löschen
+      _cityData = null; 
+      _sentQuery = null;
+      _polygons = []; // Polygone zurücksetzen
     });
     try {
       final responseMap = await _api.getCityOutline(cityName, adminLevel: adminLevel);
       setState(() {
-        _cityData = responseMap['result'];
-        _sentQuery = responseMap['query']; // Die Abfrage speichern
+        // Stelle sicher, dass die Typzuweisungen korrekt sind
+        _cityData = responseMap['result'] as String?;
+        _sentQuery = responseMap['query'] as String?;
+        _polygons = responseMap['polygons'] as List<Polygon>? ?? [];
         _isLoading = false;
+
+        if (_polygons.isNotEmpty && _polygons.first.points.isNotEmpty) {
+          _mapController.fitCamera(
+            CameraFit.bounds(
+              bounds: LatLngBounds.fromPoints(_polygons.first.points),
+              padding: const EdgeInsets.all(50.0),
+            ),
+          );
+        }
       });
     } catch (e) {
       setState(() {
@@ -90,70 +110,136 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                onPressed: () => _fetchCityData("Berlin", 4), // Beispiel: Berlin, admin_level 4
-                child: const Text('Lade Umrisse für Berlin (Lvl 4)'),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () => _fetchCityData("München", 6), // Beispiel: München, admin_level 6
-                child: const Text('Lade Umrisse für München (Lvl 6)'),
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () => _fetchCityData("Grünwald", 8), // Beispiel: Grünwald, admin_level 8
-                child: const Text('Lade Umrisse für Grünwald (Lvl 8)'),
-              ),
-              const SizedBox(height: 20),
-              if (_isLoading)
-                const CircularProgressIndicator()
-              else if (_error != null)
-                Text(
-                  _error!,
-                  style: const TextStyle(color: Colors.red),
-                  textAlign: TextAlign.center,
-                )
-              else if (_cityData != null)
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Gesendete Abfrage:",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 5),
-                        Container(
-                          padding: const EdgeInsets.all(8.0),
-                          color: Colors.grey[200],
-                          child: Text(
-                            _sentQuery ?? "Keine Abfrage gesendet",
-                            style: const TextStyle(fontFamily: 'monospace'),
-                          ),
-                        ),
-                        const SizedBox(height: 15),
-                        const Text(
-                          "Antwort:",
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(_cityData!),
-                      ],
-                    ),
-                  ),
-                )
-              else
-                const Text('Drücke einen Button, um Daten zu laden.'),
-            ],
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _fetchCityData("Berlin", 4),
+                  child: const Text('Berlin (4)'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _fetchCityData("Köln", 6),
+                  child: const Text('Köln (6)'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _fetchCityData("Bonn", 6),
+                  child: const Text('Bonn (6)'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _fetchCityData("Bornheim", 8),
+                  child: const Text('Bornheim (8)'),
+                ),
+              ],
+            ),
           ),
-        ),
+          if (_isLoading)
+            const Expanded(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_error != null)
+            Expanded(
+              child: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    _error!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: _polygons.isNotEmpty && _polygons.first.points.isNotEmpty 
+                               ? _polygons.first.points.first 
+                               : const LatLng(51.5, -0.09), // Standard-Fallback
+                  initialZoom: _polygons.isNotEmpty ? 10.0 : 6.0, // Zoom anpassen, wenn Polygone da sind
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'dev.fleaflet.flutter_map.example', // Wichtig für OSM Tile Usage Policy
+                  ),
+                  if (_polygons.isNotEmpty)
+                    PolygonLayer(
+                      polygons: _polygons,
+                    ),
+                ],
+              ),
+            ),
+          // Optional: Bereich für Query und JSON-Antwort (wieder einkommentiert)
+          if (!_isLoading && _error == null && (_sentQuery != null || _cityData != null))
+            Container(
+              height: MediaQuery.of(context).size.height * 0.25, // Höhe angepasst auf 25%
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (_sentQuery != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Gesendete Abfrage:",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.all(4.0),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(3.0),
+                            ),
+                            child: SelectableText( // Geändert zu SelectableText
+                              _sentQuery!,
+                              style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
+                    if (_cityData != null)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Rohe JSON Antwort:",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.all(4.0),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(3.0),
+                            ),
+                            child: SelectableText( // Geändert zu SelectableText
+                              _cityData!,
+                              style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
+                              maxLines: 10, // Begrenzt die angezeigte Höhe, aber scrollbar durch SingleChildScrollView
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
