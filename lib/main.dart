@@ -60,10 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
   final OverpassApi _api = OverpassApi();
   String? _cityData;
   String? _sentQuery;
-  List<Polygon> _polygons = []; // Zum Speichern der geparsten Polygone
+  List<Polygon> _cityPolygons = []; // Polygone für die Stadtgrenze
+  List<Polygon> _subDistrictPolygons = []; // Polygone für die Bezirke
   bool _isLoading = false;
   String? _error;
-  MapController _mapController = MapController(); // Für die Kartensteuerung
+  MapController _mapController = MapController();
+
+  // Statusvariablen für die Sichtbarkeit der Ebenen
+  bool _showCityOutline = true;
+  bool _showSubDistricts = true;
 
   // Stelle sicher, dass _cityData und _sentQuery im State vorhanden sind und verwendet werden
   // (sollten bereits aus vorherigen Schritten vorhanden sein)
@@ -72,24 +77,27 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _isLoading = true;
       _error = null;
-      // _cityData und _sentQuery werden hier explizit auf null gesetzt, um alte Daten zu löschen
       _cityData = null;
       _sentQuery = null;
-      _polygons = []; // Polygone zurücksetzen
+      _cityPolygons = []; // Stadtpolygone zurücksetzen
+      _subDistrictPolygons = []; // Bezirkspolygone zurücksetzen
     });
     try {
       final responseMap = await _api.getCityOutline(cityName, adminLevel: adminLevel);
       setState(() {
-        // Stelle sicher, dass die Typzuweisungen korrekt sind
         _cityData = responseMap['result'] as String?;
         _sentQuery = responseMap['query'] as String?;
-        _polygons = responseMap['polygons'] as List<Polygon>? ?? [];
+        // Die getrennten Polygonlisten aus der Antwort holen
+        _cityPolygons = responseMap['cityPolygons'] as List<Polygon>? ?? [];
+        _subDistrictPolygons = responseMap['subDistrictPolygons'] as List<Polygon>? ?? [];
         _isLoading = false;
 
-        if (_polygons.isNotEmpty && _polygons.first.points.isNotEmpty) {
+        // Kamera anpassen, basierend auf Stadtpolygonen, falls vorhanden, sonst Bezirke
+        List<Polygon> polygonsForFit = _cityPolygons.isNotEmpty ? _cityPolygons : _subDistrictPolygons;
+        if (polygonsForFit.isNotEmpty && polygonsForFit.first.points.isNotEmpty) {
           _mapController.fitCamera(
             CameraFit.bounds(
-              bounds: LatLngBounds.fromPoints(_polygons.first.points),
+              bounds: LatLngBounds.fromPoints(polygonsForFit.first.points),
               padding: const EdgeInsets.all(50.0),
             ),
           );
@@ -105,6 +113,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Kombinierte Liste der Polygone basierend auf dem Sichtbarkeitsstatus
+    List<Polygon> displayedPolygons = [];
+    if (_showCityOutline) displayedPolygons.addAll(_cityPolygons);
+    if (_showSubDistricts) displayedPolygons.addAll(_subDistrictPolygons);
+
     return Scaffold(
       appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(widget.title)),
       body: Column(
@@ -118,6 +131,34 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(onPressed: () => _fetchCityData("Köln", 6), child: const Text('Köln (6)')),
                 ElevatedButton(onPressed: () => _fetchCityData("Bonn", 6), child: const Text('Bonn (6)')),
                 ElevatedButton(onPressed: () => _fetchCityData("Bornheim", 8), child: const Text('Bornheim (8)')),
+              ],
+            ),
+          ),
+          // Checkboxen zum Ein-/Ausblenden der Ebenen
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Checkbox(
+                  value: _showCityOutline,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _showCityOutline = value ?? false;
+                    });
+                  },
+                ),
+                const Text('Stadtumriss'),
+                const SizedBox(width: 20),
+                Checkbox(
+                  value: _showSubDistricts,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      _showSubDistricts = value ?? false;
+                    });
+                  },
+                ),
+                const Text('Bezirke'),
               ],
             ),
           ),
@@ -141,17 +182,18 @@ class _MyHomePageState extends State<MyHomePage> {
               child: FlutterMap(
                 mapController: _mapController,
                 options: MapOptions(
-                  initialCenter: _polygons.isNotEmpty && _polygons.first.points.isNotEmpty
-                      ? _polygons.first.points.first
+                  initialCenter: displayedPolygons.isNotEmpty && displayedPolygons.first.points.isNotEmpty
+                      ? displayedPolygons.first.points.first
                       : const LatLng(51.5, -0.09), // Standard-Fallback
-                  initialZoom: _polygons.isNotEmpty ? 10.0 : 6.0, // Zoom anpassen, wenn Polygone da sind
+                  initialZoom: displayedPolygons.isNotEmpty ? 10.0 : 6.0, // Zoom anpassen, wenn Polygone da sind
                 ),
                 children: [
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'dev.fleaflet.flutter_map.example', // Wichtig für OSM Tile Usage Policy
                   ),
-                  if (_polygons.isNotEmpty) PolygonLayer(polygons: _polygons),
+                  // Verwende die dynamisch erstellte `displayedPolygons` Liste
+                  if (displayedPolygons.isNotEmpty) PolygonLayer(polygons: displayedPolygons),
                 ],
               ),
             ),

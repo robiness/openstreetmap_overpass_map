@@ -41,7 +41,8 @@ class OverpassApi {
     String cityQuery =
         '[out:json][timeout:25];relation["boundary"="administrative"]["type"="boundary"]["admin_level"="$adminLevel"]["name"="$cityName"];out geom;';
     String cityQueryResult = "";
-    List<Polygon> allPolygons = [];
+    List<Polygon> cityPolygons = []; // Separate Liste für Stadtpolygone
+    List<Polygon> subDistrictPolygons = []; // Separate Liste für Bezirkspolygone
     int? cityRelationId;
     String combinedQuery = cityQuery;
     String combinedResult = "";
@@ -63,7 +64,8 @@ class OverpassApi {
           throw Exception('Overpass API error for city query: ${cityDecodedBody['remark']}');
         }
 
-        allPolygons.addAll(_parseGeometriesToPolygons(cityQueryResult, isSubDistrict: false));
+        // Stadtpolygone parsen und speichern
+        cityPolygons.addAll(_parseGeometriesToPolygons(cityQueryResult, isSubDistrict: false));
 
         if (cityDecodedBody['elements'] != null && cityDecodedBody['elements'] is List) {
           for (var element in cityDecodedBody['elements']) {
@@ -108,7 +110,8 @@ class OverpassApi {
           print(
             "Keine gültigen Sub-District-Level zum Abfragen für Stadt ID $cityRelationId (Admin-Level der Stadt: $adminLevel).",
           );
-          return {'query': combinedQuery, 'result': combinedResult, 'polygons': allPolygons};
+          // Gebe die bereits gesammelten Stadtpolygone zurück
+          return {'query': combinedQuery, 'result': combinedResult, 'cityPolygons': cityPolygons, 'subDistrictPolygons': subDistrictPolygons};
         }
         subDistrictLevelPattern = levels.join("|");
         subDistrictLevelsForLogging = levels.join(", ");
@@ -145,10 +148,10 @@ out geom;
               subdistrictDecodedBody['remark'].toString().contains('Error')) {
             print('Overpass API error for subdistrict query: ${subdistrictDecodedBody['remark']}');
           }
-
-          List<Polygon> subPolygons = _parseGeometriesToPolygons(subdistrictResultBody, isSubDistrict: true);
-          allPolygons.addAll(subPolygons);
-          print("Anzahl gefundener Polygone für Unterbezirke: ${subPolygons.length}");
+          
+          // Bezirkspolygone parsen und speichern
+          subDistrictPolygons.addAll(_parseGeometriesToPolygons(subdistrictResultBody, isSubDistrict: true));
+          print("Anzahl gefundener Polygone für Unterbezirke: ${subDistrictPolygons.length}");
         } else {
           print(
             'Failed to load subdistricts for city ID $cityRelationId. Status: ${subdistrictResponse.statusCode}, Reason: ${subdistrictResponse.reasonPhrase}',
@@ -161,7 +164,8 @@ out geom;
       print("Keine Stadt-Relation-ID für $cityName gefunden, überspringe Bezirksabfrage.");
     }
 
-    return {'query': combinedQuery, 'result': combinedResult, 'polygons': allPolygons};
+    // Gebe die getrennten Listen zurück
+    return {'query': combinedQuery, 'result': combinedResult, 'cityPolygons': cityPolygons, 'subDistrictPolygons': subDistrictPolygons};
   }
 
   /// Parst den JSON-String einer Overpass API-Antwort und extrahiert Polygone.
