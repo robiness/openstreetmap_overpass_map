@@ -1,0 +1,104 @@
+.docs-row
+  cf()
+
+.docs-list
+  background-color #f0f0f0
+  overflow auto
+  ul 
+    display none
+    margin 0
+    padding 1em
+    line-height 1em
+    list-style-type: none;
+    li
+      margin-bottom 0.5em
+    a
+      display block
+      color black
+      text-decoration none
+      &:hover
+        color text_accent
+  .docs-list-title
+    line-height 3em
+    color text_muted
+  .docs-list-active
+    a
+      color text_accent
+
+.docs-improve
+  font-size 0.5em
+  font-weight normal
+
+.docs-content
+  .content
+    @extend .container
+
+.docs-sample-code
+  //stub
+
+.docs-repl
+   .CodeMirror
+     height 300px
+   nav
+     a
+       color text_color
+       position relative
+       text-decoration none
+     a.active
+       color text_accent
+     ul
+       list-style-type none 
+       padding 0
+       margin .5em 0em
+       li
+         border 1px solid #ccc
+         display inline
+         padding .5em
+         margin-right .2em
+
+.docs-repl-result
+  position relative
+  height 50vh
+  iframe, .CodeMirror
+    height 50vh
+    width 100%
+  .CodeMirror 
+    top 0px
+    position absolute
+    border-top 0px solid #ccc
+    z-index 1
+  iframe
+    position absolute
+    z-index 2
+  a
+    z-index 3
+    position absolute
+    top 1em
+    right 1em 
+    background-color white
+    box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+    z-index 1001
+
+.CodeMirror
+  height default
+  width 100%
+  border 1px solid #ccc
+  
+@media (min-width sm_size)
+  .docs-list
+    height 100vh
+    ul 
+      display block 
+    column(1/4)
+  .docs-content
+    height 100vh
+    overflow auto
+    padding 0px
+    margin 0px
+    column(3/4)
+
+@media (min-width md_size)
+  .gsc-control-cse
+    padding 0.1em 0 0.5em 1em !important
+    width 16em !important
+    float right

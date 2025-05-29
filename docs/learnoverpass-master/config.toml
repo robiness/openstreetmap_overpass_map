@@ -1,0 +1,23 @@
+languageCode = "en-us"
+title = "LearnOverpass"
+
+[[menu.doctype]]
+  name = "Block Queries"
+  url = "/actions/" 
+  weight = 1
+
+[[menu.doctype]]
+  name = "Standalone Queries"
+  identifier ="standalone-queries"
+  url = "/standalone-queries/"
+  weight = 2
+
+[[menu.doctype]]
+  name = "Filters"
+  url = "/filters/"
+  weight = 3
+
+[[menu.doctype]]
+  name = "Actions"
+  url = "/actions/"
+  weight = 4

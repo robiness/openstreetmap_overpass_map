@@ -1,0 +1,74 @@
+{{ partial "head.html" . }}
+{{ partial "menu-bar.html" . }}
+<div class="exercise-container">
+   <div class="exercise-lesson">
+     <div class="exercise-lesson-bar">
+       <div class="line">Intro</div>
+     </div>
+     <div class="exercise-lesson-inner">
+       <div class="exercise-lesson-article">
+          <h2>
+            {{ .Title }}
+            {{ $cur_path := trim (substr .Permalink (len .Site.BaseURL) (len .Permalink)) "/" }}
+            <a class="docs-improve" href="https://github.com/osmlab/learnoverpass/edit/content/{{ $cur_path }}.md">Improve page</a>
+          </h2>
+         {{ .Content }}
+       </div>
+       <div class="exercise-lesson-instruction">
+         <div class="exercise-lesson-label">
+           <span>
+             Instructions
+           </span>
+         </div>
+        {{ .Params.instructions | markdownify }}
+       </div>
+     </div>
+   </div>
+   <div class="docs-repl exercise-main">
+     <div class="editor-cover"></div>
+     <textarea>{{ .Params.code }}</textarea>
+     <div class="exercise-fail-msg">
+      <div class="message">
+        <span class="warning">
+        That doesn't seem right!
+        </span>
+        <span class="hint">
+          {{ .Params.hint | markdownify }}
+        </span>
+      </div>
+     </div>
+     <div class="exercise-action-bar">
+      <div class="exercise-action-bar-inner winner-bar">
+          <div>
+            <span>
+              Awesome Work!
+            </span>
+            <a href="{{ if .NextInSection}}{{.NextInSection.Permalink }}{{ end }}" class="exercise-action-next">
+              Go to Next Lesson
+            </a>
+          </div>
+       </div>
+       <div class="exercise-action-bar-inner">
+          <div>
+            <a href="#" class="exercise-action-run">
+              Run Query
+            </a>
+            <a href="#" class="exercise-action-reset">
+              Reset Code
+            </a>
+          </div>
+       </div>
+     </div>
+     <div class="docs-repl-result output">
+       <iframe src="https://overpass-turbo.eu/map.html?silent" seamless="seamless" frameBorder="0">
+       </iframe>
+       <textarea></textarea>
+       <a class="docs-repl-change-output button" href="#">Data</a>
+     </div>
+   </div>
+   <div class="exercise-answer">{{ .Params.answer }}</div>
+   <div class="exercise-regex">{{ .Params.regex }}</div>
+</div>
+{{ partial "shared.js.html" . }}
+{{ partial "exercise.js.html" . }}
+{{ partial "foot.html" . }}

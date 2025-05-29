@@ -1,0 +1,164 @@
+@require "jeet"
+exercise_width = 270px
+menu_bar_height = 40px
+menu_bar_height_half = 20px
+action_bar_height_half = 30px
+
+body
+  height 100vh
+  overflow hidden
+
+.exercise-contrib
+  position fixed
+  top 0
+  right 20px
+  width 100px
+  text-align center
+  font-weight bold
+  padding 10px
+  background-color bg_winner
+  box-shadow 0px 1px 10px #888888
+  z-index 90000
+  a
+    color white
+    text-decoration none
+
+.exercise-container
+  //stub
+
+.exercise-lesson
+  column(1/2, cycle: 2, gutter: 0)
+  height "calc(100vh - %s)" % (menu_bar_height)
+
+.exercise-lesson-bar
+  height 40px
+  border-bottom 1px solid rgba(0,0,0,0.15)
+  .line
+    padding 10px 30px
+
+.exercise-lesson-inner
+  height "calc(100vh - %s)" %(menu_bar_height + 40px)
+  overflow auto
+  .exercise-lesson-article
+    max-width 85%
+    margin 0 auto
+  .exercise-lesson-instruction
+    margin-bottom 25px
+    background-color #f0faff
+    border-top 1px solid #c5dfea
+    border-bottom 1px solid #c5dfea
+    .exercise-lesson-label
+      margin 0 auto
+      text-align center
+      span
+        border 1px solid #c5dfea
+        padding 0.5em
+        background-color white
+    li
+      padding-top 1em
+    li:first-child
+      padding-top 0em
+
+.exercise-main
+  column(1/2, cycle: 2, gutter: 0)
+  background-color #e0e0e0
+  .CodeMirror, .editor-cover
+    border-width 0px
+    height "calc(50vh - %s)" % (menu_bar_height_half + action_bar_height_half)
+  .editor-cover
+    z-index 9001
+    position absolute
+    width 100%
+    background-color rgba(255, 255, 255, 0.5)
+    &.hide
+      display none
+  .output
+    overflow auto
+    width 100%
+    height "calc(50vh - %s)" % (menu_bar_height_half + action_bar_height_half)
+    iframe
+      width 100%
+      height 100%
+  .exercise-fail-msg
+    pointer-events none
+    position fixed
+    right 0px
+    z-index z_notif
+    margin 1em
+    padding 1em
+    color white
+    width 200px
+    background-color rgba(256, 0, 0, 0.5)
+    box-shadow 0px 1px 3px #888888
+    top 0px
+    opacity 0
+    transition opacity .5s ease-in-out, top .5s ease-out;
+    &.show
+      top menu_bar_height
+      opacity 1
+    .message
+      float left
+      .warning
+        font-weight 900
+      span.hint
+        font-weight 400
+  .exercise-action-bar
+    position relative
+    height action_bar_height_half * 2
+    .exercise-action-bar-inner
+      height action_bar_height_half * 2
+      &.winner-bar
+        position absolute
+        width 100%
+        background-color #5bc0de
+        color white
+        opacity 0
+        top action_bar_height_half * 2
+        transition opacity .25s, ease-in-out, top .5s ease-out;
+        span
+          font-weight 600
+       &.show
+        top 0
+        opacity 1
+      padding 20px 10px
+
+.exercise-action-run, .exercise-action-next
+  margin 5px
+  @extend .button
+  color white
+  background-color bg_accent
+  &:hover
+    background-color text_accent
+  &.disabled
+    background-color lighten(bg_accent, 30)
+
+.exercise-action-reset
+  margin 5px
+  @extend .button
+  color white
+  background-color bg_title 
+  &:hover
+    background-color lighten(bg_title, 30%)
+  &.disabled
+    background-color lighten(bg_title, 20)
+
+.exercise-answer
+  display none
+
+@media (min-width sm_size)
+  .exercise-main
+    column(1/2, cycle: 2, gutter: 0)
+  .exercise-lesson
+    column(1/2, cycle: 2, gutter: 0)
+
+@media (min-width md_size)
+  .exercise-main
+    column(2/3, cycle: 3, gutter: 0)
+  .exercise-lesson
+    column(1/3, cycle: 3, gutter: 0)
+
+@media (min-width lg_size)
+  .exercise-main
+    column(3/4, cycle: 4, gutter: 0)
+  .exercise-lesson
+    column(1/4, cycle: 4, gutter: 0)

@@ -1,0 +1,36 @@
+{{ partial "head.html" . }}
+<div class="row">
+  <div class="docs-list">
+    {{ partial "header.html" . }}
+    <ul>
+      {{ $currNode := . }}
+      {{ range .Site.Menus.doctype }}
+        <li class="docs-list-title">
+          <strong>{{ .Name }}</strong>
+        </li>
+        {{ range .Children }}
+        <li class="{{ if $currNode.IsMenuCurrent "doctype" . }}docs-list-active{{end}}">
+          <a href="{{ .URL }}">{{ .Name }}</a>
+        </li>
+        {{ end }}
+      {{ end }}
+    </ul>
+  </div>
+  <div class="docs-content">
+    <div class="content">
+      {{ partial "google-cse.html" }}
+      <h1 id="post-title">
+        {{ .Title }}
+        <small>
+          {{ $cur_path := trim (substr .Permalink (len .Site.BaseURL) (len .Permalink)) "/" }}
+          <a class="docs-improve" href="https://github.com/osmlab/learnoverpass/edit/master/content/{{ $cur_path }}.md">Improve page</a>
+        </small>
+      </h1>
+      <p>{{ .Content }}</p>
+      {{ partial "footer.html" . }}
+    </div>
+  </div>
+</div>
+{{ partial "shared.js.html" . }}
+{{ partial "docs.js.html" . }}
+{{ partial "foot.html" . }}
