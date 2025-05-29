@@ -113,10 +113,52 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Kombinierte Liste der Polygone basierend auf dem Sichtbarkeitsstatus
     List<Polygon> displayedPolygons = [];
     if (_showCityOutline) displayedPolygons.addAll(_cityPolygons);
     if (_showSubDistricts) displayedPolygons.addAll(_subDistrictPolygons);
+
+    // Marker für die Namen der Gebiete erstellen
+    List<Marker> nameMarkers = [];
+    for (var polygon in displayedPolygons) {
+      if (polygon.points.isNotEmpty && polygon.label != null) {
+        // Einfache Berechnung des Mittelpunkts des Polygons ( Durchschnitt der Lat/Lng-Werte)
+        // Für eine genauere Zentrierung (z.B. "centroid" oder "point on surface") wären komplexere Algorithmen nötig.
+        double avgLat = polygon.points.map((p) => p.latitude).reduce((a, b) => a + b) / polygon.points.length;
+        double avgLng = polygon.points.map((p) => p.longitude).reduce((a, b) => a + b) / polygon.points.length;
+
+        nameMarkers.add(
+          Marker(
+            width: 120.0, // Breite des Markers anpassen
+            height: 40.0, // Höhe des Markers anpassen
+            point: LatLng(avgLat, avgLng),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(5),
+                boxShadow: const [
+                  BoxShadow(color: Colors.black26, blurRadius: 2, offset: Offset(1, 1))
+                ]
+              ),
+              child: Center(
+                child: Text(
+                  polygon.label!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  overflow: TextOverflow.ellipsis, // Verhindert Überlaufen bei langen Namen
+                  maxLines: 2, // Erlaubt bis zu zwei Zeilen für den Namen
+                ),
+              ),
+            ),
+            rotate: false, // Stellt sicher, dass der Text nicht mit der Karte rotiert (Standard)
+          ),
+        );
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary, title: Text(widget.title)),
@@ -184,20 +226,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 options: MapOptions(
                   initialCenter: displayedPolygons.isNotEmpty && displayedPolygons.first.points.isNotEmpty
                       ? displayedPolygons.first.points.first
-                      : const LatLng(51.5, -0.09), // Standard-Fallback
-                  initialZoom: displayedPolygons.isNotEmpty ? 10.0 : 6.0, // Zoom anpassen, wenn Polygone da sind
+                      : const LatLng(51.5, -0.09),
+                  initialZoom: displayedPolygons.isNotEmpty ? 10.0 : 6.0,
                 ),
                 children: [
                   TileLayer(
                     urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'dev.fleaflet.flutter_map.example', // Wichtig für OSM Tile Usage Policy
+                    userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                   ),
-                  // Verwende die dynamisch erstellte `displayedPolygons` Liste
                   if (displayedPolygons.isNotEmpty) PolygonLayer(polygons: displayedPolygons),
+                  if (nameMarkers.isNotEmpty) MarkerLayer(markers: nameMarkers), // MarkerLayer hinzufügen
                 ],
               ),
             ),
-          // Optional: Bereich für Query und JSON-Antwort (wieder einkommentiert)
+
           if (!_isLoading && _error == null && (_sentQuery != null || _cityData != null))
             Container(
               height: MediaQuery.of(context).size.height * 0.25,

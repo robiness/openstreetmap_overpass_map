@@ -183,8 +183,7 @@ out geom;
     for (var element in elements) {
       if (element is! Map) continue;
 
-      // Debug-Ausgabe für jedes Element, um die Struktur besser zu verstehen
-      // print("Verarbeite Element: Typ=${element['type']}, ID=${element['id']}, Tags=${element['tags']}");
+      String? elementName = element['tags']?['name']; // Namen extrahieren
 
       if (element['type'] == 'relation') {
         List<List<LatLng>> outerWaySegments = [];
@@ -241,13 +240,19 @@ out geom;
                   color: isNaturallyClosed
                       ? (isSubDistrict ? const Color(0x3300AA00) : const Color(0x44DD0000))
                       : const Color(0x00000000),
+                  label: elementName, // Namen dem Polygon-Label zuweisen
+                  // Optional: labelStyle für die Darstellung des Labels direkt auf dem Polygon (kann überladen wirken)
+                  // labelStyle: TextStyle(color: Colors.black, fontSize: 10, fontWeight: FontWeight.bold),
                 ),
               );
-              // print("  Relation ${element['id']} (${isSubDistrict ? 'Bezirk' : 'Stadt'}): Polygon (isFilled: $isNaturallyClosed) mit ${polygonPoints.length} Punkten erstellt.");
             }
           }
         }
       } else if (element['type'] == 'way' && element['geometry'] != null && element['geometry'] is List) {
+        // Für einzelne Ways, die nicht Teil einer Relation sind, könnten wir auch Namen anzeigen,
+        // aber typischerweise sind administrative Grenzen Relationen.
+        // Hier könnte man entscheiden, ob für diese auch Labels generiert werden sollen.
+        // Vorerst lassen wir es für Ways ohne Label, da sie meist nur Segmente sind.
         List<LatLng> currentWayPoints = [];
         for (var pt in element['geometry']) {
           if (pt is Map && pt['lat'] != null && pt['lon'] != null) {
@@ -267,9 +272,9 @@ out geom;
                   : const Color(0xFF00AAFF), // Hellgrün für Bezirks-Ways / Blau für Stadt-Ways
               borderStrokeWidth: isSubDistrict ? 1.0 : 1.5,
               isFilled: false,
+              label: elementName, // Auch hier den Namen zuweisen, falls vorhanden
             ),
           );
-          // print("Top-Level Way ${element['id']} (${isSubDistrict ? 'Bezirk' : 'Stadt'}): Linie mit ${currentWayPoints.length} Punkten erstellt.");
         }
       }
     }
