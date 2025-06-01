@@ -26,11 +26,30 @@ class DisplayableArea {
   int get visitCount => userArea.visitCount;
 }
 
+enum AreaRenderingMode {
+  polygon, // Use PolygonLayer (original)
+  animated, // Use CustomPainter with animations
+}
+
 class OverpassMapNotifier extends ChangeNotifier {
   final OverpassApi _api;
 
   BoundaryData? _boundaryData;
   BoundaryData? get boundaryData => _boundaryData;
+
+  // Rendering mode selection
+  AreaRenderingMode _renderingMode = AreaRenderingMode.polygon;
+  AreaRenderingMode get renderingMode => _renderingMode;
+
+  // Animation settings
+  bool _enableAnimations = true;
+  bool get enableAnimations => _enableAnimations;
+
+  Duration _animationDuration = const Duration(milliseconds: 1000);
+  Duration get animationDuration => _animationDuration;
+
+  Curve _animationCurve = Curves.easeInOut;
+  Curve get animationCurve => _animationCurve;
 
   // Renamed from _userAreaVisitData to make it package-private for testing access
   Map<int, UserAreaData> userAreaVisitData = {};
@@ -265,6 +284,61 @@ class OverpassMapNotifier extends ChangeNotifier {
       // Use the renamed field here
       userAreaVisitData.putIfAbsent(area.id, () => UserAreaData(areaId: area.id));
     }
+    notifyListeners();
+  }
+
+  /// Get animated area layer widget
+  Widget get animatedAreaLayer {
+    if (_boundaryData == null) return const SizedBox.shrink();
+
+    List<GeographicArea> areasToShow = [];
+
+    if (_showCityOutline) {
+      areasToShow.addAll(_boundaryData!.cities);
+    }
+    if (_showBezirke) {
+      areasToShow.addAll(_boundaryData!.bezirke);
+    }
+    if (_showStadtteile) {
+      areasToShow.addAll(_boundaryData!.stadtteile);
+    }
+
+    return MapRenderingService.createAnimatedAreaLayer(
+      areas: areasToShow,
+      animationDuration: _animationDuration,
+      animationCurve: _animationCurve,
+      enableAnimation: _enableAnimations,
+    );
+  }
+
+  /// Switch rendering mode
+  void setRenderingMode(AreaRenderingMode mode) {
+    _renderingMode = mode;
+    notifyListeners();
+  }
+
+  /// Toggle animations
+  void toggleAnimations(bool enable) {
+    _enableAnimations = enable;
+    notifyListeners();
+  }
+
+  /// Set animation duration
+  void setAnimationDuration(Duration duration) {
+    _animationDuration = duration;
+    notifyListeners();
+  }
+
+  /// Set animation curve
+  void setAnimationCurve(Curve curve) {
+    _animationCurve = curve;
+    notifyListeners();
+  }
+
+  /// Animate to a specific area
+  void animateToArea(GeographicArea area) {
+    selectArea(area);
+    // The animated layer will handle the visual animation
     notifyListeners();
   }
 

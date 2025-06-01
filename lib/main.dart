@@ -111,6 +111,44 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              // Rendering Mode Controls
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Rendering: '),
+                    DropdownButton<AreaRenderingMode>(
+                      value: notifier.renderingMode,
+                      items: const [
+                        DropdownMenuItem(
+                          value: AreaRenderingMode.polygon,
+                          child: Text('Polygon Layer'),
+                        ),
+                        DropdownMenuItem(
+                          value: AreaRenderingMode.animated,
+                          child: Text('Animated Layer'),
+                        ),
+                      ],
+                      onChanged: (mode) {
+                        if (mode != null) {
+                          notifier.setRenderingMode(mode);
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 20),
+                    if (notifier.renderingMode == AreaRenderingMode.animated) ...[
+                      Checkbox(
+                        value: notifier.enableAnimations,
+                        onChanged: (bool? value) {
+                          notifier.toggleAnimations(value ?? false);
+                        },
+                      ),
+                      const Text('Animations'),
+                    ],
+                  ],
+                ),
+              ),
               // Debug Info Area
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
@@ -246,7 +284,11 @@ class _MyHomePageState extends State<MyHomePage> {
                         urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                       ),
-                      PolygonLayer(polygons: notifier.displayedPolygons),
+                      // Choose rendering mode
+                      if (notifier.renderingMode == AreaRenderingMode.polygon)
+                        PolygonLayer(polygons: notifier.displayedPolygons)
+                      else
+                        notifier.animatedAreaLayer,
                       // MarkerLayer(markers: notifier.nameMarkers),
                     ],
                   ),

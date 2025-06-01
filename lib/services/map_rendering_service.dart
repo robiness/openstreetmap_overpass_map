@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'dart:ui' as ui;
 
 import '../models/osm_models.dart';
 import '../overpass_map_notifier.dart'; // Import DisplayableArea
+import '../widgets/animated_area_layer.dart';
+import '../widgets/custom_area_painter.dart';
 
 /// Service for converting GeographicArea data to map display elements
 class MapRenderingService {
-  /// Convert GeographicArea to Flutter Map Polygon
+  /// Convert GeographicArea to Flutter Map Polygon (legacy method)
   static Polygon areaToPolygon(GeographicArea area, {Color? color, double? borderWidth}) {
     final Color polygonColor = color ?? _getDefaultColor(area.type);
 
@@ -25,7 +28,7 @@ class MapRenderingService {
     );
   }
 
-  /// Convert multiple areas to polygons with consistent styling
+  /// Convert multiple areas to polygons with consistent styling (legacy method)
   static List<Polygon> areasToPolygons(
     List<GeographicArea> areas, {
     Map<String, Color>? colorsByType,
@@ -72,6 +75,98 @@ class MapRenderingService {
         height: 40, // Adjusted height
       );
     }).toList();
+  }
+
+  /// Create an animated area layer widget
+  static Widget createAnimatedAreaLayer({
+    required List<GeographicArea> areas,
+    Map<String, Color>? colorsByType,
+    Duration animationDuration = const Duration(milliseconds: 1000),
+    Curve animationCurve = Curves.easeInOut,
+    bool enableAnimation = true,
+    Map<int, ui.Shader>? shadersByAreaId,
+    VoidCallback? onAnimationComplete,
+  }) {
+    return AnimatedAreaLayer(
+      areas: areas,
+      colorsByType: colorsByType,
+      animationDuration: animationDuration,
+      animationCurve: animationCurve,
+      enableAnimation: enableAnimation,
+      shadersByAreaId: shadersByAreaId,
+      onAnimationComplete: onAnimationComplete,
+    );
+  }
+
+  /// Create animated areas with custom styling
+  static List<AnimatedArea> createAnimatedAreas({
+    required List<GeographicArea> areas,
+    Map<String, Color>? colorsByType,
+    Map<int, Color>? fillColorOverrides,
+    Map<int, Color>? borderColorOverrides,
+    Map<int, double>? opacityOverrides,
+    Map<int, ui.Shader>? shadersByAreaId,
+    double defaultBorderWidth = 2.0,
+    double defaultFillOpacity = 0.3,
+  }) {
+    return areas.map((area) {
+      final defaultColor = colorsByType?[area.type] ?? _getDefaultColor(area.type);
+      
+      return AnimatedArea(
+        geoArea: area,
+        fillColor: fillColorOverrides?[area.id] ?? defaultColor,
+        borderColor: borderColorOverrides?[area.id] ?? defaultColor.withOpacity(0.8),
+        fillOpacity: opacityOverrides?[area.id] ?? defaultFillOpacity,
+        borderWidth: defaultBorderWidth,
+        shader: shadersByAreaId?[area.id],
+      );
+    }).toList();
+  }
+
+  /// Create shaders for specific animation effects
+  static Map<int, ui.Shader> createAnimationShaders({
+    required List<GeographicArea> areas,
+    required Size screenSize,
+    String shaderType = 'gradient',
+  }) {
+    final Map<int, ui.Shader> shaders = {};
+    
+    for (final area in areas) {
+      switch (shaderType) {
+        case 'gradient':
+          shaders[area.id] = ui.Gradient.linear(
+            const Offset(0, 0),
+            Offset(screenSize.width, screenSize.height),
+            [
+              _getDefaultColor(area.type).withOpacity(0.1),
+              _getDefaultColor(area.type).withOpacity(0.6),
+            ],
+          );
+          break;
+        case 'radial':
+          shaders[area.id] = ui.Gradient.radial(
+            Offset(screenSize.width / 2, screenSize.height / 2),
+            screenSize.width / 3,
+            [
+              _getDefaultColor(area.type).withOpacity(0.8),
+              _getDefaultColor(area.type).withOpacity(0.2),
+            ],
+          );
+          break;
+        case 'sweep':
+          shaders[area.id] = ui.Gradient.sweep(
+            Offset(screenSize.width / 2, screenSize.height / 2),
+            [
+              _getDefaultColor(area.type),
+              _getDefaultColor(area.type).withOpacity(0.3),
+              _getDefaultColor(area.type),
+            ],
+          );
+          break;
+      }
+    }
+    
+    return shaders;
   }
 
   /// Calculate bounds for fitting all areas on map
