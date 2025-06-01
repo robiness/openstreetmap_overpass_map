@@ -14,7 +14,7 @@ class MapRenderingService {
     return Polygon(
       points: _coordinatesToLatLng(area.coordinates),
       color: polygonColor.withOpacity(0.3),
-      borderColor: polygonColor,
+      borderColor: Colors.black,
       borderStrokeWidth: borderWidth ?? 2.0,
       label: area.name,
       labelStyle: TextStyle(
@@ -66,7 +66,8 @@ class MapRenderingService {
       // Color markerColor = displayArea.visitCount > 0 ? Colors.purple : Colors.orange;
       return Marker(
         point: center,
-        child: markerBuilder?.call(displayArea) ?? _defaultMarker(displayArea.geoArea, visitCount: displayArea.visitCount),
+        child:
+            markerBuilder?.call(displayArea) ?? _defaultMarker(displayArea.geoArea, visitCount: displayArea.visitCount),
         width: 120, // Adjusted width for potentially more info
         height: 40, // Adjusted height
       );
@@ -128,7 +129,7 @@ class MapRenderingService {
     // Use the first (longest) coordinate ring as the main polygon outline
     // This should be the combined outer boundary from our parser
     final mainRing = coordinates.isNotEmpty ? coordinates.first : <List<double>>[];
-    
+
     return mainRing.map((coord) => LatLng(coord[1], coord[0])).toList();
   }
 
@@ -155,23 +156,15 @@ class MapRenderingService {
     if (visitCount != null && visitCount > 0) {
       label += ' (Visits: $visitCount)';
     }
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
-        border: Border.all(color: _getDefaultColor(area.type)),
-        borderRadius: BorderRadius.circular(4),
+    return Text(
+      label,
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontSize: 14,
+        color: Colors.black45,
+        fontWeight: FontWeight.bold,
       ),
-      child: Text(
-        label,
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 10,
-          color: _getDefaultColor(area.type).withOpacity(1.0),
-          fontWeight: FontWeight.bold,
-        ),
-        overflow: TextOverflow.ellipsis,
-      ),
+      overflow: TextOverflow.ellipsis,
     );
   }
 }

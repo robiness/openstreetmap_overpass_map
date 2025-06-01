@@ -1,4 +1,5 @@
 import 'dart:convert'; // For json.encode/decode if persisting UserAreaData map
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:overpass_map/overpass_api.dart';
@@ -32,7 +33,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   BoundaryData? get boundaryData => _boundaryData;
 
   // Renamed from _userAreaVisitData to make it package-private for testing access
-  Map<int, UserAreaData> userAreaVisitData = {}; 
+  Map<int, UserAreaData> userAreaVisitData = {};
   static const String _userVisitDataKey = 'user_visit_data';
 
   String _dataSource = "unknown";
@@ -80,7 +81,8 @@ class OverpassMapNotifier extends ChangeNotifier {
     return bounds;
   }
 
-  OverpassMapNotifier(this._api) { // Accept OverpassApi in constructor
+  OverpassMapNotifier(this._api) {
+    // Accept OverpassApi in constructor
     _loadUserVisitData(); // Load visit counts on initialization
     fetchCityData("Köln", 6);
   }
@@ -174,7 +176,7 @@ class OverpassMapNotifier extends ChangeNotifier {
       areasToShow.addAll(_boundaryData!.stadtteile);
     }
 
-    return MapRenderingService.areasToPolygons(areasToShow);
+    return MapRenderingService.areasToPolygons(areasToShow, borderWidth: 1.5);
   }
 
   /// Get markers for area names

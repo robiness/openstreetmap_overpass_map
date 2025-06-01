@@ -78,48 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Consumer<OverpassMapNotifier>(
       builder: (context, notifier, child) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            title: const Text("Overpass Map Explorer"),
-          ),
           body: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        notifier.fetchCityData("Berlin", 4);
-                        notifier.selectArea(null);
-                      },
-                      child: const Text('Berlin (4)'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        notifier.fetchCityData("Köln", 6);
-                        notifier.selectArea(null);
-                      },
-                      child: const Text('Köln (6)'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        notifier.fetchCityData("Bonn", 6);
-                        notifier.selectArea(null);
-                      },
-                      child: const Text('Bonn (6)'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        notifier.fetchCityData("Bornheim", 8);
-                        notifier.selectArea(null);
-                      },
-                      child: const Text('Bornheim (8)'),
-                    ),
-                  ],
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Row(
@@ -154,16 +114,9 @@ class _MyHomePageState extends State<MyHomePage> {
               // Debug Info Area
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-                child: Container(
-                  padding: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                  child: Text(
-                    'Data from: ${notifier.dataSource}, Load time: ${notifier.dataLoadDuration}ms',
-                    style: const TextStyle(fontSize: 10),
-                  ),
+                child: Text(
+                  'Data from: ${notifier.dataSource}, Load time: ${notifier.dataLoadDuration}ms',
+                  style: const TextStyle(fontSize: 10),
                 ),
               ),
               // Selected Area Info and Visit Count Modifier
@@ -294,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                       ),
                       PolygonLayer(polygons: notifier.displayedPolygons),
-                      MarkerLayer(markers: notifier.nameMarkers),
+                      // MarkerLayer(markers: notifier.nameMarkers),
                     ],
                   ),
                 ),
