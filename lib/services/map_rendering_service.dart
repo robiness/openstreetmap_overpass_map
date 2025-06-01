@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../models/osm_models.dart';
+import '../overpass_map_notifier.dart'; // Import DisplayableArea
 
 /// Service for converting GeographicArea data to map display elements
 class MapRenderingService {
@@ -48,6 +49,26 @@ class MapRenderingService {
         child: markerBuilder?.call(area) ?? _defaultMarker(area),
         width: 100,
         height: 30,
+      );
+    }).toList();
+  }
+
+  /// Create markers for area labels/centers, potentially using visit counts
+  static List<Marker> createAreaMarkersWithVisits(
+    List<DisplayableArea> displayableAreas, {
+    // You can add a custom builder that also receives UserAreaData or visitCount
+    Widget Function(DisplayableArea)? markerBuilder,
+  }) {
+    return displayableAreas.map((displayArea) {
+      // Use geoArea for coordinates and name, userArea.visitCount for potential styling/info
+      final center = _calculateCenterPoint(displayArea.geoArea.coordinates);
+      // Example: Modify marker based on visit count
+      // Color markerColor = displayArea.visitCount > 0 ? Colors.purple : Colors.orange;
+      return Marker(
+        point: center,
+        child: markerBuilder?.call(displayArea) ?? _defaultMarker(displayArea.geoArea, visitCount: displayArea.visitCount),
+        width: 120, // Adjusted width for potentially more info
+        height: 40, // Adjusted height
       );
     }).toList();
   }
@@ -112,40 +133,44 @@ class MapRenderingService {
   }
 
   static LatLng _calculateCenterPoint(List<List<List<double>>> coordinates) {
-    if (coordinates.isEmpty) return const LatLng(50.9, 6.9); // Cologne default
-
-    final outerRing = coordinates.first;
-    if (outerRing.isEmpty) return const LatLng(50.9, 6.9);
-
-    double sumLat = 0;
-    double sumLng = 0;
-    int count = 0;
-
-    for (final coord in outerRing) {
-      sumLng += coord[0];
-      sumLat += coord[1];
-      count++;
+    if (coordinates.isEmpty || coordinates.first.isEmpty) {
+      return const LatLng(0, 0); // Fallback
     }
-
-    return LatLng(sumLat / count, sumLng / count);
+    double latSum = 0;
+    double lngSum = 0;
+    int pointCount = 0;
+    for (final ring in coordinates) {
+      for (final coord in ring) {
+        lngSum += coord[0];
+        latSum += coord[1];
+        pointCount++;
+      }
+    }
+    if (pointCount == 0) return const LatLng(0, 0);
+    return LatLng(latSum / pointCount, lngSum / pointCount);
   }
 
-  static Widget _defaultMarker(GeographicArea area) {
+  static Widget _defaultMarker(GeographicArea area, {int? visitCount}) {
+    String label = area.name;
+    if (visitCount != null && visitCount > 0) {
+      label += ' (Visits: $visitCount)';
+    }
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(4),
+        color: Colors.white.withOpacity(0.7),
         border: Border.all(color: _getDefaultColor(area.type)),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
-        area.name,
+        label,
+        textAlign: TextAlign.center,
         style: TextStyle(
           fontSize: 10,
+          color: _getDefaultColor(area.type).withOpacity(1.0),
           fontWeight: FontWeight.bold,
-          color: _getDefaultColor(area.type),
         ),
-        textAlign: TextAlign.center,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
