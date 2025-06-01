@@ -1,14 +1,15 @@
-import 'models/osm_models.dart';
+import 'osm_models.dart';
 
 /// Parses Overpass/OSM JSON data and produces lists of GeographicArea objects for city, bezirk, and stadtteil boundaries.
 class BoundaryData {
+  final Map<String, dynamic> rawJson; // Store the raw JSON
   final List<GeographicArea> cities = [];
   final List<GeographicArea> bezirke = [];
   final List<GeographicArea> stadtteile = [];
 
   /// Parses the provided Overpass JSON string.
-  BoundaryData(Map<String, dynamic> json) {
-    final List elements = json['elements'] ?? [];
+  BoundaryData(this.rawJson) { // Accept raw JSON in constructor
+    final List elements = rawJson['elements'] ?? [];
 
     // Parse relations directly since geometry is embedded in members
     for (final element in elements) {
@@ -68,10 +69,10 @@ class BoundaryData {
             print('Found ${outerWays.length} outer ways for $name');
             final combinedOuters = _combineWays(outerWays);
             print('Combined into ${combinedOuters.length} continuous polygons for $name');
-            
+
             // Add combined outer ways
             coordinates.addAll(combinedOuters);
-            
+
             // Add inner ways (holes) as separate rings
             if (innerWays.isNotEmpty) {
               print('Found ${innerWays.length} inner ways (holes) for $name');
@@ -114,20 +115,20 @@ class BoundaryData {
     print('_combineWays: Starting with ${ways.length} ways');
     List<List<List<double>>> result = [];
     List<List<List<double>>> remaining = List.from(ways);
-    
+
     while (remaining.isNotEmpty) {
       List<List<double>> currentPolygon = remaining.removeAt(0);
       bool foundConnection = true;
-      
+
       print('_combineWays: Starting new polygon with ${currentPolygon.length} points');
-      
+
       // Keep trying to connect ways until no more connections are found
       while (foundConnection && remaining.isNotEmpty) {
         foundConnection = false;
-        
+
         for (int i = 0; i < remaining.length; i++) {
           final way = remaining[i];
-          
+
           // Check if this way connects to the end of current polygon
           if (_pointsEqual(currentPolygon.last, way.first)) {
             // Connect at the end, skip first point of way to avoid duplication
@@ -168,11 +169,11 @@ class BoundaryData {
           }
         }
       }
-      
+
       print('_combineWays: Completed polygon with ${currentPolygon.length} points');
       result.add(currentPolygon);
     }
-    
+
     print('_combineWays: Finished with ${result.length} polygons');
     return result;
   }
@@ -180,7 +181,6 @@ class BoundaryData {
   /// Helper method to check if two coordinate points are equal (within a small tolerance)
   bool _pointsEqual(List<double> point1, List<double> point2) {
     const tolerance = 0.0000001; // Very small tolerance for floating point comparison
-    return (point1[0] - point2[0]).abs() < tolerance && 
-           (point1[1] - point2[1]).abs() < tolerance;
+    return (point1[0] - point2[0]).abs() < tolerance && (point1[1] - point2[1]).abs() < tolerance;
   }
 }

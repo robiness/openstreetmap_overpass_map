@@ -76,7 +76,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Consumer<OverpassMapNotifier>(
       builder: (context, notifier, child) {
         return Scaffold(
-          appBar: AppBar(backgroundColor: Theme.of(context).colorScheme.inversePrimary),
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: const Text("Overpass Map Explorer"),
+          ),
           body: Column(
             children: [
               Padding(
@@ -92,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ElevatedButton(
                       onPressed: () => notifier.fetchCityData("Bonn", 6),
                       child: const Text('Bonn (6)'),
-                    ), // Geändert von Bonn zu Buenos Aires, Admin-Level vorerst auf 4 gesetzt
+                    ),
                     ElevatedButton(
                       onPressed: () => notifier.fetchCityData("Bornheim", 8),
                       child: const Text('Bornheim (8)'),
@@ -131,6 +134,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
               ),
+              // Debug Info Area
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                child: Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[200],
+                    borderRadius: BorderRadius.circular(4.0),
+                  ),
+                  child: Text(
+                    'Data from: ${notifier.dataSource}, Load time: ${notifier.dataLoadDuration}ms',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+              ),
               if (notifier.isLoading)
                 const Expanded(child: Center(child: CircularProgressIndicator()))
               else if (notifier.error != null)
@@ -151,108 +169,24 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: FlutterMap(
                     mapController: _mapController,
                     options: MapOptions(
+                      initialCenter: const LatLng(50.9375, 6.9603), // Default to Cologne
+                      initialZoom: 10.0,
                       onMapReady: () {
-                        // Callback für Kartenbereitschaft
                         setState(() {
-                          _isMapReady = true;
+                          _isMapReady = true; // Map ist bereit
                         });
-                        // Wenn es ausstehende boundsToFit gibt, jetzt anwenden
-                        // Dies ist nützlich, wenn der Notifier die Daten bereits geladen hat,
-                        // bevor die Karte initialisiert wurde.
-                        final initialBounds = _mapNotifier.consumeBoundsToFit();
-                        if (initialBounds != null) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted && _isMapReady) {
-                              _mapController.fitCamera(
-                                CameraFit.bounds(bounds: initialBounds, padding: const EdgeInsets.all(50.0)),
-                              );
-                            }
-                          });
-                        }
+                        // Trigger bounds fit if available after map is ready
+                        _handleNotifierChanges();
                       },
-                      initialCenter:
-                          notifier.displayedPolygons.isNotEmpty && notifier.displayedPolygons.first.points.isNotEmpty
-                          ? LatLngBounds.fromPoints(notifier.displayedPolygons.expand((p) => p.points).toList())
-                                .center // Zentriere auf alle angezeigten Polygone
-                          : const LatLng(51.5, -0.09),
-                      initialZoom: notifier.displayedPolygons.isNotEmpty ? 10.0 : 6.0,
-                      // Die Kamera wird jetzt durch _handleNotifierChanges angepasst
                     ),
                     children: [
                       TileLayer(
                         urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                       ),
-                      if (notifier.displayedPolygons.isNotEmpty) PolygonLayer(polygons: notifier.displayedPolygons),
-                      if (notifier.nameMarkers.isNotEmpty) MarkerLayer(markers: notifier.nameMarkers),
+                      PolygonLayer(polygons: notifier.displayedPolygons),
+                      MarkerLayer(markers: notifier.nameMarkers),
                     ],
-                  ),
-                ),
-              if (!notifier.isLoading &&
-                  notifier.error == null &&
-                  (notifier.currentBoundaryData?.query != null || notifier.currentBoundaryData?.result != null))
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.2,
-                  // Höhe etwas reduziert
-                  padding: const EdgeInsets.all(8.0),
-                  margin: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (notifier.currentBoundaryData?.query != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Gesendete Abfrage:",
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                                ),
-                                const SizedBox(height: 4),
-                                Container(
-                                  padding: const EdgeInsets.all(4.0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(3.0),
-                                  ),
-                                  child: SelectableText(
-                                    notifier.currentBoundaryData!.query,
-                                    style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        if (notifier.currentBoundaryData?.result != null)
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Rohe JSON Antwort:",
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
-                              ),
-                              const SizedBox(height: 4),
-                              Container(
-                                padding: const EdgeInsets.all(4.0),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey[200],
-                                  borderRadius: BorderRadius.circular(3.0),
-                                ),
-                                child: SelectableText(
-                                  notifier.currentBoundaryData!.result,
-                                  style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
                   ),
                 ),
             ],

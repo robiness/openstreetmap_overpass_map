@@ -2,15 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:overpass_map/overpass_api.dart';
 
+import 'models/boundary_data.dart';
 import 'models/osm_models.dart';
 import 'services/map_rendering_service.dart';
 
 class OverpassMapNotifier extends ChangeNotifier {
   final _api = OverpassApi();
 
-  OverPassAPIResult? _currentResult;
+  BoundaryData? _boundaryData; // This is now from overpass_json_parser.dart
+  BoundaryData? get boundaryData => _boundaryData;
 
-  OverPassAPIResult? get currentBoundaryData => _currentResult;
+  String _dataSource = "unknown";
+  String get dataSource => _dataSource;
+
+  int _dataLoadDuration = 0;
+  int get dataLoadDuration => _dataLoadDuration;
 
   bool _isLoading = false;
 
@@ -53,18 +59,24 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   /// Get polygons to display based on current toggle settings
   List<Polygon> get displayedPolygons {
-    if (_currentResult == null) return [];
+    // if (_currentResult == null) return [];
+    if (_boundaryData == null) return [];
 
     List<GeographicArea> areasToShow = [];
 
+    // Assuming BoundaryData has a way to get these lists (e.g., cities, bezirke, stadtteile)
+    // You'll need to adapt this based on your actual BoundaryData structure
     if (_showCityOutline) {
-      areasToShow.addAll(_currentResult!.boundaryData.cities);
+      // areasToShow.addAll(_currentResult!.boundaryData.cities);
+      areasToShow.addAll(_boundaryData!.cities);
     }
     if (_showBezirke) {
-      areasToShow.addAll(_currentResult!.boundaryData.bezirke);
+      // areasToShow.addAll(_currentResult!.boundaryData.bezirke);
+      areasToShow.addAll(_boundaryData!.bezirke);
     }
     if (_showStadtteile) {
-      areasToShow.addAll(_currentResult!.boundaryData.stadtteile);
+      // areasToShow.addAll(_currentResult!.boundaryData.stadtteile);
+      areasToShow.addAll(_boundaryData!.stadtteile);
     }
 
     return MapRenderingService.areasToPolygons(areasToShow);
@@ -72,18 +84,22 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   /// Get markers for area names
   List<Marker> get nameMarkers {
-    if (_currentResult == null) return [];
+    // if (_currentResult == null) return [];
+    if (_boundaryData == null) return [];
 
     List<GeographicArea> areasToShow = [];
 
     if (_showCityOutline) {
-      areasToShow.addAll(_currentResult!.boundaryData.cities);
+      // areasToShow.addAll(_currentResult!.boundaryData.cities);
+      areasToShow.addAll(_boundaryData!.cities);
     }
     if (_showBezirke) {
-      areasToShow.addAll(_currentResult!.boundaryData.bezirke);
+      // areasToShow.addAll(_currentResult!.boundaryData.bezirke);
+      areasToShow.addAll(_boundaryData!.bezirke);
     }
     if (_showStadtteile) {
-      areasToShow.addAll(_currentResult!.boundaryData.stadtteile);
+      // areasToShow.addAll(_currentResult!.boundaryData.stadtteile);
+      areasToShow.addAll(_boundaryData!.stadtteile);
     }
 
     return MapRenderingService.createAreaMarkers(areasToShow);
@@ -96,40 +112,39 @@ class OverpassMapNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _currentResult = await _api.getCityData(cityName, cityAdminLevel: adminLevel);
+      final result = await _api.getCityData(cityName, cityAdminLevel: adminLevel);
+      _boundaryData = result.data;
+      _dataSource = result.source;
+      _dataLoadDuration = result.duration;
 
-      // Calculate bounds and trigger map fit
-      final allAreas = _currentResult!.boundaryData.cities;
-      if (allAreas.isNotEmpty) {
-        _boundsToFit = MapRenderingService.calculateBounds(allAreas);
+      if (_boundaryData != null) {
+        // Construct allElements directly from the BoundaryData fields
+        final List<GeographicArea> allElements = [];
+        allElements.addAll(_boundaryData!.cities);
+        allElements.addAll(_boundaryData!.bezirke);
+        allElements.addAll(_boundaryData!.stadtteile);
+
+        if (allElements.isNotEmpty) {
+          _boundsToFit = MapRenderingService.calculateBounds(allElements);
+        }
+      } else {
+        _error = "No data received.";
       }
-
-      print(
-        'Loaded ${_currentResult!.boundaryData.cities.length} cities, '
-        '${_currentResult!.boundaryData.bezirke.length} bezirke, '
-        '${_currentResult!.boundaryData.stadtteile.length} stadtteile',
-      );
     } catch (e) {
-      _error = 'Failed to load data for $cityName: $e';
-      print(_error);
+      _error = e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
+  /// Toggle city outline visibility
   void toggleCityOutline(bool show) {
     _showCityOutline = show;
     notifyListeners();
   }
 
   /// Toggle bezirke visibility
-  void toggleSubDistricts(bool show) {
-    _showBezirke = show;
-    notifyListeners();
-  }
-
-  /// Toggle bezirke visibility (new method name)
   void toggleBezirke(bool show) {
     _showBezirke = show;
     notifyListeners();

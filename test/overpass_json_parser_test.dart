@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:overpass_map/overpass_json_parser.dart';
+import 'package:overpass_map/models/boundary_data.dart';
 
 void main() {
   group('OverpassJsonParser', () {

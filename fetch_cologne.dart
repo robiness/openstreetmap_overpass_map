@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:overpass_map/overpass_api.dart';
@@ -14,7 +15,7 @@ Future<void> main() async {
 
     // Save to cologne_response.json
     final file = File('lib/cologne_response.json');
-    await file.writeAsString(response.result);
+    await file.writeAsString(jsonEncode(response.data!.rawJson));
     print("✅ Saved response to lib/cologne_response.json");
   } catch (e) {
     print('❌ Error fetching Cologne boundaries: $e');
