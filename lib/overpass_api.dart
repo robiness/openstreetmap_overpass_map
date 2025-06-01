@@ -11,24 +11,24 @@ class OverpassApi {
   /// Single query to get all administrative boundaries for a city in one request
   Future<OverPassAPIResult> getCityData(String cityName, {int cityAdminLevel = 6}) async {
     // Single query that gets city (level 6), bezirke (level 9), and stadtteile (level 10)
-    final query =
-        '''
-[out:json][timeout:60];
+    // and sub-boundaries (admin_level 9 and 10) within that city.
+    final String query =
+        """
+[out:json][timeout:30];
 (
-  // City level (e.g., Cologne at level 6)
-  relation["boundary"="administrative"]["type"="boundary"]["admin_level"="$cityAdminLevel"]["name"="$cityName"];
-  
-  // Get the city area first, then find sub-districts within it
-  relation["boundary"="administrative"]["type"="boundary"]["admin_level"="$cityAdminLevel"]["name"="$cityName"] -> .city;
-  
-  // Bezirke (level 9) within the city
-  relation(area.city)["boundary"="administrative"]["type"="boundary"]["admin_level"="9"];
-  
-  // Stadtteile (level 10) within the city  
-  relation(area.city)["boundary"="administrative"]["type"="boundary"]["admin_level"="10"];
+  relation["name"="$cityName"]["boundary"="administrative"]["admin_level"="$cityAdminLevel"]["type"="boundary"];
+)->.city_main_boundary;
+(.city_main_boundary; map_to_area;)->.city_area;
+(
+  relation(area.city_area)["boundary"="administrative"]["admin_level"="9"]["type"="boundary"];
+  relation(area.city_area)["boundary"="administrative"]["admin_level"="10"]["type"="boundary"];
+)->.sub_level_boundaries;
+(
+  .city_main_boundary;
+  .sub_level_boundaries;
 );
 out geom;
-''';
+""";
 
     try {
       print("Single query for $cityName with all admin levels");
