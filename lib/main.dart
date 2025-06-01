@@ -182,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               if (!notifier.isLoading &&
                   notifier.error == null &&
-                  (notifier.sentQuery != null || notifier.cityDataResponse != null))
+                  (notifier.currentBoundaryData?.query != null || notifier.currentBoundaryData?.result != null))
                 Container(
                   height: MediaQuery.of(context).size.height * 0.2,
                   // Höhe etwas reduziert
@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (notifier.sentQuery != null)
+                        if (notifier.currentBoundaryData?.query != null)
                           Padding(
                             padding: const EdgeInsets.only(bottom: 8.0),
                             child: Column(
@@ -214,14 +214,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                     borderRadius: BorderRadius.circular(3.0),
                                   ),
                                   child: SelectableText(
-                                    notifier.sentQuery!,
+                                    notifier.currentBoundaryData!.query,
                                     style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                        if (notifier.cityDataResponse != null)
+                        if (notifier.currentBoundaryData?.result != null)
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -237,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   borderRadius: BorderRadius.circular(3.0),
                                 ),
                                 child: SelectableText(
-                                  notifier.cityDataResponse!,
+                                  notifier.currentBoundaryData!.result,
                                   style: const TextStyle(fontSize: 10, fontFamily: 'monospace'),
                                 ),
                               ),
