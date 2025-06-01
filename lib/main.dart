@@ -114,12 +114,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     const Text('Stadtumriss'),
                     const SizedBox(width: 20),
                     Checkbox(
-                      value: notifier.showSubDistricts,
+                      value: notifier.showBezirke,
                       onChanged: (bool? value) {
-                        notifier.toggleSubDistricts(value ?? false);
+                        notifier.toggleBezirke(value ?? false);
                       },
                     ),
                     const Text('Bezirke'),
+                    const SizedBox(width: 20),
+                    Checkbox(
+                      value: notifier.showStadtteile,
+                      onChanged: (bool? value) {
+                        notifier.toggleStadtteile(value ?? false);
+                      },
+                    ),
+                    const Text('Stadtteile'),
                   ],
                 ),
               ),
