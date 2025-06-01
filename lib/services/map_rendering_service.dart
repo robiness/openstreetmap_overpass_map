@@ -104,9 +104,11 @@ class MapRenderingService {
   static List<LatLng> _coordinatesToLatLng(List<List<List<double>>> coordinates) {
     if (coordinates.isEmpty) return [];
 
-    // Take the first ring (outer boundary)
-    final outerRing = coordinates.first;
-    return outerRing.map((coord) => LatLng(coord[1], coord[0])).toList();
+    // Use the first (longest) coordinate ring as the main polygon outline
+    // This should be the combined outer boundary from our parser
+    final mainRing = coordinates.isNotEmpty ? coordinates.first : <List<double>>[];
+    
+    return mainRing.map((coord) => LatLng(coord[1], coord[0])).toList();
   }
 
   static LatLng _calculateCenterPoint(List<List<List<double>>> coordinates) {

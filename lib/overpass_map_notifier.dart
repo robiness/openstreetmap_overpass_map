@@ -58,13 +58,13 @@ class OverpassMapNotifier extends ChangeNotifier {
     List<GeographicArea> areasToShow = [];
 
     if (_showCityOutline) {
-      areasToShow.addAll(_currentResult!.boundaryData!.cities);
+      areasToShow.addAll(_currentResult!.boundaryData.cities);
     }
     if (_showBezirke) {
-      areasToShow.addAll(_currentResult!.boundaryData!.bezirke);
+      areasToShow.addAll(_currentResult!.boundaryData.bezirke);
     }
     if (_showStadtteile) {
-      areasToShow.addAll(_currentResult!.boundaryData!.stadtteile);
+      areasToShow.addAll(_currentResult!.boundaryData.stadtteile);
     }
 
     return MapRenderingService.areasToPolygons(areasToShow);

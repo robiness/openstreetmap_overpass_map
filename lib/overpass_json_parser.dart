@@ -33,12 +33,16 @@ class BoundaryData {
             continue; // Not a target admin level
           }
 
-          // Extract geomet ry directly from relation members
+          // Extract geometry from relation members and combine them properly
           List<List<List<double>>> coordinates = [];
           final members = element['members'] as List? ?? [];
 
+          // Separate outer and inner ways
+          List<List<List<double>>> outerWays = [];
+          List<List<List<double>>> innerWays = [];
+
           for (final memberData in members) {
-            if (memberData['type'] == 'way' && memberData['role'] == 'outer') {
+            if (memberData['type'] == 'way') {
               final geometry = memberData['geometry'] as List?;
               if (geometry != null && geometry.isNotEmpty) {
                 final wayCoords = geometry.map<List<double>>((point) {
@@ -47,8 +51,31 @@ class BoundaryData {
                     (point['lat'] as num).toDouble(),
                   ];
                 }).toList();
-                coordinates.add(wayCoords);
+
+                final role = memberData['role'] as String? ?? '';
+                if (role == 'outer' || role == '') {
+                  // Empty role often means outer boundary
+                  outerWays.add(wayCoords);
+                } else if (role == 'inner') {
+                  innerWays.add(wayCoords);
+                }
               }
+            }
+          }
+
+          // Combine outer ways into continuous polygons
+          if (outerWays.isNotEmpty) {
+            print('Found ${outerWays.length} outer ways for $name');
+            final combinedOuters = _combineWays(outerWays);
+            print('Combined into ${combinedOuters.length} continuous polygons for $name');
+            
+            // Add combined outer ways
+            coordinates.addAll(combinedOuters);
+            
+            // Add inner ways (holes) as separate rings
+            if (innerWays.isNotEmpty) {
+              print('Found ${innerWays.length} inner ways (holes) for $name');
+              coordinates.addAll(innerWays);
             }
           }
 
@@ -65,6 +92,7 @@ class BoundaryData {
 
             if (type == 'city') {
               cities.add(area);
+              print('Added city: $name (${relation.id})');
             } else if (type == 'bezirk') {
               bezirke.add(area);
             } else if (type == 'stadtteil') {
@@ -76,5 +104,83 @@ class BoundaryData {
         }
       }
     }
+  }
+
+  /// Combines multiple ways into continuous polygons by connecting them end-to-end
+  List<List<List<double>>> _combineWays(List<List<List<double>>> ways) {
+    if (ways.isEmpty) return [];
+    if (ways.length == 1) return ways;
+
+    print('_combineWays: Starting with ${ways.length} ways');
+    List<List<List<double>>> result = [];
+    List<List<List<double>>> remaining = List.from(ways);
+    
+    while (remaining.isNotEmpty) {
+      List<List<double>> currentPolygon = remaining.removeAt(0);
+      bool foundConnection = true;
+      
+      print('_combineWays: Starting new polygon with ${currentPolygon.length} points');
+      
+      // Keep trying to connect ways until no more connections are found
+      while (foundConnection && remaining.isNotEmpty) {
+        foundConnection = false;
+        
+        for (int i = 0; i < remaining.length; i++) {
+          final way = remaining[i];
+          
+          // Check if this way connects to the end of current polygon
+          if (_pointsEqual(currentPolygon.last, way.first)) {
+            // Connect at the end, skip first point of way to avoid duplication
+            currentPolygon.addAll(way.skip(1));
+            remaining.removeAt(i);
+            foundConnection = true;
+            print('_combineWays: Connected way at end, now ${currentPolygon.length} points');
+            break;
+          }
+          // Check if this way connects to the start of current polygon
+          else if (_pointsEqual(currentPolygon.first, way.last)) {
+            // Connect at the start, skip last point of way to avoid duplication
+            currentPolygon.insertAll(0, way.take(way.length - 1));
+            remaining.removeAt(i);
+            foundConnection = true;
+            print('_combineWays: Connected way at start, now ${currentPolygon.length} points');
+            break;
+          }
+          // Check if this way connects reversed to the end
+          else if (_pointsEqual(currentPolygon.last, way.last)) {
+            // Connect reversed at the end, skip last point and reverse
+            final reversedWay = way.reversed.toList();
+            currentPolygon.addAll(reversedWay.skip(1));
+            remaining.removeAt(i);
+            foundConnection = true;
+            print('_combineWays: Connected reversed way at end, now ${currentPolygon.length} points');
+            break;
+          }
+          // Check if this way connects reversed to the start
+          else if (_pointsEqual(currentPolygon.first, way.first)) {
+            // Connect reversed at the start, skip first point and reverse
+            final reversedWay = way.reversed.toList();
+            currentPolygon.insertAll(0, reversedWay.take(reversedWay.length - 1));
+            remaining.removeAt(i);
+            foundConnection = true;
+            print('_combineWays: Connected reversed way at start, now ${currentPolygon.length} points');
+            break;
+          }
+        }
+      }
+      
+      print('_combineWays: Completed polygon with ${currentPolygon.length} points');
+      result.add(currentPolygon);
+    }
+    
+    print('_combineWays: Finished with ${result.length} polygons');
+    return result;
+  }
+
+  /// Helper method to check if two coordinate points are equal (within a small tolerance)
+  bool _pointsEqual(List<double> point1, List<double> point2) {
+    const tolerance = 0.0000001; // Very small tolerance for floating point comparison
+    return (point1[0] - point2[0]).abs() < tolerance && 
+           (point1[1] - point2[1]).abs() < tolerance;
   }
 }
