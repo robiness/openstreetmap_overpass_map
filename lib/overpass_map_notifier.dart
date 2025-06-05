@@ -70,7 +70,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   String? get error => _error;
 
   // Display toggles
-  bool _showCityOutline = false;
+  bool _showCityOutline = true;  // Changed to true
 
   bool get showCityOutline => _showCityOutline;
 
@@ -79,7 +79,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   bool get showSubDistricts => _showBezirke; // Keep old name for compatibility
   bool get showBezirke => _showBezirke;
 
-  bool _showStadtteile = false;
+  bool _showStadtteile = true;  // Changed to true
 
   bool get showStadtteile => _showStadtteile;
 
@@ -88,7 +88,9 @@ class OverpassMapNotifier extends ChangeNotifier {
   DisplayableArea? get selectedDisplayArea {
     if (_rawSelectedArea == null) return null;
     // Use the renamed field here
-    final userVisits = userAreaVisitData[_rawSelectedArea!.id] ?? UserAreaData(areaId: _rawSelectedArea!.id);
+    final userVisits =
+        userAreaVisitData[_rawSelectedArea!.id] ??
+        UserAreaData(areaId: _rawSelectedArea!.id);
     return DisplayableArea(geoArea: _rawSelectedArea!, userArea: userVisits);
   }
 
@@ -131,7 +133,9 @@ class OverpassMapNotifier extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       final String jsonString = json.encode(
         // Use the renamed field here
-        userAreaVisitData.map((key, value) => MapEntry(key.toString(), value.toJson())),
+        userAreaVisitData.map(
+          (key, value) => MapEntry(key.toString(), value.toJson()),
+        ),
       );
       await prefs.setString(_userVisitDataKey, jsonString);
     } catch (e) {
@@ -149,7 +153,8 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   void decrementVisitCount(int areaId) {
     // Use the renamed field here
-    if (userAreaVisitData.containsKey(areaId) && userAreaVisitData[areaId]!.visitCount > 0) {
+    if (userAreaVisitData.containsKey(areaId) &&
+        userAreaVisitData[areaId]!.visitCount > 0) {
       userAreaVisitData[areaId]!.visitCount--;
       _saveUserVisitData();
       notifyListeners();
@@ -168,7 +173,8 @@ class OverpassMapNotifier extends ChangeNotifier {
   List<DisplayableArea> _getDisplayableAreas(List<GeographicArea> geoAreas) {
     return geoAreas.map((geo) {
       // Use the renamed field here
-      final userVisits = userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
+      final userVisits =
+          userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
       return DisplayableArea(geoArea: geo, userArea: userVisits);
     }).toList();
   }
@@ -216,12 +222,16 @@ class OverpassMapNotifier extends ChangeNotifier {
     }
 
     // Create DisplayableAreas to pass to MapRenderingService if it needs visit counts for markers
-    List<DisplayableArea> displayableAreasForMarkers = _getDisplayableAreas(areasForMarkers);
+    List<DisplayableArea> displayableAreasForMarkers = _getDisplayableAreas(
+      areasForMarkers,
+    );
 
     // Assuming MapRenderingService.createAreaMarkers can now take List<DisplayableArea>
     // or you adapt it to take GeographicArea and a lookup map for visit counts.
     // For now, let's assume it's adapted or we pass GeographicArea and handle count in UI.
-    return MapRenderingService.createAreaMarkersWithVisits(displayableAreasForMarkers);
+    return MapRenderingService.createAreaMarkersWithVisits(
+      displayableAreasForMarkers,
+    );
   }
 
   /// Fetch city boundary data
@@ -231,7 +241,10 @@ class OverpassMapNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final result = await _api.getCityData(cityName, cityAdminLevel: adminLevel);
+      final result = await _api.getCityData(
+        cityName,
+        cityAdminLevel: adminLevel,
+      );
       _boundaryData = result.data;
       _dataSource = result.source;
       _dataLoadDuration = result.duration;
@@ -282,7 +295,10 @@ class OverpassMapNotifier extends ChangeNotifier {
     if (area != null) {
       _boundsToFit = MapRenderingService.calculateBounds([area]);
       // Use the renamed field here
-      userAreaVisitData.putIfAbsent(area.id, () => UserAreaData(areaId: area.id));
+      userAreaVisitData.putIfAbsent(
+        area.id,
+        () => UserAreaData(areaId: area.id),
+      );
     }
     notifyListeners();
   }
@@ -303,11 +319,21 @@ class OverpassMapNotifier extends ChangeNotifier {
       areasToShow.addAll(_boundaryData!.stadtteile);
     }
 
+    // Get visited area IDs
+    final visitedAreaIds = userAreaVisitData.entries
+        .where((entry) => entry.value.visitCount > 0)
+        .map((entry) => entry.key)
+        .toSet();
+
     return MapRenderingService.createAnimatedAreaLayer(
       areas: areasToShow,
       animationDuration: _animationDuration,
       animationCurve: _animationCurve,
       enableAnimation: _enableAnimations,
+      selectedArea: _rawSelectedArea,
+      visitedAreaIds: visitedAreaIds,
+      selectionColor: Colors.orange,
+      visitedColor: Colors.purple,
     );
   }
 

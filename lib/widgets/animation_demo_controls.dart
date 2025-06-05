@@ -7,7 +7,8 @@ import '../examples/area_animation_examples.dart';
 /// A demo widget showcasing various area animation effects
 class AnimationDemoControls extends StatefulWidget {
   final List<GeographicArea> areas;
-  final Function(List<GeographicArea>, {Duration duration, String effect}) onApplyAnimation;
+  final Function(List<GeographicArea>, {Duration duration, String effect})
+  onApplyAnimation;
 
   const AnimationDemoControls({
     super.key,
@@ -21,11 +22,10 @@ class AnimationDemoControls extends StatefulWidget {
 
 class _AnimationDemoControlsState extends State<AnimationDemoControls>
     with TickerProviderStateMixin {
-  
   late AnimationController _rainbowController;
   late AnimationController _pulseController;
   late AnimationController _breatheController;
-  
+
   String _selectedEffect = 'fade_in';
   Duration _animationDuration = const Duration(milliseconds: 1000);
 
@@ -50,17 +50,17 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
   @override
   void initState() {
     super.initState();
-    
+
     _rainbowController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     );
-    
+
     _breatheController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -97,7 +97,7 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
 
   void _applySelectedAnimation() {
     _stopAllAnimations();
-    
+
     switch (_selectedEffect) {
       case 'rainbow':
       case 'pulse':
@@ -131,7 +131,7 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Effect Selection
             Row(
               children: [
@@ -158,7 +158,7 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Duration Selection
             Row(
               children: [
@@ -185,7 +185,7 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Action Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -206,7 +206,7 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Quick Animation Buttons
             const Text(
               'Quick Effects:',
@@ -242,7 +242,11 @@ class _AnimationDemoControlsState extends State<AnimationDemoControls>
     );
   }
 
-  Widget _buildQuickButton(String label, IconData icon, VoidCallback onPressed) {
+  Widget _buildQuickButton(
+    String label,
+    IconData icon,
+    VoidCallback onPressed,
+  ) {
     return ElevatedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 16),

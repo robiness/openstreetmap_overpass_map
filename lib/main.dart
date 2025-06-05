@@ -4,12 +4,14 @@ import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/models/osm_models.dart';
 import 'package:overpass_map/overpass_api.dart'; // Import OverpassApi
 import 'package:overpass_map/overpass_map_notifier.dart';
+import 'package:overpass_map/widgets/hierarchical_area_list.dart';
 import 'package:provider/provider.dart';
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => OverpassMapNotifier(OverpassApi()), // New: Provide real OverpassApi
+      create: (context) =>
+          OverpassMapNotifier(OverpassApi()), // New: Provide real OverpassApi
       child: const MyApp(),
     ),
   );
@@ -40,7 +42,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final MapController _mapController = MapController();
-  late OverpassMapNotifier _mapNotifier; // Für den Zugriff im initState/didChangeDependencies
+  late OverpassMapNotifier
+  _mapNotifier; // Für den Zugriff im initState/didChangeDependencies
   bool _isMapReady = false; // Flag für den Kartenstatus
 
   @override
@@ -59,7 +62,12 @@ class _MyHomePageState extends State<MyHomePage> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _isMapReady) {
           // Korrektur: _isMapReady verwenden
-          _mapController.fitCamera(CameraFit.bounds(bounds: boundsToFit, padding: const EdgeInsets.all(50.0)));
+          _mapController.fitCamera(
+            CameraFit.bounds(
+              bounds: boundsToFit,
+              padding: const EdgeInsets.all(50.0),
+            ),
+          );
         }
       });
     }
@@ -78,221 +86,272 @@ class _MyHomePageState extends State<MyHomePage> {
     return Consumer<OverpassMapNotifier>(
       builder: (context, notifier, child) {
         return Scaffold(
-          body: Column(
+          body: Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Checkbox(
-                      value: notifier.showCityOutline,
-                      onChanged: (bool? value) {
-                        notifier.toggleCityOutline(value ?? false);
-                      },
-                    ),
-                    const Text('Stadtumriss'),
-                    const SizedBox(width: 20),
-                    Checkbox(
-                      value: notifier.showBezirke,
-                      onChanged: (bool? value) {
-                        notifier.toggleBezirke(value ?? false);
-                      },
-                    ),
-                    const Text('Bezirke'),
-                    const SizedBox(width: 20),
-                    Checkbox(
-                      value: notifier.showStadtteile,
-                      onChanged: (bool? value) {
-                        notifier.toggleStadtteile(value ?? false);
-                      },
-                    ),
-                    const Text('Stadtteile'),
-                  ],
+              // Sidebar with hierarchical area list
+              Container(
+                width: 350,
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: BorderSide(color: Colors.grey[300]!),
+                  ),
+                ),
+                child: HierarchicalAreaList(
+                  boundaryData: notifier.boundaryData,
+                  notifier: notifier,
+                  selectedArea: notifier.selectedDisplayArea?.geoArea,
                 ),
               ),
-              // Rendering Mode Controls
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              // Main content area
+              Expanded(
+                child: Column(
                   children: [
-                    const Text('Rendering: '),
-                    DropdownButton<AreaRenderingMode>(
-                      value: notifier.renderingMode,
-                      items: const [
-                        DropdownMenuItem(
-                          value: AreaRenderingMode.polygon,
-                          child: Text('Polygon Layer'),
-                        ),
-                        DropdownMenuItem(
-                          value: AreaRenderingMode.animated,
-                          child: Text('Animated Layer'),
-                        ),
-                      ],
-                      onChanged: (mode) {
-                        if (mode != null) {
-                          notifier.setRenderingMode(mode);
-                        }
-                      },
-                    ),
-                    const SizedBox(width: 20),
-                    if (notifier.renderingMode == AreaRenderingMode.animated) ...[
-                      Checkbox(
-                        value: notifier.enableAnimations,
-                        onChanged: (bool? value) {
-                          notifier.toggleAnimations(value ?? false);
-                        },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                            value: notifier.showCityOutline,
+                            onChanged: (bool? value) {
+                              notifier.toggleCityOutline(value ?? false);
+                            },
+                          ),
+                          const Text('Stadtumriss'),
+                          const SizedBox(width: 20),
+                          Checkbox(
+                            value: notifier.showBezirke,
+                            onChanged: (bool? value) {
+                              notifier.toggleBezirke(value ?? false);
+                            },
+                          ),
+                          const Text('Bezirke'),
+                          const SizedBox(width: 20),
+                          Checkbox(
+                            value: notifier.showStadtteile,
+                            onChanged: (bool? value) {
+                              notifier.toggleStadtteile(value ?? false);
+                            },
+                          ),
+                          const Text('Stadtteile'),
+                        ],
                       ),
-                      const Text('Animations'),
-                    ],
-                  ],
-                ),
-              ),
-              // Debug Info Area
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-                child: Text(
-                  'Data from: ${notifier.dataSource}, Load time: ${notifier.dataLoadDuration}ms',
-                  style: const TextStyle(fontSize: 10),
-                ),
-              ),
-              // Selected Area Info and Visit Count Modifier
-              if (notifier.selectedDisplayArea != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-                  child: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      color: Colors.blue[50],
-                      borderRadius: BorderRadius.circular(4.0),
-                      border: Border.all(color: Colors.blue[200]!),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Selected: ${notifier.selectedDisplayArea!.name}',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.ellipsis,
+                    // Rendering Mode Controls
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Rendering: '),
+                          DropdownButton<AreaRenderingMode>(
+                            value: notifier.renderingMode,
+                            items: const [
+                              DropdownMenuItem(
+                                value: AreaRenderingMode.polygon,
+                                child: Text('Polygon Layer'),
                               ),
-                              Text('Visits: ${notifier.selectedDisplayArea!.visitCount}'),
+                              DropdownMenuItem(
+                                value: AreaRenderingMode.animated,
+                                child: Text('Animated Layer'),
+                              ),
+                            ],
+                            onChanged: (mode) {
+                              if (mode != null) {
+                                notifier.setRenderingMode(mode);
+                              }
+                            },
+                          ),
+                          const SizedBox(width: 20),
+                          if (notifier.renderingMode ==
+                              AreaRenderingMode.animated) ...[
+                            Checkbox(
+                              value: notifier.enableAnimations,
+                              onChanged: (bool? value) {
+                                notifier.toggleAnimations(value ?? false);
+                              },
+                            ),
+                            const Text('Animations'),
+                          ],
+                        ],
+                      ),
+                    ),
+                    // Debug Info Area
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 4.0,
+                        horizontal: 16.0,
+                      ),
+                      child: Text(
+                        'Data from: ${notifier.dataSource}, Load time: ${notifier.dataLoadDuration}ms',
+                        style: const TextStyle(fontSize: 10),
+                      ),
+                    ),
+                    // Selected Area Info and Visit Count Modifier
+                    if (notifier.selectedDisplayArea != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            color: Colors.blue[50],
+                            borderRadius: BorderRadius.circular(4.0),
+                            border: Border.all(color: Colors.blue[200]!),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Selected: ${notifier.selectedDisplayArea!.name}',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    Text(
+                                      'Visits: ${notifier.selectedDisplayArea!.visitCount}',
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.remove_circle_outline),
+                                    onPressed: () {
+                                      notifier.decrementVisitCount(
+                                        notifier.selectedDisplayArea!.id,
+                                      );
+                                    },
+                                    tooltip: 'Decrement Visits',
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_circle_outline),
+                                    onPressed: () {
+                                      notifier.incrementVisitCount(
+                                        notifier.selectedDisplayArea!.id,
+                                      );
+                                    },
+                                    tooltip: 'Increment Visits',
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                        Row(
+                      ),
+                    if (notifier.isLoading)
+                      const Expanded(
+                        child: Center(child: CircularProgressIndicator()),
+                      )
+                    else if (notifier.error != null)
+                      Expanded(
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              notifier.error!,
+                              style: const TextStyle(color: Colors.red),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      )
+                    else
+                      Expanded(
+                        child: FlutterMap(
+                          mapController: _mapController,
+                          options: MapOptions(
+                            initialCenter: const LatLng(
+                              50.9375,
+                              6.9603,
+                            ), // Default to Cologne
+                            initialZoom: 10.0,
+                            onMapReady: () {
+                              setState(() {
+                                _isMapReady = true;
+                              });
+                              _handleNotifierChanges();
+                            },
+                            onTap: (tapPosition, latLng) {
+                              // Simple tap handling: find the closest area and select it
+                              // This is a basic implementation. For more accuracy, you might need a point-in-polygon check.
+                              if (notifier.boundaryData != null) {
+                                final allGeoAreas = [
+                                  ...notifier.boundaryData!.cities,
+                                  ...notifier.boundaryData!.bezirke,
+                                  ...notifier.boundaryData!.stadtteile,
+                                ];
+                                GeographicArea? tappedArea;
+                                double minDistance = double.infinity;
+
+                                for (final area in allGeoAreas) {
+                                  // Calculate center of area (simplistic)
+                                  if (area.coordinates.isNotEmpty &&
+                                      area.coordinates.first.isNotEmpty) {
+                                    double areaLat = 0;
+                                    double areaLng = 0;
+                                    int pointCount = 0;
+                                    for (var ring in area.coordinates) {
+                                      for (var coord in ring) {
+                                        areaLng += coord[0];
+                                        areaLat += coord[1];
+                                        pointCount++;
+                                      }
+                                    }
+                                    if (pointCount > 0) {
+                                      final center = LatLng(
+                                        areaLat / pointCount,
+                                        areaLng / pointCount,
+                                      );
+                                      final distance = const Distance().as(
+                                        LengthUnit.Kilometer,
+                                        center,
+                                        latLng,
+                                      );
+                                      if (distance < minDistance) {
+                                        minDistance = distance;
+                                        // Heuristic: if tap is within a certain "radius" of the center.
+                                        // This is very rough. A proper point-in-polygon test is needed for accuracy.
+                                        // For simplicity, we'll use a generous threshold or select the closest one.
+                                        // Let's consider a tap "close enough" if it's the closest and within a few km of its center.
+                                        // This threshold would depend on zoom level and area sizes.
+                                        // For now, just select the closest one found.
+                                        tappedArea = area;
+                                      }
+                                    }
+                                  }
+                                }
+                                notifier.selectArea(tappedArea);
+                              }
+                            },
+                          ),
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove_circle_outline),
-                              onPressed: () {
-                                notifier.decrementVisitCount(notifier.selectedDisplayArea!.id);
-                              },
-                              tooltip: 'Decrement Visits',
+                            TileLayer(
+                              urlTemplate:
+                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName:
+                                  'dev.fleaflet.flutter_map.example',
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.add_circle_outline),
-                              onPressed: () {
-                                notifier.incrementVisitCount(notifier.selectedDisplayArea!.id);
-                              },
-                              tooltip: 'Increment Visits',
-                            ),
+                            // Choose rendering mode
+                            if (notifier.renderingMode == AreaRenderingMode.polygon)
+                              PolygonLayer(polygons: notifier.displayedPolygons)
+                            else
+                              notifier.animatedAreaLayer,
+                            // MarkerLayer(markers: notifier.nameMarkers),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              if (notifier.isLoading)
-                const Expanded(child: Center(child: CircularProgressIndicator()))
-              else if (notifier.error != null)
-                Expanded(
-                  child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        notifier.error!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  ),
-                )
-              else
-                Expanded(
-                  child: FlutterMap(
-                    mapController: _mapController,
-                    options: MapOptions(
-                      initialCenter: const LatLng(50.9375, 6.9603), // Default to Cologne
-                      initialZoom: 10.0,
-                      onMapReady: () {
-                        setState(() {
-                          _isMapReady = true;
-                        });
-                        _handleNotifierChanges();
-                      },
-                      onTap: (tapPosition, latLng) {
-                        // Simple tap handling: find the closest area and select it
-                        // This is a basic implementation. For more accuracy, you might need a point-in-polygon check.
-                        if (notifier.boundaryData != null) {
-                          final allGeoAreas = [
-                            ...notifier.boundaryData!.cities,
-                            ...notifier.boundaryData!.bezirke,
-                            ...notifier.boundaryData!.stadtteile,
-                          ];
-                          GeographicArea? tappedArea;
-                          double minDistance = double.infinity;
-
-                          for (final area in allGeoAreas) {
-                            // Calculate center of area (simplistic)
-                            if (area.coordinates.isNotEmpty && area.coordinates.first.isNotEmpty) {
-                              double areaLat = 0;
-                              double areaLng = 0;
-                              int pointCount = 0;
-                              for (var ring in area.coordinates) {
-                                for (var coord in ring) {
-                                  areaLng += coord[0];
-                                  areaLat += coord[1];
-                                  pointCount++;
-                                }
-                              }
-                              if (pointCount > 0) {
-                                final center = LatLng(areaLat / pointCount, areaLng / pointCount);
-                                final distance = const Distance().as(LengthUnit.Kilometer, center, latLng);
-                                if (distance < minDistance) {
-                                  minDistance = distance;
-                                  // Heuristic: if tap is within a certain "radius" of the center.
-                                  // This is very rough. A proper point-in-polygon test is needed for accuracy.
-                                  // For simplicity, we'll use a generous threshold or select the closest one.
-                                  // Let's consider a tap "close enough" if it's the closest and within a few km of its center.
-                                  // This threshold would depend on zoom level and area sizes.
-                                  // For now, just select the closest one found.
-                                  tappedArea = area;
-                                }
-                              }
-                            }
-                          }
-                          notifier.selectArea(tappedArea);
-                        }
-                      },
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                      ),
-                      // Choose rendering mode
-                      if (notifier.renderingMode == AreaRenderingMode.polygon)
-                        PolygonLayer(polygons: notifier.displayedPolygons)
-                      else
-                        notifier.animatedAreaLayer,
-                      // MarkerLayer(markers: notifier.nameMarkers),
-                    ],
-                  ),
+                  ],
                 ),
+              ),
             ],
           ),
         );

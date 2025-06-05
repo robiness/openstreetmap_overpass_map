@@ -15,6 +15,10 @@ class AnimatedAreaLayer extends StatefulWidget {
   final bool enableAnimation;
   final Map<int, ui.Shader>? shadersByAreaId;
   final VoidCallback? onAnimationComplete;
+  final GeographicArea? selectedArea;
+  final Set<int>? visitedAreaIds;
+  final Color selectionColor;
+  final Color visitedColor;
 
   const AnimatedAreaLayer({
     super.key,
@@ -25,6 +29,10 @@ class AnimatedAreaLayer extends StatefulWidget {
     this.enableAnimation = true,
     this.shadersByAreaId,
     this.onAnimationComplete,
+    this.selectedArea,
+    this.visitedAreaIds,
+    this.selectionColor = Colors.orange,
+    this.visitedColor = Colors.purple,
   });
 
   @override
@@ -34,14 +42,19 @@ class AnimatedAreaLayer extends StatefulWidget {
 class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
     _setupAnimation();
+    _setupPulseAnimation();
     if (widget.enableAnimation) {
       _animationController.forward();
     }
+    // Start pulsing animation for visual feedback
+    _pulseController.repeat(reverse: true);
   }
 
   void _setupAnimation() {
@@ -60,6 +73,21 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
         widget.onAnimationComplete?.call();
       }
     });
+  }
+
+  void _setupPulseAnimation() {
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _pulseAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
   }
 
   @override
@@ -81,6 +109,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
   @override
   void dispose() {
     _animationController.dispose();
+    _pulseController.dispose();
     super.dispose();
   }
 
@@ -135,16 +164,70 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
 
         // Create animated areas
         final animatedAreas = widget.areas.map((area) {
-          final color = _getAreaColor(area);
+          final defaultColor = _getAreaColor(area);
           final shader = widget.shadersByAreaId?[area.id];
+
+          // Determine visual properties based on state
+          Color fillColor;
+          double fillOpacity;
+          double borderWidth;
+          bool isDashed = false;
+          bool hasShadow = false;
+          double pulseScale = 1.0;
+          
+          final isSelected = widget.selectedArea?.id == area.id;
+          final isVisited = widget.visitedAreaIds?.contains(area.id) == true;
+          
+          if (isSelected && isVisited) {
+            // Both selected AND visited: enhanced orange fill with thick dashed purple border
+            fillColor = widget.selectionColor;
+            fillOpacity = 0.5;
+            borderWidth = 4.0;
+            isDashed = true;
+            hasShadow = true;
+            pulseScale = _pulseAnimation.value;
+          } else if (isSelected) {
+            // Only selected: bright orange fill with pulsing effect
+            fillColor = widget.selectionColor;
+            fillOpacity = 0.4;
+            borderWidth = 3.5;
+            hasShadow = true;
+            pulseScale = _pulseAnimation.value;
+          } else if (isVisited) {
+            // Only visited: purple fill with dashed border
+            fillColor = widget.visitedColor;
+            fillOpacity = 0.25;
+            borderWidth = 3.0;
+            isDashed = true;
+          } else {
+            // Default: transparent with thin solid border
+            fillColor = defaultColor;
+            fillOpacity = 0.0;
+            borderWidth = 1.5;
+          }
+
+          // Enhanced border color logic
+          Color borderColor;
+          if (isSelected && isVisited) {
+            borderColor = widget.visitedColor.withValues(alpha: 0.9);
+          } else if (isSelected) {
+            borderColor = widget.selectionColor.withValues(alpha: 0.9);
+          } else if (isVisited) {
+            borderColor = widget.visitedColor.withValues(alpha: 0.8);
+          } else {
+            borderColor = defaultColor.withValues(alpha: 0.8);
+          }
 
           return AnimatedArea(
             geoArea: area,
-            fillColor: color,
-            borderColor: color.withValues(alpha: 0.8),
-            fillOpacity: 0.3,
-            borderWidth: 2.0,
+            fillColor: fillColor,
+            borderColor: borderColor,
+            fillOpacity: fillOpacity,
+            borderWidth: borderWidth * pulseScale,
             shader: shader,
+            isDashed: isDashed,
+            hasShadow: hasShadow,
+            shadowColor: isSelected ? widget.selectionColor.withValues(alpha: 0.3) : null,
           );
         }).toList();
 

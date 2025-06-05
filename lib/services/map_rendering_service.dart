@@ -11,7 +11,11 @@ import '../widgets/custom_area_painter.dart';
 /// Service for converting GeographicArea data to map display elements
 class MapRenderingService {
   /// Convert GeographicArea to Flutter Map Polygon (legacy method)
-  static Polygon areaToPolygon(GeographicArea area, {Color? color, double? borderWidth}) {
+  static Polygon areaToPolygon(
+    GeographicArea area, {
+    Color? color,
+    double? borderWidth,
+  }) {
     final Color polygonColor = color ?? _getDefaultColor(area.type);
 
     return Polygon(
@@ -70,7 +74,11 @@ class MapRenderingService {
       return Marker(
         point: center,
         child:
-            markerBuilder?.call(displayArea) ?? _defaultMarker(displayArea.geoArea, visitCount: displayArea.visitCount),
+            markerBuilder?.call(displayArea) ??
+            _defaultMarker(
+              displayArea.geoArea,
+              visitCount: displayArea.visitCount,
+            ),
         width: 120, // Adjusted width for potentially more info
         height: 40, // Adjusted height
       );
@@ -86,6 +94,10 @@ class MapRenderingService {
     bool enableAnimation = true,
     Map<int, ui.Shader>? shadersByAreaId,
     VoidCallback? onAnimationComplete,
+    GeographicArea? selectedArea,
+    Set<int>? visitedAreaIds,
+    Color selectionColor = Colors.orange,
+    Color visitedColor = Colors.purple,
   }) {
     return AnimatedAreaLayer(
       areas: areas,
@@ -95,6 +107,10 @@ class MapRenderingService {
       enableAnimation: enableAnimation,
       shadersByAreaId: shadersByAreaId,
       onAnimationComplete: onAnimationComplete,
+      selectedArea: selectedArea,
+      visitedAreaIds: visitedAreaIds,
+      selectionColor: selectionColor,
+      visitedColor: visitedColor,
     );
   }
 
@@ -107,16 +123,40 @@ class MapRenderingService {
     Map<int, double>? opacityOverrides,
     Map<int, ui.Shader>? shadersByAreaId,
     double defaultBorderWidth = 2.0,
-    double defaultFillOpacity = 0.3,
+    double defaultFillOpacity = 0.0, // Changed to transparent by default
+    GeographicArea? selectedArea,
+    Set<int>? visitedAreaIds,
+    Color selectionColor = Colors.orange,
+    Color visitedColor = Colors.purple,
   }) {
     return areas.map((area) {
-      final defaultColor = colorsByType?[area.type] ?? _getDefaultColor(area.type);
+      final defaultColor =
+          colorsByType?[area.type] ?? _getDefaultColor(area.type);
       
+      // Determine fill color based on state
+      Color fillColor;
+      double fillOpacity;
+      
+      if (selectedArea?.id == area.id) {
+        // Selected area gets selection color
+        fillColor = selectionColor;
+        fillOpacity = 0.3;
+      } else if (visitedAreaIds?.contains(area.id) == true) {
+        // Visited area gets visited color
+        fillColor = visitedColor;
+        fillOpacity = 0.2;
+      } else {
+        // Default transparent fill
+        fillColor = fillColorOverrides?[area.id] ?? defaultColor;
+        fillOpacity = opacityOverrides?[area.id] ?? defaultFillOpacity;
+      }
+
       return AnimatedArea(
         geoArea: area,
-        fillColor: fillColorOverrides?[area.id] ?? defaultColor,
-        borderColor: borderColorOverrides?[area.id] ?? defaultColor.withOpacity(0.8),
-        fillOpacity: opacityOverrides?[area.id] ?? defaultFillOpacity,
+        fillColor: fillColor,
+        borderColor:
+            borderColorOverrides?[area.id] ?? defaultColor.withValues(alpha: 0.8),
+        fillOpacity: fillOpacity,
         borderWidth: defaultBorderWidth,
         shader: shadersByAreaId?[area.id],
       );
@@ -130,7 +170,7 @@ class MapRenderingService {
     String shaderType = 'gradient',
   }) {
     final Map<int, ui.Shader> shaders = {};
-    
+
     for (final area in areas) {
       switch (shaderType) {
         case 'gradient':
@@ -165,7 +205,7 @@ class MapRenderingService {
           break;
       }
     }
-    
+
     return shaders;
   }
 
@@ -218,12 +258,16 @@ class MapRenderingService {
     }
   }
 
-  static List<LatLng> _coordinatesToLatLng(List<List<List<double>>> coordinates) {
+  static List<LatLng> _coordinatesToLatLng(
+    List<List<List<double>>> coordinates,
+  ) {
     if (coordinates.isEmpty) return [];
 
     // Use the first (longest) coordinate ring as the main polygon outline
     // This should be the combined outer boundary from our parser
-    final mainRing = coordinates.isNotEmpty ? coordinates.first : <List<double>>[];
+    final mainRing = coordinates.isNotEmpty
+        ? coordinates.first
+        : <List<double>>[];
 
     return mainRing.map((coord) => LatLng(coord[1], coord[0])).toList();
   }
