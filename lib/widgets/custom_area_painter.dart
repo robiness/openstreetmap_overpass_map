@@ -65,11 +65,13 @@ class CustomAreaPainter extends CustomPainter {
     Paint? shadowPaint;
     if (animatedArea.hasShadow && animatedArea.shadowColor != null) {
       shadowPaint = Paint()
-        ..color = Color.lerp(
-          animatedArea.shadowColor!.withValues(alpha: 0.0),
-          animatedArea.shadowColor!,
-          animationValue,
-        ) ?? animatedArea.shadowColor!
+        ..color =
+            Color.lerp(
+              animatedArea.shadowColor!.withValues(alpha: 0.0),
+              animatedArea.shadowColor!,
+              animationValue,
+            ) ??
+            animatedArea.shadowColor!
         ..style = PaintingStyle.fill
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
     }
@@ -113,9 +115,9 @@ class CustomAreaPainter extends CustomPainter {
       ..strokeWidth = paint.strokeWidth * 1.2
       ..strokeJoin = paint.strokeJoin
       ..strokeCap = StrokeCap.round;
-    
+
     canvas.drawPath(path, dashedPaint);
-    
+
     // Draw dotted overlay for dashed effect
     final dottedPaint = Paint()
       ..color = paint.color
@@ -123,7 +125,7 @@ class CustomAreaPainter extends CustomPainter {
       ..strokeWidth = paint.strokeWidth * 0.6
       ..strokeJoin = paint.strokeJoin
       ..strokeCap = StrokeCap.round;
-      
+
     canvas.drawPath(path, dottedPaint);
   }
 

@@ -70,7 +70,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   String? get error => _error;
 
   // Display toggles
-  bool _showCityOutline = true;  // Changed to true
+  bool _showCityOutline = true; // Changed to true
 
   bool get showCityOutline => _showCityOutline;
 
@@ -79,7 +79,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   bool get showSubDistricts => _showBezirke; // Keep old name for compatibility
   bool get showBezirke => _showBezirke;
 
-  bool _showStadtteile = true;  // Changed to true
+  bool _showStadtteile = true; // Changed to true
 
   bool get showStadtteile => _showStadtteile;
 

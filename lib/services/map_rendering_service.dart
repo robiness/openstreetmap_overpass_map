@@ -132,11 +132,11 @@ class MapRenderingService {
     return areas.map((area) {
       final defaultColor =
           colorsByType?[area.type] ?? _getDefaultColor(area.type);
-      
+
       // Determine fill color based on state
       Color fillColor;
       double fillOpacity;
-      
+
       if (selectedArea?.id == area.id) {
         // Selected area gets selection color
         fillColor = selectionColor;
@@ -155,7 +155,8 @@ class MapRenderingService {
         geoArea: area,
         fillColor: fillColor,
         borderColor:
-            borderColorOverrides?[area.id] ?? defaultColor.withValues(alpha: 0.8),
+            borderColorOverrides?[area.id] ??
+            defaultColor.withValues(alpha: 0.8),
         fillOpacity: fillOpacity,
         borderWidth: defaultBorderWidth,
         shader: shadersByAreaId?[area.id],

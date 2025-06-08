@@ -81,13 +81,16 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
       vsync: this,
     );
 
-    _pulseAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.2,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
+    _pulseAnimation =
+        Tween<double>(
+          begin: 0.8,
+          end: 1.2,
+        ).animate(
+          CurvedAnimation(
+            parent: _pulseController,
+            curve: Curves.easeInOut,
+          ),
+        );
   }
 
   @override
@@ -174,10 +177,10 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
           bool isDashed = false;
           bool hasShadow = false;
           double pulseScale = 1.0;
-          
+
           final isSelected = widget.selectedArea?.id == area.id;
           final isVisited = widget.visitedAreaIds?.contains(area.id) == true;
-          
+
           if (isSelected && isVisited) {
             // Both selected AND visited: enhanced orange fill with thick dashed purple border
             fillColor = widget.selectionColor;

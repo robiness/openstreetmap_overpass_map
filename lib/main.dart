@@ -10,8 +10,7 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) =>
-          OverpassMapNotifier(OverpassApi()), // New: Provide real OverpassApi
+      create: (context) => OverpassMapNotifier(OverpassApi()), // New: Provide real OverpassApi
       child: const MyApp(),
     ),
   );
@@ -42,8 +41,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final MapController _mapController = MapController();
-  late OverpassMapNotifier
-  _mapNotifier; // Für den Zugriff im initState/didChangeDependencies
+  late OverpassMapNotifier _mapNotifier; // Für den Zugriff im initState/didChangeDependencies
   bool _isMapReady = false; // Flag für den Kartenstatus
 
   @override
@@ -163,8 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             },
                           ),
                           const SizedBox(width: 20),
-                          if (notifier.renderingMode ==
-                              AreaRenderingMode.animated) ...[
+                          if (notifier.renderingMode == AreaRenderingMode.animated) ...[
                             Checkbox(
                               value: notifier.enableAnimations,
                               onChanged: (bool? value) {
@@ -224,7 +221,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               Row(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.remove_circle_outline),
+                                    icon: const Icon(
+                                      Icons.remove_circle_outline,
+                                    ),
                                     onPressed: () {
                                       notifier.decrementVisitCount(
                                         notifier.selectedDisplayArea!.id,
@@ -294,8 +293,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                 for (final area in allGeoAreas) {
                                   // Calculate center of area (simplistic)
-                                  if (area.coordinates.isNotEmpty &&
-                                      area.coordinates.first.isNotEmpty) {
+                                  if (area.coordinates.isNotEmpty && area.coordinates.first.isNotEmpty) {
                                     double areaLat = 0;
                                     double areaLng = 0;
                                     int pointCount = 0;
@@ -335,10 +333,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           children: [
                             TileLayer(
-                              urlTemplate:
-                                  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName:
-                                  'dev.fleaflet.flutter_map.example',
+                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                              userAgentPackageName: 'dev.fleaflet.flutter_map.example',
                             ),
                             // Choose rendering mode
                             if (notifier.renderingMode == AreaRenderingMode.polygon)
