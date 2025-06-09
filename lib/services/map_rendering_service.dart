@@ -7,42 +7,11 @@ import '../models/osm_models.dart';
 import '../overpass_map_notifier.dart'; // Import DisplayableArea
 import '../widgets/animated_area_layer.dart';
 import '../widgets/custom_area_painter.dart';
+import '../theme/app_theme.dart';
 
 /// Service for converting GeographicArea data to map display elements
 class MapRenderingService {
-  /// Convert GeographicArea to Flutter Map Polygon (legacy method)
-  static Polygon areaToPolygon(
-    GeographicArea area, {
-    Color? color,
-    double? borderWidth,
-  }) {
-    final Color polygonColor = color ?? _getDefaultColor(area.type);
-
-    return Polygon(
-      points: _coordinatesToLatLng(area.coordinates),
-      color: polygonColor.withOpacity(0.3),
-      borderColor: Colors.black,
-      borderStrokeWidth: borderWidth ?? 2.0,
-      label: area.name,
-      labelStyle: TextStyle(
-        color: polygonColor.withOpacity(0.8),
-        fontWeight: FontWeight.bold,
-        fontSize: 12,
-      ),
-    );
-  }
-
-  /// Convert multiple areas to polygons with consistent styling (legacy method)
-  static List<Polygon> areasToPolygons(
-    List<GeographicArea> areas, {
-    Map<String, Color>? colorsByType,
-    double? borderWidth,
-  }) {
-    return areas.map((area) {
-      final color = colorsByType?[area.type] ?? _getDefaultColor(area.type);
-      return areaToPolygon(area, color: color, borderWidth: borderWidth);
-    }).toList();
-  }
+  // Removed legacy polygon methods since we only use animated rendering now
 
   /// Create markers for area labels/centers
   static List<Marker> createAreaMarkers(
@@ -249,29 +218,17 @@ class MapRenderingService {
   static Color _getDefaultColor(String type) {
     switch (type) {
       case 'city':
-        return Colors.red;
+        return AppTheme.getCityColor();
       case 'bezirk':
-        return Colors.blue;
+        return AppTheme.getBezirkColor();
       case 'stadtteil':
-        return Colors.green;
+        return AppTheme.getStadtteilColor();
       default:
-        return Colors.grey;
+        return AppTheme.textSecondary;
     }
   }
 
-  static List<LatLng> _coordinatesToLatLng(
-    List<List<List<double>>> coordinates,
-  ) {
-    if (coordinates.isEmpty) return [];
-
-    // Use the first (longest) coordinate ring as the main polygon outline
-    // This should be the combined outer boundary from our parser
-    final mainRing = coordinates.isNotEmpty
-        ? coordinates.first
-        : <List<double>>[];
-
-    return mainRing.map((coord) => LatLng(coord[1], coord[0])).toList();
-  }
+  // Removed _coordinatesToLatLng method since we only use animated rendering now
 
   static LatLng _calculateCenterPoint(List<List<List<double>>> coordinates) {
     if (coordinates.isEmpty || coordinates.first.isEmpty) {

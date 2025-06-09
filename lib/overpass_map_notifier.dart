@@ -26,10 +26,7 @@ class DisplayableArea {
   int get visitCount => userArea.visitCount;
 }
 
-enum AreaRenderingMode {
-  polygon, // Use PolygonLayer (original)
-  animated, // Use CustomPainter with animations
-}
+// Removed AreaRenderingMode enum since we only use animated rendering now
 
 class OverpassMapNotifier extends ChangeNotifier {
   final OverpassApi _api;
@@ -37,13 +34,10 @@ class OverpassMapNotifier extends ChangeNotifier {
   BoundaryData? _boundaryData;
   BoundaryData? get boundaryData => _boundaryData;
 
-  // Rendering mode selection
-  AreaRenderingMode _renderingMode = AreaRenderingMode.polygon;
-  AreaRenderingMode get renderingMode => _renderingMode;
+  // Removed rendering mode selection - now only using animated layer
 
-  // Animation settings
-  bool _enableAnimations = true;
-  bool get enableAnimations => _enableAnimations;
+  // Animation settings - always enabled
+  bool get enableAnimations => true; // Always enabled
 
   Duration _animationDuration = const Duration(milliseconds: 1000);
   Duration get animationDuration => _animationDuration;
@@ -179,30 +173,7 @@ class OverpassMapNotifier extends ChangeNotifier {
     }).toList();
   }
 
-  /// Get polygons to display based on current toggle settings
-  List<Polygon> get displayedPolygons {
-    // if (_currentResult == null) return [];
-    if (_boundaryData == null) return [];
-
-    List<GeographicArea> areasToShow = [];
-
-    // Assuming BoundaryData has a way to get these lists (e.g., cities, bezirke, stadtteile)
-    // You'll need to adapt this based on your actual BoundaryData structure
-    if (_showCityOutline) {
-      // areasToShow.addAll(_currentResult!.boundaryData.cities);
-      areasToShow.addAll(_boundaryData!.cities);
-    }
-    if (_showBezirke) {
-      // areasToShow.addAll(_currentResult!.boundaryData.bezirke);
-      areasToShow.addAll(_boundaryData!.bezirke);
-    }
-    if (_showStadtteile) {
-      // areasToShow.addAll(_currentResult!.boundaryData.stadtteile);
-      areasToShow.addAll(_boundaryData!.stadtteile);
-    }
-
-    return MapRenderingService.areasToPolygons(areasToShow, borderWidth: 1.5);
-  }
+  // Removed displayedPolygons getter since we only use animated rendering now
 
   /// Get markers for area names
   List<Marker> get nameMarkers {
@@ -329,7 +300,7 @@ class OverpassMapNotifier extends ChangeNotifier {
       areas: areasToShow,
       animationDuration: _animationDuration,
       animationCurve: _animationCurve,
-      enableAnimation: _enableAnimations,
+      enableAnimation: true, // Always enabled
       selectedArea: _rawSelectedArea,
       visitedAreaIds: visitedAreaIds,
       selectionColor: Colors.orange,
@@ -337,17 +308,9 @@ class OverpassMapNotifier extends ChangeNotifier {
     );
   }
 
-  /// Switch rendering mode
-  void setRenderingMode(AreaRenderingMode mode) {
-    _renderingMode = mode;
-    notifyListeners();
-  }
+  // Removed setRenderingMode method since we only use animated rendering now
 
-  /// Toggle animations
-  void toggleAnimations(bool enable) {
-    _enableAnimations = enable;
-    notifyListeners();
-  }
+  // Removed toggleAnimations method since animations are always enabled now
 
   /// Set animation duration
   void setAnimationDuration(Duration duration) {

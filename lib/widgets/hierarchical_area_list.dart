@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/boundary_data.dart';
 import '../models/osm_models.dart';
 import '../overpass_map_notifier.dart';
+import '../theme/app_theme.dart';
 
 /// A hierarchical, scrollable list widget that displays cities, bezirke, and stadtteile
 /// with visual differentiation and visit count information
@@ -21,187 +22,263 @@ class HierarchicalAreaList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (boundaryData == null) {
-      return const Center(
-        child: Text(
-          'No data available',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
+      return Center(
+        child: Container(
+          padding: const EdgeInsets.all(AppTheme.spacingXl),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.location_off,
+                size: 48,
+                color: AppTheme.textTertiary,
+              ),
+              const SizedBox(height: AppTheme.spacingLg),
+              Text(
+                'No data available',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: AppTheme.textSecondary,
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacingSm),
+              Text(
+                'Load geographic data to explore areas',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppTheme.textTertiary,
+                ),
+              ),
+            ],
           ),
         ),
       );
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Header with enhanced legend
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            border: Border(
-              bottom: BorderSide(color: Colors.grey[300]!),
+    return Container(
+      color: AppTheme.surfaceColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Enhanced legend in sidebar header
+          Container(
+            padding: const EdgeInsets.all(AppTheme.spacingLg),
+            decoration: BoxDecoration(
+              color: AppTheme.cardColor,
+              border: Border(
+                bottom: BorderSide(color: AppTheme.borderColor),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Visual States',
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingMd),
+
+                // State legend
+                Container(
+                  padding: const EdgeInsets.all(AppTheme.spacingMd),
+                  decoration: BoxDecoration(
+                    color: AppTheme.surfaceColor,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                    border: Border.all(color: AppTheme.borderColor),
+                  ),
+                  child: Column(
+                    children: [
+                      _buildLegendItem(
+                        context,
+                        icon: Icons.radio_button_checked,
+                        color: AppTheme.getSelectedColor(),
+                        label: 'Selected',
+                      ),
+                      const SizedBox(height: AppTheme.spacingSm),
+                      _buildLegendItem(
+                        context,
+                        icon: Icons.check_circle,
+                        color: AppTheme.getVisitedColor(),
+                        label: 'Visited',
+                      ),
+                      const SizedBox(height: AppTheme.spacingSm),
+                      _buildLegendItem(
+                        context,
+                        icon: Icons.star,
+                        color: AppTheme.getSelectedColor(),
+                        label: 'Selected + Visited',
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.location_city, color: Colors.blue),
-                  SizedBox(width: 8),
-                  Text(
-                    'Geographic Areas',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+
+          // Scrollable list
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(AppTheme.spacingLg),
+              children: [
+                // Cities section
+                if (boundaryData!.cities.isNotEmpty) ...[
+                  _buildSectionHeader(
+                    context,
+                    'Cities',
+                    Icons.location_city,
+                    AppTheme.getCityColor(),
+                    boundaryData!.cities.length,
+                  ),
+                  const SizedBox(height: AppTheme.spacingMd),
+                  ...boundaryData!.cities.map(
+                    (city) => _buildAreaListItem(
+                      context: context,
+                      area: city,
+                      level: 0,
+                      icon: Icons.location_city,
+                      color: AppTheme.getCityColor(),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingXl),
+                ],
+
+                // Bezirke section
+                if (boundaryData!.bezirke.isNotEmpty) ...[
+                  _buildSectionHeader(
+                    context,
+                    'Bezirke',
+                    Icons.domain,
+                    AppTheme.getBezirkColor(),
+                    boundaryData!.bezirke.length,
+                  ),
+                  const SizedBox(height: AppTheme.spacingMd),
+                  ...boundaryData!.bezirke.map(
+                    (bezirk) => _buildAreaListItem(
+                      context: context,
+                      area: bezirk,
+                      level: 1,
+                      icon: Icons.domain,
+                      color: AppTheme.getBezirkColor(),
+                    ),
+                  ),
+                  const SizedBox(height: AppTheme.spacingXl),
+                ],
+
+                // Stadtteile section
+                if (boundaryData!.stadtteile.isNotEmpty) ...[
+                  _buildSectionHeader(
+                    context,
+                    'Stadtteile',
+                    Icons.home_work,
+                    AppTheme.getStadtteilColor(),
+                    boundaryData!.stadtteile.length,
+                  ),
+                  const SizedBox(height: AppTheme.spacingMd),
+                  ...boundaryData!.stadtteile.map(
+                    (stadtteil) => _buildAreaListItem(
+                      context: context,
+                      area: stadtteil,
+                      level: 2,
+                      icon: Icons.home_work,
+                      color: AppTheme.getStadtteilColor(),
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 12),
-              // Visual state legend
-              Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Visual States:',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Icon(Icons.radio_button_checked, size: 14, color: Colors.orange),
-                              const SizedBox(width: 4),
-                              const Text('Selected', style: TextStyle(fontSize: 10)),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Icon(Icons.check_circle, size: 14, color: Colors.purple),
-                              const SizedBox(width: 4),
-                              const Text('Visited', style: TextStyle(fontSize: 10)),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.star, size: 14, color: Colors.orange),
-                        const SizedBox(width: 4),
-                        const Text('Selected + Visited', style: TextStyle(fontSize: 10)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLegendItem(
+    BuildContext context, {
+    required IconData icon,
+    required Color color,
+    required String label,
+  }) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 14,
+          color: color,
         ),
-        // Scrollable list
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.all(8.0),
-            children: [
-              // Cities section
-              if (boundaryData!.cities.isNotEmpty) ...[
-                _buildSectionHeader('Cities', Icons.location_city, Colors.red, boundaryData!.cities.length),
-                ...boundaryData!.cities.map(
-                  (city) => _buildAreaListItem(
-                    area: city,
-                    level: 0,
-                    icon: Icons.location_city,
-                    color: Colors.red,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Bezirke section
-              if (boundaryData!.bezirke.isNotEmpty) ...[
-                _buildSectionHeader('Bezirke', Icons.domain, Colors.blue, boundaryData!.bezirke.length),
-                ...boundaryData!.bezirke.map(
-                  (bezirk) => _buildAreaListItem(
-                    area: bezirk,
-                    level: 1,
-                    icon: Icons.domain,
-                    color: Colors.blue,
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-
-              // Stadtteile section
-              if (boundaryData!.stadtteile.isNotEmpty) ...[
-                _buildSectionHeader('Stadtteile', Icons.home_work, Colors.green, boundaryData!.stadtteile.length),
-                ...boundaryData!.stadtteile.map(
-                  (stadtteil) => _buildAreaListItem(
-                    area: stadtteil,
-                    level: 2,
-                    icon: Icons.home_work,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            ],
+        const SizedBox(width: AppTheme.spacingSm),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: AppTheme.textSecondary,
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSectionHeader(String title, IconData icon, Color color, int count) {
+  Widget _buildSectionHeader(
+    BuildContext context,
+    String title,
+    IconData icon,
+    Color color,
+    int count,
+  ) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8.0),
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 12.0),
+      padding: const EdgeInsets.all(AppTheme.spacingMd),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        gradient: LinearGradient(
+          colors: [
+            color.withOpacity(0.1),
+            color.withOpacity(0.05),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: color.withValues(alpha: 0.8),
+          Container(
+            padding: const EdgeInsets.all(AppTheme.spacingSm),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+            ),
+            child: Icon(
+              icon,
+              color: color,
+              size: 20,
             ),
           ),
-          const Spacer(),
+
+          const SizedBox(width: AppTheme.spacingMd),
+
+          Expanded(
+            child: Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacingSm,
+              vertical: AppTheme.spacing2xs,
+            ),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12.0),
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              border: Border.all(color: color.withOpacity(0.3)),
             ),
             child: Text(
               count.toString(),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontWeight: FontWeight.w600,
                 color: color,
               ),
             ),
@@ -212,6 +289,7 @@ class HierarchicalAreaList extends StatelessWidget {
   }
 
   Widget _buildAreaListItem({
+    required BuildContext context,
     required GeographicArea area,
     required int level,
     required IconData icon,
@@ -265,7 +343,9 @@ class HierarchicalAreaList extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12.0), // More rounded corners
-        border: borderWidth > 0 ? Border.all(color: borderColor, width: borderWidth) : null,
+        border: borderWidth > 0
+            ? Border.all(color: borderColor, width: borderWidth)
+            : null,
         boxShadow: isSelected
             ? [
                 BoxShadow(
@@ -325,7 +405,9 @@ class HierarchicalAreaList extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
-                    color: (isSelected || isVisited) ? color.withValues(alpha: 0.15) : Colors.transparent,
+                    color: (isSelected || isVisited)
+                        ? color.withValues(alpha: 0.15)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(6.0),
                   ),
                   child: Icon(
@@ -347,8 +429,12 @@ class HierarchicalAreaList extends StatelessWidget {
                       Text(
                         area.name,
                         style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          fontSize: 14 - (level * 0.5), // Smaller text for lower levels
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          fontSize:
+                              14 -
+                              (level * 0.5), // Smaller text for lower levels
                           color: isSelected
                               ? Colors.orange.shade700
                               : isVisited
@@ -375,7 +461,10 @@ class HierarchicalAreaList extends StatelessWidget {
                 // Enhanced visit count badge
                 if (visitCount > 0) ...[
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0,
+                      vertical: 4.0,
+                    ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -429,7 +518,9 @@ class HierarchicalAreaList extends StatelessWidget {
                           child: Icon(
                             Icons.remove_circle_outline,
                             size: 16,
-                            color: visitCount > 0 ? Colors.purple.shade600 : Colors.grey[400],
+                            color: visitCount > 0
+                                ? Colors.purple.shade600
+                                : Colors.grey[400],
                           ),
                         ),
                       ),

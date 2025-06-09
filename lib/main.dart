@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/models/osm_models.dart';
-import 'package:overpass_map/overpass_api.dart'; // Import OverpassApi
+import 'package:overpass_map/overpass_api.dart';
 import 'package:overpass_map/overpass_map_notifier.dart';
 import 'package:overpass_map/widgets/hierarchical_area_list.dart';
+import 'package:overpass_map/widgets/control_panel.dart';
+import 'package:overpass_map/widgets/status_card.dart';
+import 'package:overpass_map/theme/app_theme.dart';
 import 'package:provider/provider.dart';
+import 'dart:math' as math;
 
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (context) => OverpassMapNotifier(OverpassApi()), // New: Provide real OverpassApi
+      create: (context) => OverpassMapNotifier(OverpassApi()),
       child: const MyApp(),
     ),
   );
@@ -22,44 +26,38 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true, // Optional, für modernen Look
-      ),
-      home: const MyHomePage(),
+      title: 'Overpass Map Explorer',
+      theme: AppTheme.lightTheme,
+      debugShowCheckedModeBanner: false,
+      home: const MapExplorerScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class MapExplorerScreen extends StatefulWidget {
+  const MapExplorerScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MapExplorerScreen> createState() => _MapExplorerScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MapExplorerScreenState extends State<MapExplorerScreen> {
   final MapController _mapController = MapController();
-  late OverpassMapNotifier _mapNotifier; // Für den Zugriff im initState/didChangeDependencies
-  bool _isMapReady = false; // Flag für den Kartenstatus
+  late OverpassMapNotifier _mapNotifier;
+  bool _isMapReady = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Notifier initialisieren und Listener hinzufügen
-    // Dies wird nach initState und wenn sich Dependencies ändern aufgerufen
     _mapNotifier = Provider.of<OverpassMapNotifier>(context, listen: false);
     _mapNotifier.addListener(_handleNotifierChanges);
   }
 
   void _handleNotifierChanges() {
-    // Prüfen, ob die Kamera angepasst werden muss
     final boundsToFit = _mapNotifier.consumeBoundsToFit();
     if (boundsToFit != null && mounted && _isMapReady) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _isMapReady) {
-          // Korrektur: _isMapReady verwenden
           _mapController.fitCamera(
             CameraFit.bounds(
               bounds: boundsToFit,
@@ -80,271 +78,82 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Consumer verwenden, um auf Änderungen im Notifier zu reagieren und die UI neu zu erstellen
     return Consumer<OverpassMapNotifier>(
       builder: (context, notifier, child) {
         return Scaffold(
+          backgroundColor: AppTheme.surfaceColor,
           body: Row(
             children: [
-              // Sidebar with hierarchical area list
+              // Sidebar
               Container(
-                width: 350,
-                decoration: BoxDecoration(
+                width: 400,
+                decoration: const BoxDecoration(
+                  color: AppTheme.cardColor,
                   border: Border(
-                    right: BorderSide(color: Colors.grey[300]!),
+                    right: BorderSide(color: AppTheme.borderColor),
                   ),
                 ),
-                child: HierarchicalAreaList(
-                  boundaryData: notifier.boundaryData,
-                  notifier: notifier,
-                  selectedArea: notifier.selectedDisplayArea?.geoArea,
+                child: Column(
+                  children: [
+                    // App header
+                    _buildAppHeader(),
+
+                    // Sidebar content
+                    Expanded(
+                      child: HierarchicalAreaList(
+                        boundaryData: notifier.boundaryData,
+                        notifier: notifier,
+                        selectedArea: notifier.selectedDisplayArea?.geoArea,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
               // Main content area
               Expanded(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    // Top controls
+                    Container(
+                      padding: const EdgeInsets.all(AppTheme.spacingLg),
+                      decoration: const BoxDecoration(
+                        color: AppTheme.cardColor,
+                        border: Border(
+                          bottom: BorderSide(color: AppTheme.borderColor),
+                        ),
+                      ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Checkbox(
-                            value: notifier.showCityOutline,
-                            onChanged: (bool? value) {
-                              notifier.toggleCityOutline(value ?? false);
-                            },
+                          Expanded(
+                            child: ControlPanel(notifier: notifier),
                           ),
-                          const Text('Stadtumriss'),
-                          const SizedBox(width: 20),
-                          Checkbox(
-                            value: notifier.showBezirke,
-                            onChanged: (bool? value) {
-                              notifier.toggleBezirke(value ?? false);
-                            },
+                          const SizedBox(width: AppTheme.spacingLg),
+                          Expanded(
+                            child: StatusCard(notifier: notifier),
                           ),
-                          const Text('Bezirke'),
-                          const SizedBox(width: 20),
-                          Checkbox(
-                            value: notifier.showStadtteile,
-                            onChanged: (bool? value) {
-                              notifier.toggleStadtteile(value ?? false);
-                            },
-                          ),
-                          const Text('Stadtteile'),
                         ],
                       ),
                     ),
-                    // Rendering Mode Controls
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Rendering: '),
-                          DropdownButton<AreaRenderingMode>(
-                            value: notifier.renderingMode,
-                            items: const [
-                              DropdownMenuItem(
-                                value: AreaRenderingMode.polygon,
-                                child: Text('Polygon Layer'),
-                              ),
-                              DropdownMenuItem(
-                                value: AreaRenderingMode.animated,
-                                child: Text('Animated Layer'),
-                              ),
-                            ],
-                            onChanged: (mode) {
-                              if (mode != null) {
-                                notifier.setRenderingMode(mode);
-                              }
-                            },
-                          ),
-                          const SizedBox(width: 20),
-                          if (notifier.renderingMode == AreaRenderingMode.animated) ...[
-                            Checkbox(
-                              value: notifier.enableAnimations,
-                              onChanged: (bool? value) {
-                                notifier.toggleAnimations(value ?? false);
-                              },
-                            ),
-                            const Text('Animations'),
-                          ],
-                        ],
-                      ),
-                    ),
-                    // Debug Info Area
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 4.0,
-                        horizontal: 16.0,
-                      ),
-                      child: Text(
-                        'Data from: ${notifier.dataSource}, Load time: ${notifier.dataLoadDuration}ms',
-                        style: const TextStyle(fontSize: 10),
-                      ),
-                    ),
-                    // Selected Area Info and Visit Count Modifier
-                    if (notifier.selectedDisplayArea != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 4.0,
-                          horizontal: 16.0,
-                        ),
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[50],
-                            borderRadius: BorderRadius.circular(4.0),
-                            border: Border.all(color: Colors.blue[200]!),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Selected: ${notifier.selectedDisplayArea!.name}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    Text(
-                                      'Visits: ${notifier.selectedDisplayArea!.visitCount}',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.remove_circle_outline,
-                                    ),
-                                    onPressed: () {
-                                      notifier.decrementVisitCount(
-                                        notifier.selectedDisplayArea!.id,
-                                      );
-                                    },
-                                    tooltip: 'Decrement Visits',
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.add_circle_outline),
-                                    onPressed: () {
-                                      notifier.incrementVisitCount(
-                                        notifier.selectedDisplayArea!.id,
-                                      );
-                                    },
-                                    tooltip: 'Increment Visits',
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    if (notifier.isLoading)
-                      const Expanded(
-                        child: Center(child: CircularProgressIndicator()),
-                      )
-                    else if (notifier.error != null)
-                      Expanded(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Text(
-                              notifier.error!,
-                              style: const TextStyle(color: Colors.red),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      Expanded(
-                        child: FlutterMap(
-                          mapController: _mapController,
-                          options: MapOptions(
-                            initialCenter: const LatLng(
-                              50.9375,
-                              6.9603,
-                            ), // Default to Cologne
-                            initialZoom: 10.0,
-                            onMapReady: () {
-                              setState(() {
-                                _isMapReady = true;
-                              });
-                              _handleNotifierChanges();
-                            },
-                            onTap: (tapPosition, latLng) {
-                              // Simple tap handling: find the closest area and select it
-                              // This is a basic implementation. For more accuracy, you might need a point-in-polygon check.
-                              if (notifier.boundaryData != null) {
-                                final allGeoAreas = [
-                                  ...notifier.boundaryData!.cities,
-                                  ...notifier.boundaryData!.bezirke,
-                                  ...notifier.boundaryData!.stadtteile,
-                                ];
-                                GeographicArea? tappedArea;
-                                double minDistance = double.infinity;
 
-                                for (final area in allGeoAreas) {
-                                  // Calculate center of area (simplistic)
-                                  if (area.coordinates.isNotEmpty && area.coordinates.first.isNotEmpty) {
-                                    double areaLat = 0;
-                                    double areaLng = 0;
-                                    int pointCount = 0;
-                                    for (var ring in area.coordinates) {
-                                      for (var coord in ring) {
-                                        areaLng += coord[0];
-                                        areaLat += coord[1];
-                                        pointCount++;
-                                      }
-                                    }
-                                    if (pointCount > 0) {
-                                      final center = LatLng(
-                                        areaLat / pointCount,
-                                        areaLng / pointCount,
-                                      );
-                                      final distance = const Distance().as(
-                                        LengthUnit.Kilometer,
-                                        center,
-                                        latLng,
-                                      );
-                                      if (distance < minDistance) {
-                                        minDistance = distance;
-                                        // Heuristic: if tap is within a certain "radius" of the center.
-                                        // This is very rough. A proper point-in-polygon test is needed for accuracy.
-                                        // For simplicity, we'll use a generous threshold or select the closest one.
-                                        // Let's consider a tap "close enough" if it's the closest and within a few km of its center.
-                                        // This threshold would depend on zoom level and area sizes.
-                                        // For now, just select the closest one found.
-                                        tappedArea = area;
-                                      }
-                                    }
-                                  }
-                                }
-                                notifier.selectArea(tappedArea);
-                              }
-                            },
+                    // Map view
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.all(AppTheme.spacingLg),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusLg,
                           ),
-                          children: [
-                            TileLayer(
-                              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                              userAgentPackageName: 'dev.fleaflet.flutter_map.example',
-                            ),
-                            // Choose rendering mode
-                            if (notifier.renderingMode == AreaRenderingMode.polygon)
-                              PolygonLayer(polygons: notifier.displayedPolygons)
-                            else
-                              notifier.animatedAreaLayer,
-                            // MarkerLayer(markers: notifier.nameMarkers),
-                          ],
+                          boxShadow: AppTheme.shadowMd,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusLg,
+                          ),
+                          child: _buildMapView(notifier),
                         ),
                       ),
+                    ),
                   ],
                 ),
               ),
@@ -353,5 +162,251 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  Widget _buildAppHeader() {
+    return Container(
+      padding: const EdgeInsets.all(AppTheme.spacingLg),
+      decoration: const BoxDecoration(
+        gradient: AppTheme.primaryGradient,
+        border: Border(
+          bottom: BorderSide(color: AppTheme.borderColor),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(AppTheme.spacingSm),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+            ),
+            child: const Icon(
+              Icons.map,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+
+          const SizedBox(width: AppTheme.spacingMd),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Overpass Map',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  'Geographic Boundary Explorer',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMapView(OverpassMapNotifier notifier) {
+    if (notifier.isLoading) {
+      return Container(
+        color: AppTheme.surfaceColor,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(AppTheme.spacingXl),
+                decoration: BoxDecoration(
+                  color: AppTheme.cardColor,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+                  boxShadow: AppTheme.shadowLg,
+                ),
+                child: Column(
+                  children: [
+                    const CircularProgressIndicator(
+                      strokeWidth: 3,
+                    ),
+                    const SizedBox(height: AppTheme.spacingLg),
+                    Text(
+                      'Loading Geographic Data...',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                    const SizedBox(height: AppTheme.spacingSm),
+                    Text(
+                      'Fetching boundary information from Overpass API',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (notifier.error != null) {
+      return Container(
+        color: AppTheme.surfaceColor,
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.all(AppTheme.spacingXl),
+            padding: const EdgeInsets.all(AppTheme.spacingXl),
+            decoration: BoxDecoration(
+              color: AppTheme.cardColor,
+              borderRadius: BorderRadius.circular(AppTheme.radiusXl),
+              boxShadow: AppTheme.shadowLg,
+              border: Border.all(color: AppTheme.errorColor.withOpacity(0.3)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: AppTheme.errorColor,
+                ),
+                const SizedBox(height: AppTheme.spacingLg),
+                Text(
+                  'Error Loading Data',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: AppTheme.errorColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacingMd),
+                Text(
+                  notifier.error!,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: AppTheme.spacingXl),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Trigger data reload if such method exists
+                    // notifier.reloadData();
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        initialCenter: const LatLng(50.9375, 6.9603), // Cologne
+        initialZoom: 10.0,
+        onMapReady: () {
+          setState(() {
+            _isMapReady = true;
+          });
+          _handleNotifierChanges();
+        },
+        onTap: (tapPosition, latLng) {
+          _handleMapTap(notifier, latLng);
+        },
+      ),
+      children: [
+        TileLayer(
+          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+          userAgentPackageName: 'com.example.overpass_map',
+        ),
+        // Use the animated area layer
+        notifier.animatedAreaLayer,
+      ],
+    );
+  }
+
+  void _handleMapTap(OverpassMapNotifier notifier, LatLng latLng) {
+    if (notifier.boundaryData == null) return;
+
+    final allGeoAreas = [
+      ...notifier.boundaryData!.cities,
+      ...notifier.boundaryData!.bezirke,
+      ...notifier.boundaryData!.stadtteile,
+    ];
+
+    GeographicArea? tappedArea;
+    double minDistance = double.infinity;
+
+    for (final area in allGeoAreas) {
+      if (area.coordinates.isNotEmpty && area.coordinates.first.isNotEmpty) {
+        // Calculate center of area (basic implementation)
+        double areaLat = 0;
+        double areaLng = 0;
+        int pointCount = 0;
+
+        for (var ring in area.coordinates) {
+          for (var coord in ring) {
+            areaLng += coord[0];
+            areaLat += coord[1];
+            pointCount++;
+          }
+        }
+
+        if (pointCount > 0) {
+          final center = LatLng(
+            areaLat / pointCount,
+            areaLng / pointCount,
+          );
+
+          // Calculate distance using Haversine formula
+          final distance = _calculateDistance(center, latLng);
+
+          if (distance < minDistance) {
+            minDistance = distance;
+            tappedArea = area;
+          }
+        }
+      }
+    }
+
+    // Select the closest area (within reasonable distance)
+    if (minDistance < 5.0) {
+      // Within 5km
+      notifier.selectArea(tappedArea);
+    }
+  }
+
+  double _calculateDistance(LatLng point1, LatLng point2) {
+    // Simple distance calculation using Haversine formula
+    const double earthRadius = 6371; // Earth radius in kilometers
+
+    final double lat1Rad = point1.latitude * (math.pi / 180);
+    final double lat2Rad = point2.latitude * (math.pi / 180);
+    final double deltaLatRad =
+        (point2.latitude - point1.latitude) * (math.pi / 180);
+    final double deltaLngRad =
+        (point2.longitude - point1.longitude) * (math.pi / 180);
+
+    final double a =
+        math.pow(math.sin(deltaLatRad / 2), 2) +
+        math.cos(lat1Rad) *
+            math.cos(lat2Rad) *
+            math.pow(math.sin(deltaLngRad / 2), 2);
+
+    final double c = 2 * math.asin(math.sqrt(a));
+
+    return earthRadius * c;
   }
 }
