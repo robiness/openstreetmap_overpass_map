@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
@@ -5,13 +7,12 @@ import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/models/osm_models.dart';
 import 'package:overpass_map/overpass_api.dart';
 import 'package:overpass_map/overpass_map_notifier.dart';
-import 'package:overpass_map/widgets/hierarchical_area_list.dart';
-import 'package:overpass_map/widgets/control_panel.dart';
-import 'package:overpass_map/widgets/status_card.dart';
-import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
 import 'package:overpass_map/theme/app_theme.dart';
+import 'package:overpass_map/widgets/control_panel.dart';
+import 'package:overpass_map/widgets/hierarchical_area_list.dart';
+import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
+import 'package:overpass_map/widgets/status_card.dart';
 import 'package:provider/provider.dart';
-import 'dart:math' as math;
 
 void main() {
   runApp(
@@ -328,7 +329,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
           tileProvider: CancellableNetworkTileProvider(),
         ),
         // Use the animated area layer
-        notifier.animatedAreaLayer,
+        RepaintBoundary(child: notifier.animatedAreaLayer),
       ],
     );
   }
@@ -387,16 +388,12 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
 
     final double lat1Rad = point1.latitude * (math.pi / 180);
     final double lat2Rad = point2.latitude * (math.pi / 180);
-    final double deltaLatRad =
-        (point2.latitude - point1.latitude) * (math.pi / 180);
-    final double deltaLngRad =
-        (point2.longitude - point1.longitude) * (math.pi / 180);
+    final double deltaLatRad = (point2.latitude - point1.latitude) * (math.pi / 180);
+    final double deltaLngRad = (point2.longitude - point1.longitude) * (math.pi / 180);
 
     final double a =
         math.pow(math.sin(deltaLatRad / 2), 2) +
-        math.cos(lat1Rad) *
-            math.cos(lat2Rad) *
-            math.pow(math.sin(deltaLngRad / 2), 2);
+        math.cos(lat1Rad) * math.cos(lat2Rad) * math.pow(math.sin(deltaLngRad / 2), 2);
 
     final double c = 2 * math.asin(math.sqrt(a));
 

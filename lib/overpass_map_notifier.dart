@@ -261,15 +261,22 @@ class OverpassMapNotifier extends ChangeNotifier {
   }
 
   /// Select an area for detailed view/interaction
+  /// If the same area is already selected, it will be deselected (toggle behavior)
   void selectArea(GeographicArea? area) {
-    _rawSelectedArea = area;
-    if (area != null) {
-      _boundsToFit = MapRenderingService.calculateBounds([area]);
-      // Use the renamed field here
-      userAreaVisitData.putIfAbsent(
-        area.id,
-        () => UserAreaData(areaId: area.id),
-      );
+    // Toggle behavior: if clicking on already selected area, deselect it
+    if (area != null && _rawSelectedArea?.id == area.id) {
+      _rawSelectedArea = null;
+      _boundsToFit = null;
+    } else {
+      _rawSelectedArea = area;
+      if (area != null) {
+        _boundsToFit = MapRenderingService.calculateBounds([area]);
+        // Use the renamed field here
+        userAreaVisitData.putIfAbsent(
+          area.id,
+          () => UserAreaData(areaId: area.id),
+        );
+      }
     }
     notifyListeners();
   }
@@ -291,10 +298,11 @@ class OverpassMapNotifier extends ChangeNotifier {
     }
 
     // Get visited area IDs
-    final visitedAreaIds = userAreaVisitData.entries
-        .where((entry) => entry.value.visitCount > 0)
-        .map((entry) => entry.key)
-        .toSet();
+    final visitedAreaIds =
+        userAreaVisitData.entries
+            .where((entry) => entry.value.visitCount > 0)
+            .map((entry) => entry.key)
+            .toSet();
 
     return MapRenderingService.createAnimatedAreaLayer(
       areas: areasToShow,

@@ -1,10 +1,11 @@
-import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+
 import '../models/osm_models.dart';
-import '../services/polygon_optimization_service.dart';
 
 /// A custom painter for drawing geographic areas with animation support
 class CustomAreaPainter extends CustomPainter {
@@ -12,8 +13,7 @@ class CustomAreaPainter extends CustomPainter {
   final MapCamera camera;
   final Animation<double>? animation;
 
-  CustomAreaPainter({required this.areas, required this.camera, this.animation})
-    : super(repaint: animation);
+  CustomAreaPainter({required this.areas, required this.camera, this.animation}) : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -83,33 +83,31 @@ class CustomAreaPainter extends CustomPainter {
     final animationValue = animation?.value ?? 1.0;
 
     // Create animated paint for fill
-    final fillPaint =
-        Paint()
-          ..color =
-              Color.lerp(
-                animatedArea.fillColor.withValues(alpha: 0.0),
-                animatedArea.fillColor.withValues(
-                  alpha: animatedArea.fillOpacity,
-                ),
-                animationValue,
-              ) ??
-              animatedArea.fillColor.withValues(alpha: animatedArea.fillOpacity)
-          ..style = PaintingStyle.fill;
+    final fillPaint = Paint()
+      ..color =
+          Color.lerp(
+            animatedArea.fillColor.withValues(alpha: 0.0),
+            animatedArea.fillColor.withValues(
+              alpha: animatedArea.fillOpacity,
+            ),
+            animationValue,
+          ) ??
+          animatedArea.fillColor.withValues(alpha: animatedArea.fillOpacity)
+      ..style = PaintingStyle.fill;
 
     // Create animated paint for border
-    final borderPaint =
-        Paint()
-          ..color =
-              Color.lerp(
-                animatedArea.borderColor.withValues(alpha: 0.0),
-                animatedArea.borderColor,
-                animationValue,
-              ) ??
-              animatedArea.borderColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = animatedArea.borderWidth * animationValue
-          ..strokeJoin = StrokeJoin.round
-          ..strokeCap = StrokeCap.round;
+    final borderPaint = Paint()
+      ..color =
+          Color.lerp(
+            animatedArea.borderColor.withValues(alpha: 0.0),
+            animatedArea.borderColor,
+            animationValue,
+          ) ??
+          animatedArea.borderColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = animatedArea.borderWidth * animationValue
+      ..strokeJoin = StrokeJoin.round
+      ..strokeCap = StrokeCap.round;
 
     // Configure dashed border if needed
     if (animatedArea.isDashed) {
@@ -120,17 +118,16 @@ class CustomAreaPainter extends CustomPainter {
     // Create shadow paint if needed
     Paint? shadowPaint;
     if (animatedArea.hasShadow && animatedArea.shadowColor != null) {
-      shadowPaint =
-          Paint()
-            ..color =
-                Color.lerp(
-                  animatedArea.shadowColor!.withValues(alpha: 0.0),
-                  animatedArea.shadowColor!,
-                  animationValue,
-                ) ??
-                animatedArea.shadowColor!
-            ..style = PaintingStyle.fill
-            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+      shadowPaint = Paint()
+        ..color =
+            Color.lerp(
+              animatedArea.shadowColor!.withValues(alpha: 0.0),
+              animatedArea.shadowColor!,
+              animationValue,
+            ) ??
+            animatedArea.shadowColor!
+        ..style = PaintingStyle.fill
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
     }
 
     // Apply shader if provided
@@ -166,24 +163,22 @@ class CustomAreaPainter extends CustomPainter {
   void _drawDashedPath(Canvas canvas, ui.Path path, Paint paint) {
     // Simple dashed effect by drawing with reduced opacity and thicker lines
     // This is a simplified approach - for true dashes, we'd need path measurement
-    final dashedPaint =
-        Paint()
-          ..color = paint.color.withValues(alpha: paint.color.alpha * 0.7)
-          ..style = paint.style
-          ..strokeWidth = paint.strokeWidth * 1.2
-          ..strokeJoin = paint.strokeJoin
-          ..strokeCap = StrokeCap.round;
+    final dashedPaint = Paint()
+      ..color = paint.color.withValues(alpha: paint.color.alpha * 0.7)
+      ..style = paint.style
+      ..strokeWidth = paint.strokeWidth * 1.2
+      ..strokeJoin = paint.strokeJoin
+      ..strokeCap = StrokeCap.round;
 
     canvas.drawPath(path, dashedPaint);
 
     // Draw dotted overlay for dashed effect
-    final dottedPaint =
-        Paint()
-          ..color = paint.color
-          ..style = paint.style
-          ..strokeWidth = paint.strokeWidth * 0.6
-          ..strokeJoin = paint.strokeJoin
-          ..strokeCap = StrokeCap.round;
+    final dottedPaint = Paint()
+      ..color = paint.color
+      ..style = paint.style
+      ..strokeWidth = paint.strokeWidth * 0.6
+      ..strokeJoin = paint.strokeJoin
+      ..strokeCap = StrokeCap.round;
 
     canvas.drawPath(path, dottedPaint);
   }
@@ -230,9 +225,7 @@ class CustomAreaPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomAreaPainter oldDelegate) {
-    return oldDelegate.areas != areas ||
-        oldDelegate.camera != camera ||
-        oldDelegate.animation != animation;
+    return oldDelegate.areas != areas || oldDelegate.camera != camera || oldDelegate.animation != animation;
   }
 
   @override
