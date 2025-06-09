@@ -1,8 +1,10 @@
 import 'dart:ui' as ui;
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import '../models/osm_models.dart';
+import '../services/polygon_optimization_service.dart';
 
 /// A custom painter for drawing geographic areas with animation support
 class CustomAreaPainter extends CustomPainter {
@@ -10,20 +12,70 @@ class CustomAreaPainter extends CustomPainter {
   final MapCamera camera;
   final Animation<double>? animation;
 
-  CustomAreaPainter({
-    required this.areas,
-    required this.camera,
-    this.animation,
-  }) : super(repaint: animation);
+  CustomAreaPainter({required this.areas, required this.camera, this.animation})
+    : super(repaint: animation);
 
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
     canvas.clipRect(rect);
 
-    for (final animatedArea in areas) {
+    // Performance optimization: viewport culling
+    final visibleAreas = _getVisibleAreas(size);
+
+    for (final animatedArea in visibleAreas) {
       _paintArea(canvas, size, animatedArea);
     }
+  }
+
+  /// Only render areas that are likely visible in current viewport
+  List<AnimatedArea> _getVisibleAreas(Size size) {
+    if (areas.length <= 10) return areas; // Small number, render all
+
+    // For larger numbers, implement basic viewport culling
+    final visibleAreas = <AnimatedArea>[];
+
+    for (final area in areas) {
+      if (_isAreaLikelyVisible(area, size)) {
+        visibleAreas.add(area);
+      }
+    }
+
+    return visibleAreas;
+  }
+
+  /// Basic check if area might be visible (simplified bounds checking)
+  bool _isAreaLikelyVisible(AnimatedArea area, Size size) {
+    if (area.geoArea.coordinates.isEmpty) return false;
+
+    // Simple heuristic: check if any coordinate converts to screen bounds
+    final firstRing = area.geoArea.coordinates.first;
+    if (firstRing.isEmpty) return false;
+
+    bool hasVisiblePoint = false;
+    int checkCount = 0;
+
+    // Check only a sample of points for performance
+    final step = math.max(1, firstRing.length ~/ 5);
+    for (int i = 0; i < firstRing.length && checkCount < 5; i += step) {
+      final coord = firstRing[i];
+      final screenPoint = _latLngToScreenPoint(
+        LatLng(coord[1], coord[0]),
+        size,
+      );
+
+      // Check if point is within extended screen bounds (with padding)
+      if (screenPoint.dx > -100 &&
+          screenPoint.dx < size.width + 100 &&
+          screenPoint.dy > -100 &&
+          screenPoint.dy < size.height + 100) {
+        hasVisiblePoint = true;
+        break;
+      }
+      checkCount++;
+    }
+
+    return hasVisiblePoint;
   }
 
   void _paintArea(Canvas canvas, Size size, AnimatedArea animatedArea) {
@@ -31,29 +83,33 @@ class CustomAreaPainter extends CustomPainter {
     final animationValue = animation?.value ?? 1.0;
 
     // Create animated paint for fill
-    final fillPaint = Paint()
-      ..color =
-          Color.lerp(
-            animatedArea.fillColor.withValues(alpha: 0.0),
-            animatedArea.fillColor.withValues(alpha: animatedArea.fillOpacity),
-            animationValue,
-          ) ??
-          animatedArea.fillColor.withValues(alpha: animatedArea.fillOpacity)
-      ..style = PaintingStyle.fill;
+    final fillPaint =
+        Paint()
+          ..color =
+              Color.lerp(
+                animatedArea.fillColor.withValues(alpha: 0.0),
+                animatedArea.fillColor.withValues(
+                  alpha: animatedArea.fillOpacity,
+                ),
+                animationValue,
+              ) ??
+              animatedArea.fillColor.withValues(alpha: animatedArea.fillOpacity)
+          ..style = PaintingStyle.fill;
 
     // Create animated paint for border
-    final borderPaint = Paint()
-      ..color =
-          Color.lerp(
-            animatedArea.borderColor.withValues(alpha: 0.0),
-            animatedArea.borderColor,
-            animationValue,
-          ) ??
-          animatedArea.borderColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = animatedArea.borderWidth * animationValue
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round;
+    final borderPaint =
+        Paint()
+          ..color =
+              Color.lerp(
+                animatedArea.borderColor.withValues(alpha: 0.0),
+                animatedArea.borderColor,
+                animationValue,
+              ) ??
+              animatedArea.borderColor
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = animatedArea.borderWidth * animationValue
+          ..strokeJoin = StrokeJoin.round
+          ..strokeCap = StrokeCap.round;
 
     // Configure dashed border if needed
     if (animatedArea.isDashed) {
@@ -64,16 +120,17 @@ class CustomAreaPainter extends CustomPainter {
     // Create shadow paint if needed
     Paint? shadowPaint;
     if (animatedArea.hasShadow && animatedArea.shadowColor != null) {
-      shadowPaint = Paint()
-        ..color =
-            Color.lerp(
-              animatedArea.shadowColor!.withValues(alpha: 0.0),
-              animatedArea.shadowColor!,
-              animationValue,
-            ) ??
-            animatedArea.shadowColor!
-        ..style = PaintingStyle.fill
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
+      shadowPaint =
+          Paint()
+            ..color =
+                Color.lerp(
+                  animatedArea.shadowColor!.withValues(alpha: 0.0),
+                  animatedArea.shadowColor!,
+                  animationValue,
+                ) ??
+                animatedArea.shadowColor!
+            ..style = PaintingStyle.fill
+            ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
     }
 
     // Apply shader if provided
@@ -109,22 +166,24 @@ class CustomAreaPainter extends CustomPainter {
   void _drawDashedPath(Canvas canvas, ui.Path path, Paint paint) {
     // Simple dashed effect by drawing with reduced opacity and thicker lines
     // This is a simplified approach - for true dashes, we'd need path measurement
-    final dashedPaint = Paint()
-      ..color = paint.color.withValues(alpha: paint.color.alpha * 0.7)
-      ..style = paint.style
-      ..strokeWidth = paint.strokeWidth * 1.2
-      ..strokeJoin = paint.strokeJoin
-      ..strokeCap = StrokeCap.round;
+    final dashedPaint =
+        Paint()
+          ..color = paint.color.withValues(alpha: paint.color.alpha * 0.7)
+          ..style = paint.style
+          ..strokeWidth = paint.strokeWidth * 1.2
+          ..strokeJoin = paint.strokeJoin
+          ..strokeCap = StrokeCap.round;
 
     canvas.drawPath(path, dashedPaint);
 
     // Draw dotted overlay for dashed effect
-    final dottedPaint = Paint()
-      ..color = paint.color
-      ..style = paint.style
-      ..strokeWidth = paint.strokeWidth * 0.6
-      ..strokeJoin = paint.strokeJoin
-      ..strokeCap = StrokeCap.round;
+    final dottedPaint =
+        Paint()
+          ..color = paint.color
+          ..style = paint.style
+          ..strokeWidth = paint.strokeWidth * 0.6
+          ..strokeJoin = paint.strokeJoin
+          ..strokeCap = StrokeCap.round;
 
     canvas.drawPath(path, dottedPaint);
   }

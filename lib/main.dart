@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/models/osm_models.dart';
 import 'package:overpass_map/overpass_api.dart';
@@ -7,6 +8,7 @@ import 'package:overpass_map/overpass_map_notifier.dart';
 import 'package:overpass_map/widgets/hierarchical_area_list.dart';
 import 'package:overpass_map/widgets/control_panel.dart';
 import 'package:overpass_map/widgets/status_card.dart';
+import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
 import 'package:overpass_map/theme/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'dart:math' as math;
@@ -125,13 +127,9 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                       ),
                       child: Row(
                         children: [
-                          Expanded(
-                            child: ControlPanel(notifier: notifier),
-                          ),
+                          Expanded(child: ControlPanel(notifier: notifier)),
                           const SizedBox(width: AppTheme.spacingLg),
-                          Expanded(
-                            child: StatusCard(notifier: notifier),
-                          ),
+                          Expanded(child: StatusCard(notifier: notifier)),
                         ],
                       ),
                     ),
@@ -150,7 +148,16 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                           borderRadius: BorderRadius.circular(
                             AppTheme.radiusLg,
                           ),
-                          child: _buildMapView(notifier),
+                          child: Stack(
+                            children: [
+                              _buildMapView(notifier),
+                              // Performance overlay - shows stats in debug mode
+                              perf.PerformanceOverlay(
+                                areas: _getAllAreas(notifier),
+                                showOverlay: true, // Set to false to disable
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -169,9 +176,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
       padding: const EdgeInsets.all(AppTheme.spacingLg),
       decoration: const BoxDecoration(
         gradient: AppTheme.primaryGradient,
-        border: Border(
-          bottom: BorderSide(color: AppTheme.borderColor),
-        ),
+        border: Border(bottom: BorderSide(color: AppTheme.borderColor)),
       ),
       child: Row(
         children: [
@@ -181,11 +186,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               color: Colors.white.withOpacity(0.2),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
-            child: const Icon(
-              Icons.map,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: const Icon(Icons.map, color: Colors.white, size: 24),
           ),
 
           const SizedBox(width: AppTheme.spacingMd),
@@ -232,9 +233,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                 ),
                 child: Column(
                   children: [
-                    const CircularProgressIndicator(
-                      strokeWidth: 3,
-                    ),
+                    const CircularProgressIndicator(strokeWidth: 3),
                     const SizedBox(height: AppTheme.spacingLg),
                     Text(
                       'Loading Geographic Data...',
@@ -274,11 +273,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 48,
-                  color: AppTheme.errorColor,
-                ),
+                Icon(Icons.error_outline, size: 48, color: AppTheme.errorColor),
                 const SizedBox(height: AppTheme.spacingLg),
                 Text(
                   'Error Loading Data',
@@ -330,6 +325,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.example.overpass_map',
+          tileProvider: CancellableNetworkTileProvider(),
         ),
         // Use the animated area layer
         notifier.animatedAreaLayer,
@@ -365,10 +361,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
         }
 
         if (pointCount > 0) {
-          final center = LatLng(
-            areaLat / pointCount,
-            areaLng / pointCount,
-          );
+          final center = LatLng(areaLat / pointCount, areaLng / pointCount);
 
           // Calculate distance using Haversine formula
           final distance = _calculateDistance(center, latLng);
@@ -408,5 +401,16 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
     final double c = 2 * math.asin(math.sqrt(a));
 
     return earthRadius * c;
+  }
+
+  /// Get all areas for performance monitoring
+  List<GeographicArea> _getAllAreas(OverpassMapNotifier notifier) {
+    if (notifier.boundaryData == null) return [];
+
+    return [
+      ...notifier.boundaryData!.cities,
+      ...notifier.boundaryData!.bezirke,
+      ...notifier.boundaryData!.stadtteile,
+    ];
   }
 }
