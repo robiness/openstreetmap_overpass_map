@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -19,63 +18,9 @@ class CustomAreaPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
     canvas.clipRect(rect);
-
-    // Performance optimization: viewport culling
-    final visibleAreas = _getVisibleAreas(size);
-
-    for (final animatedArea in visibleAreas) {
+    for (final animatedArea in areas) {
       _paintArea(canvas, size, animatedArea);
     }
-  }
-
-  /// Only render areas that are likely visible in current viewport
-  List<AnimatedArea> _getVisibleAreas(Size size) {
-    if (areas.length <= 10) return areas; // Small number, render all
-
-    // For larger numbers, implement basic viewport culling
-    final visibleAreas = <AnimatedArea>[];
-
-    for (final area in areas) {
-      if (_isAreaLikelyVisible(area, size)) {
-        visibleAreas.add(area);
-      }
-    }
-
-    return visibleAreas;
-  }
-
-  /// Basic check if area might be visible (simplified bounds checking)
-  bool _isAreaLikelyVisible(AnimatedArea area, Size size) {
-    if (area.geoArea.coordinates.isEmpty) return false;
-
-    // Simple heuristic: check if any coordinate converts to screen bounds
-    final firstRing = area.geoArea.coordinates.first;
-    if (firstRing.isEmpty) return false;
-
-    bool hasVisiblePoint = false;
-    int checkCount = 0;
-
-    // Check only a sample of points for performance
-    final step = math.max(1, firstRing.length ~/ 5);
-    for (int i = 0; i < firstRing.length && checkCount < 5; i += step) {
-      final coord = firstRing[i];
-      final screenPoint = _latLngToScreenPoint(
-        LatLng(coord[1], coord[0]),
-        size,
-      );
-
-      // Check if point is within extended screen bounds (with padding)
-      if (screenPoint.dx > -100 &&
-          screenPoint.dx < size.width + 100 &&
-          screenPoint.dy > -100 &&
-          screenPoint.dy < size.height + 100) {
-        hasVisiblePoint = true;
-        break;
-      }
-      checkCount++;
-    }
-
-    return hasVisiblePoint;
   }
 
   void _paintArea(Canvas canvas, Size size, AnimatedArea animatedArea) {

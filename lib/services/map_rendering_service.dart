@@ -1,13 +1,14 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'dart:ui' as ui;
 
 import '../models/osm_models.dart';
 import '../overpass_map_notifier.dart'; // Import DisplayableArea
+import '../theme/app_theme.dart';
 import '../widgets/animated_area_layer.dart';
 import '../widgets/custom_area_painter.dart';
-import '../theme/app_theme.dart';
 
 /// Service for converting GeographicArea data to map display elements
 class MapRenderingService {
@@ -60,7 +61,6 @@ class MapRenderingService {
     Map<String, Color>? colorsByType,
     Duration animationDuration = const Duration(milliseconds: 1000),
     Curve animationCurve = Curves.easeInOut,
-    bool enableAnimation = true,
     Map<int, ui.Shader>? shadersByAreaId,
     VoidCallback? onAnimationComplete,
     GeographicArea? selectedArea,
@@ -73,7 +73,6 @@ class MapRenderingService {
       colorsByType: colorsByType,
       animationDuration: animationDuration,
       animationCurve: animationCurve,
-      enableAnimation: enableAnimation,
       shadersByAreaId: shadersByAreaId,
       onAnimationComplete: onAnimationComplete,
       selectedArea: selectedArea,
@@ -99,8 +98,7 @@ class MapRenderingService {
     Color visitedColor = Colors.purple,
   }) {
     return areas.map((area) {
-      final defaultColor =
-          colorsByType?[area.type] ?? _getDefaultColor(area.type);
+      final defaultColor = colorsByType?[area.type] ?? _getDefaultColor(area.type);
 
       // Determine fill color based on state
       Color fillColor;
@@ -123,9 +121,7 @@ class MapRenderingService {
       return AnimatedArea(
         geoArea: area,
         fillColor: fillColor,
-        borderColor:
-            borderColorOverrides?[area.id] ??
-            defaultColor.withValues(alpha: 0.8),
+        borderColor: borderColorOverrides?[area.id] ?? defaultColor.withValues(alpha: 0.8),
         fillOpacity: fillOpacity,
         borderWidth: defaultBorderWidth,
         shader: shadersByAreaId?[area.id],

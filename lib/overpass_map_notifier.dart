@@ -82,9 +82,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   DisplayableArea? get selectedDisplayArea {
     if (_rawSelectedArea == null) return null;
     // Use the renamed field here
-    final userVisits =
-        userAreaVisitData[_rawSelectedArea!.id] ??
-        UserAreaData(areaId: _rawSelectedArea!.id);
+    final userVisits = userAreaVisitData[_rawSelectedArea!.id] ?? UserAreaData(areaId: _rawSelectedArea!.id);
     return DisplayableArea(geoArea: _rawSelectedArea!, userArea: userVisits);
   }
 
@@ -147,8 +145,7 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   void decrementVisitCount(int areaId) {
     // Use the renamed field here
-    if (userAreaVisitData.containsKey(areaId) &&
-        userAreaVisitData[areaId]!.visitCount > 0) {
+    if (userAreaVisitData.containsKey(areaId) && userAreaVisitData[areaId]!.visitCount > 0) {
       userAreaVisitData[areaId]!.visitCount--;
       _saveUserVisitData();
       notifyListeners();
@@ -167,8 +164,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   List<DisplayableArea> _getDisplayableAreas(List<GeographicArea> geoAreas) {
     return geoAreas.map((geo) {
       // Use the renamed field here
-      final userVisits =
-          userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
+      final userVisits = userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
       return DisplayableArea(geoArea: geo, userArea: userVisits);
     }).toList();
   }
@@ -298,17 +294,15 @@ class OverpassMapNotifier extends ChangeNotifier {
     }
 
     // Get visited area IDs
-    final visitedAreaIds =
-        userAreaVisitData.entries
-            .where((entry) => entry.value.visitCount > 0)
-            .map((entry) => entry.key)
-            .toSet();
+    final visitedAreaIds = userAreaVisitData.entries
+        .where((entry) => entry.value.visitCount > 0)
+        .map((entry) => entry.key)
+        .toSet();
 
     return MapRenderingService.createAnimatedAreaLayer(
       areas: areasToShow,
       animationDuration: _animationDuration,
       animationCurve: _animationCurve,
-      enableAnimation: true, // Always enabled
       selectedArea: _rawSelectedArea,
       visitedAreaIds: visitedAreaIds,
       selectionColor: Colors.orange,

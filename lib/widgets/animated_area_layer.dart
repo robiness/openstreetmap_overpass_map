@@ -12,7 +12,6 @@ class AnimatedAreaLayer extends StatefulWidget {
   final Map<String, Color>? colorsByType;
   final Duration animationDuration;
   final Curve animationCurve;
-  final bool enableAnimation;
   final Map<int, ui.Shader>? shadersByAreaId;
   final VoidCallback? onAnimationComplete;
   final GeographicArea? selectedArea;
@@ -26,7 +25,6 @@ class AnimatedAreaLayer extends StatefulWidget {
     this.colorsByType,
     this.animationDuration = const Duration(milliseconds: 1000),
     this.animationCurve = Curves.easeInOut,
-    this.enableAnimation = true,
     this.shadersByAreaId,
     this.onAnimationComplete,
     this.selectedArea,
@@ -50,9 +48,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
     super.initState();
     _setupAnimation();
     _setupPulseAnimation();
-    if (widget.enableAnimation) {
-      _animationController.forward();
-    }
+    _animationController.forward();
     // Start pulsing animation for visual feedback
     _pulseController.repeat(reverse: true);
   }
@@ -98,7 +94,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
     super.didUpdateWidget(oldWidget);
 
     // Restart animation if areas changed and animation is enabled
-    if (widget.enableAnimation && widget.areas != oldWidget.areas && mounted) {
+    if (widget.areas != oldWidget.areas && mounted) {
       _animationController.reset();
       _animationController.forward();
     }
@@ -238,7 +234,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
           painter: CustomAreaPainter(
             areas: animatedAreas,
             camera: mapState,
-            animation: widget.enableAnimation ? _animation : null,
+            animation: _animation,
           ),
           size: Size.infinite,
         );
