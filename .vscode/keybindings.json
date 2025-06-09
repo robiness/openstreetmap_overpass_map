@@ -1,0 +1,17 @@
+[
+  {
+    "key": "cmd+shift+w",
+    "command": "workbench.action.tasks.runTask",
+    "args": "Flutter Web"
+  },
+  {
+    "key": "cmd+shift+m", 
+    "command": "workbench.action.tasks.runTask",
+    "args": "Flutter macOS"
+  },
+  {
+    "key": "cmd+r",
+    "command": "flutter.hotReload",
+    "when": "dart-code:anyProjectLoaded"
+  }
+] 
