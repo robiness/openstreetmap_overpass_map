@@ -1,10 +1,16 @@
 # Overpass Map Explorer 🗺️
 
-A Flutter web application for exploring geographic boundaries using OpenStreetMap's Overpass API. Navigate through hierarchical administrative areas (Cities → Bezirke → Stadtteile) with an interactive map interface.
+A cross-platform Flutter application for exploring geographic boundaries using OpenStreetMap's Overpass API. Navigate through hierarchical administrative areas (Cities → Bezirke → Stadtteile) with an interactive map interface.
+
+## 🎯 Vision & Roadmap
+
+**Current**: Web application optimized for desktop and mobile browsers  
+**Future**: Native Android and iOS apps with enhanced mobile features
 
 ## 🌐 Live Demo
 
-**Visit the live app**: [https://tgmp.netlify.app](https://tgmp.netlify.app)
+**Visit the live app**: [https://tgmp.netlify.app](https://tgmp.netlify.app)  
+*Works on desktop browsers and mobile devices*
 
 ## ✨ Features
 
@@ -36,13 +42,27 @@ flutter build web --wasm --release && netlify deploy --prod --dir=build/web
 
 📚 **See [DEPLOYMENT.md](DEPLOYMENT.md) for setup and troubleshooting**
 
-## 🛠️ Technology Stack
+## 🛠️ Development Stack
 
-- **Flutter Web** with WebAssembly compilation
-- **Flutter Map** for interactive mapping
-- **Overpass API** for geographic data
-- **Provider** for state management
-- **Netlify** for hosting and deployment
+- **Platform**: macOS development environment
+- **Framework**: Flutter (web-first, mobile-ready)
+- **Performance**: WebAssembly compilation for web
+- **Mapping**: Flutter Map with OpenStreetMap tiles
+- **Data**: Overpass API for geographic boundaries
+- **State**: Provider for state management
+- **Hosting**: Netlify with global CDN
+
+## 📱 Platform Strategy
+
+### Phase 1: Web (Current)
+- ✅ **Desktop browsers**: Full-featured experience
+- ✅ **Mobile browsers**: Touch-optimized responsive design
+- ✅ **PWA capabilities**: Add to home screen, offline caching
+
+### Phase 2: Native Apps (Planned)
+- 🔄 **Android app**: Enhanced mobile navigation and gestures
+- 🔄 **iOS app**: Native iOS design patterns and performance
+- 🔄 **Mobile features**: GPS integration, offline maps, push notifications
 
 ## 📋 Development Resources
 
