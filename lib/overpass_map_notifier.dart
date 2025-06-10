@@ -2,11 +2,13 @@ import 'dart:convert'; // For json.encode/decode if persisting UserAreaData map
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/overpass_api.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // For persistence
 
 import 'models/boundary_data.dart';
 import 'models/osm_models.dart';
+import 'models/spot.dart';
 import 'models/user_area_data.dart'; // Import the new model
 import 'services/map_rendering_service.dart';
 
@@ -49,6 +51,26 @@ class OverpassMapNotifier extends ChangeNotifier {
   Map<int, UserAreaData> userAreaVisitData = {};
   static const String _userVisitDataKey = 'user_visit_data';
 
+  // Spots data
+  List<Spot> _spots = [];
+  List<Spot> get spots => _spots;
+
+  Map<int, UserSpotData> userSpotData = {};
+  static const String _userSpotDataKey = 'user_spot_data';
+
+  // Spot filtering and display
+  Set<String> _enabledSpotCategories = {
+    'restaurant',
+    'cafe',
+    'bar',
+    'biergarten',
+    'viewpoint',
+  };
+  Set<String> get enabledSpotCategories => _enabledSpotCategories;
+
+  bool _showSpots = true;
+  bool get showSpots => _showSpots;
+
   String _dataSource = "unknown";
   String get dataSource => _dataSource;
 
@@ -82,8 +104,19 @@ class OverpassMapNotifier extends ChangeNotifier {
   DisplayableArea? get selectedDisplayArea {
     if (_rawSelectedArea == null) return null;
     // Use the renamed field here
-    final userVisits = userAreaVisitData[_rawSelectedArea!.id] ?? UserAreaData(areaId: _rawSelectedArea!.id);
+    final userVisits =
+        userAreaVisitData[_rawSelectedArea!.id] ??
+        UserAreaData(areaId: _rawSelectedArea!.id);
     return DisplayableArea(geoArea: _rawSelectedArea!, userArea: userVisits);
+  }
+
+  Spot? _selectedSpot;
+  DisplayableSpot? get selectedDisplaySpot {
+    if (_selectedSpot == null) return null;
+    final userData =
+        userSpotData[_selectedSpot!.id] ??
+        UserSpotData(spotId: _selectedSpot!.id);
+    return DisplayableSpot(spot: _selectedSpot!, userData: userData);
   }
 
   LatLngBounds? _boundsToFit;
@@ -97,6 +130,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   OverpassMapNotifier(this._api) {
     // Accept OverpassApi in constructor
     _loadUserVisitData(); // Load visit counts on initialization
+    _loadUserSpotData(); // Load spot visit data on initialization
     fetchCityData("Köln", 6);
   }
 
@@ -135,6 +169,39 @@ class OverpassMapNotifier extends ChangeNotifier {
     }
   }
 
+  Future<void> _loadUserSpotData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? jsonString = prefs.getString(_userSpotDataKey);
+      if (jsonString != null) {
+        final Map<String, dynamic> decodedMap = json.decode(jsonString);
+        userSpotData = decodedMap.map(
+          (key, value) => MapEntry(
+            int.parse(key),
+            UserSpotData.fromJson(value as Map<String, dynamic>),
+          ),
+        );
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error loading user spot data: $e");
+    }
+  }
+
+  Future<void> _saveUserSpotData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String jsonString = json.encode(
+        userSpotData.map(
+          (key, value) => MapEntry(key.toString(), value.toJson()),
+        ),
+      );
+      await prefs.setString(_userSpotDataKey, jsonString);
+    } catch (e) {
+      print("Error saving user spot data: $e");
+    }
+  }
+
   void incrementVisitCount(int areaId) {
     // Use the renamed field here
     userAreaVisitData.putIfAbsent(areaId, () => UserAreaData(areaId: areaId));
@@ -145,7 +212,8 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   void decrementVisitCount(int areaId) {
     // Use the renamed field here
-    if (userAreaVisitData.containsKey(areaId) && userAreaVisitData[areaId]!.visitCount > 0) {
+    if (userAreaVisitData.containsKey(areaId) &&
+        userAreaVisitData[areaId]!.visitCount > 0) {
       userAreaVisitData[areaId]!.visitCount--;
       _saveUserVisitData();
       notifyListeners();
@@ -164,7 +232,8 @@ class OverpassMapNotifier extends ChangeNotifier {
   List<DisplayableArea> _getDisplayableAreas(List<GeographicArea> geoAreas) {
     return geoAreas.map((geo) {
       // Use the renamed field here
-      final userVisits = userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
+      final userVisits =
+          userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
       return DisplayableArea(geoArea: geo, userArea: userVisits);
     }).toList();
   }
@@ -173,41 +242,120 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   /// Get markers for area names
   List<Marker> get nameMarkers {
-    // if (_currentResult == null) return [];
-    if (_boundaryData == null) return [];
+    // Temporarily disabled area labels
+    return [];
 
-    List<GeographicArea> areasForMarkers = [];
+    // Original implementation commented out:
+    // if (_boundaryData == null) return [];
 
-    if (_showCityOutline) {
-      areasForMarkers.addAll(_boundaryData!.cities);
-    }
-    if (_showBezirke) {
-      areasForMarkers.addAll(_boundaryData!.bezirke);
-    }
-    if (_showStadtteile) {
-      areasForMarkers.addAll(_boundaryData!.stadtteile);
-    }
+    // List<GeographicArea> areasForMarkers = [];
 
-    // Create DisplayableAreas to pass to MapRenderingService if it needs visit counts for markers
-    List<DisplayableArea> displayableAreasForMarkers = _getDisplayableAreas(
-      areasForMarkers,
-    );
+    // if (_showCityOutline) {
+    //   areasForMarkers.addAll(_boundaryData!.cities);
+    // }
+    // if (_showBezirke) {
+    //   areasForMarkers.addAll(_boundaryData!.bezirke);
+    // }
+    // if (_showStadtteile) {
+    //   areasForMarkers.addAll(_boundaryData!.stadtteile);
+    // }
 
-    // Assuming MapRenderingService.createAreaMarkers can now take List<DisplayableArea>
-    // or you adapt it to take GeographicArea and a lookup map for visit counts.
-    // For now, let's assume it's adapted or we pass GeographicArea and handle count in UI.
-    return MapRenderingService.createAreaMarkersWithVisits(
-      displayableAreasForMarkers,
-    );
+    // // Create DisplayableAreas to pass to MapRenderingService if it needs visit counts for markers
+    // List<DisplayableArea> displayableAreasForMarkers = _getDisplayableAreas(
+    //   areasForMarkers,
+    // );
+
+    // // Assuming MapRenderingService.createAreaMarkers can now take List<DisplayableArea>
+    // // or you adapt it to take GeographicArea and a lookup map for visit counts.
+    // // For now, let's assume it's adapted or we pass GeographicArea and handle count in UI.
+    // return MapRenderingService.createAreaMarkersWithVisits(
+    //   displayableAreasForMarkers,
+    // );
   }
 
-  /// Fetch city boundary data
+  /// Get markers for spots
+  List<Marker> get spotMarkers {
+    if (!_showSpots) return [];
+
+    final displayableSpots = filteredDisplayableSpots;
+    return displayableSpots.map((displayableSpot) {
+      return Marker(
+        point: displayableSpot.location,
+        child: GestureDetector(
+          onTap: () => selectSpot(displayableSpot.spot),
+          child: Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: _getSpotColor(displayableSpot),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: _selectedSpot?.id == displayableSpot.id
+                    ? Colors.orange
+                    : Colors.white,
+                width: 2,
+              ),
+            ),
+            child: Icon(
+              _getSpotIcon(displayableSpot.category),
+              size: 16,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
+    }).toList();
+  }
+
+  Color _getSpotColor(DisplayableSpot spot) {
+    if (spot.isFavorite) return Colors.red;
+    if (spot.isVisited) return Colors.purple;
+
+    switch (spot.category) {
+      case 'restaurant':
+        return Colors.orange;
+      case 'cafe':
+        return Colors.brown;
+      case 'bar':
+        return Colors.indigo;
+      case 'biergarten':
+        return Colors.green;
+      case 'viewpoint':
+        return Colors.blue;
+      case 'shop':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getSpotIcon(String category) {
+    switch (category) {
+      case 'restaurant':
+        return Icons.restaurant;
+      case 'cafe':
+        return Icons.local_cafe;
+      case 'bar':
+        return Icons.local_bar;
+      case 'biergarten':
+        return Icons.sports_bar;
+      case 'viewpoint':
+        return Icons.landscape;
+      case 'shop':
+        return Icons.shopping_bag;
+      default:
+        return Icons.place;
+    }
+  }
+
+  /// Fetch city boundary data and spots
   Future<void> fetchCityData(String cityName, int adminLevel) async {
     _isLoading = true;
     _error = null;
     notifyListeners();
 
     try {
+      // Fetch boundary data
       final result = await _api.getCityData(
         cityName,
         cityAdminLevel: adminLevel,
@@ -227,6 +375,9 @@ class OverpassMapNotifier extends ChangeNotifier {
         if (allElements.isNotEmpty) {
           _boundsToFit = MapRenderingService.calculateBounds(allElements);
         }
+
+        // Fetch spots for the city
+        await fetchSpots(cityName);
       } else {
         _error = "No data received.";
       }
@@ -235,6 +386,20 @@ class OverpassMapNotifier extends ChangeNotifier {
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// Fetch spots for a city
+  Future<void> fetchSpots(String cityName) async {
+    try {
+      _spots = await _api.getSpots(
+        cityName: cityName,
+        categories: _enabledSpotCategories.toList(),
+      );
+      notifyListeners();
+    } catch (e) {
+      print("Error fetching spots: $e");
+      // Don't fail the whole operation if spots fail
     }
   }
 
@@ -256,9 +421,65 @@ class OverpassMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Toggle spots visibility
+  void toggleSpots(bool show) {
+    _showSpots = show;
+    notifyListeners();
+  }
+
+  /// Toggle specific spot category
+  void toggleSpotCategory(String category, bool enabled) {
+    if (enabled) {
+      _enabledSpotCategories.add(category);
+    } else {
+      _enabledSpotCategories.remove(category);
+    }
+    notifyListeners();
+  }
+
+  /// Get filtered spots based on enabled categories
+  List<DisplayableSpot> get filteredDisplayableSpots {
+    if (!_showSpots) return [];
+
+    return _spots
+        .where((spot) => _enabledSpotCategories.contains(spot.category))
+        .map((spot) {
+          final userData =
+              userSpotData[spot.id] ?? UserSpotData(spotId: spot.id);
+          return DisplayableSpot(spot: spot, userData: userData);
+        })
+        .toList();
+  }
+
+  /// Spot interaction methods
+  void incrementSpotVisitCount(int spotId) {
+    userSpotData.putIfAbsent(spotId, () => UserSpotData(spotId: spotId));
+    userSpotData[spotId]!.incrementVisitCount();
+    _saveUserSpotData();
+    notifyListeners();
+  }
+
+  void toggleSpotFavorite(int spotId) {
+    userSpotData.putIfAbsent(spotId, () => UserSpotData(spotId: spotId));
+    userSpotData[spotId]!.isFavorite = !userSpotData[spotId]!.isFavorite;
+    _saveUserSpotData();
+    notifyListeners();
+  }
+
+  void setSpotRating(int spotId, double rating) {
+    userSpotData.putIfAbsent(spotId, () => UserSpotData(spotId: spotId));
+    userSpotData[spotId]!.userRating = rating;
+    _saveUserSpotData();
+    notifyListeners();
+  }
+
   /// Select an area for detailed view/interaction
   /// If the same area is already selected, it will be deselected (toggle behavior)
-  void selectArea(GeographicArea? area) {
+  /// [moveCamera] controls whether the camera should move to fit the selected area
+  void selectArea(GeographicArea? area, {bool moveCamera = true}) {
+    // Deselect spot when selecting area
+    _selectedSpot = null;
+
     // Toggle behavior: if clicking on already selected area, deselect it
     if (area != null && _rawSelectedArea?.id == area.id) {
       _rawSelectedArea = null;
@@ -266,12 +487,51 @@ class OverpassMapNotifier extends ChangeNotifier {
     } else {
       _rawSelectedArea = area;
       if (area != null) {
-        _boundsToFit = MapRenderingService.calculateBounds([area]);
+        // Only set bounds to fit if camera movement is requested
+        if (moveCamera) {
+          _boundsToFit = MapRenderingService.calculateBounds([area]);
+        }
         // Use the renamed field here
         userAreaVisitData.putIfAbsent(
           area.id,
           () => UserAreaData(areaId: area.id),
         );
+      }
+    }
+    notifyListeners();
+  }
+
+  /// Select a spot for detailed view/interaction
+  /// If the same spot is already selected, it will be deselected (toggle behavior)
+  /// [moveCamera] controls whether the camera should move to center on the spot
+  void selectSpot(Spot? spot, {bool moveCamera = true}) {
+    // Deselect area when selecting spot
+    _rawSelectedArea = null;
+
+    // Toggle behavior: if clicking on already selected spot, deselect it
+    if (spot != null && _selectedSpot?.id == spot.id) {
+      _selectedSpot = null;
+      _boundsToFit = null;
+    } else {
+      _selectedSpot = spot;
+      if (spot != null) {
+        // Only set bounds to fit if camera movement is requested
+        if (moveCamera) {
+          // Create a small bounds around the spot
+          const offset = 0.001; // Small offset for zoom
+          _boundsToFit = LatLngBounds(
+            LatLng(
+              spot.location.latitude - offset,
+              spot.location.longitude - offset,
+            ),
+            LatLng(
+              spot.location.latitude + offset,
+              spot.location.longitude + offset,
+            ),
+          );
+        }
+        // Ensure user data exists for the spot
+        userSpotData.putIfAbsent(spot.id, () => UserSpotData(spotId: spot.id));
       }
     }
     notifyListeners();

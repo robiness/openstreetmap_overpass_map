@@ -11,6 +11,9 @@ import 'package:overpass_map/theme/app_theme.dart';
 import 'package:overpass_map/widgets/control_panel.dart';
 import 'package:overpass_map/widgets/hierarchical_area_list.dart';
 import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
+import 'package:overpass_map/widgets/spot_category_filters.dart';
+import 'package:overpass_map/widgets/spot_detail_panel.dart';
+import 'package:overpass_map/widgets/spot_list.dart';
 import 'package:overpass_map/widgets/status_card.dart';
 import 'package:provider/provider.dart';
 
@@ -69,16 +72,24 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
 
           EdgeInsets padding;
           if (isMobile) {
-            // On mobile, account for app bar and potential bottom sheet
+            // On mobile, account for app bar and bottom sheet
             final appBarHeight = kToolbarHeight;
+            final statusBarHeight = MediaQuery.of(context).padding.top;
             final bottomSheetHeight =
-                screenHeight *
-                0.4; // Estimate bottom sheet takes ~40% of screen
+                screenHeight * 0.35; // 35% of screen for bottom sheet
+            final availableMapHeight =
+                screenHeight -
+                statusBarHeight -
+                appBarHeight -
+                bottomSheetHeight;
+
             padding = EdgeInsets.only(
-              top: 50.0 + appBarHeight, // Account for app bar
-              left: 50.0,
-              right: 50.0,
-              bottom: 50.0 + bottomSheetHeight, // Account for bottom sheet
+              top: 20.0, // Minimal top padding
+              left: 20.0, // Reduced side padding for mobile
+              right: 20.0,
+              bottom:
+                  bottomSheetHeight +
+                  20.0, // Account for bottom sheet + padding
             );
           } else {
             // Desktop layout - use original padding
@@ -95,18 +106,19 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
       });
     }
 
-    // Show bottom sheet on mobile when a new area is selected
+    // Show bottom sheet on mobile when a new area or spot is selected
     final currentSelectedArea = _mapNotifier.selectedDisplayArea?.geoArea;
+    final currentSelectedSpot = _mapNotifier.selectedDisplaySpot?.spot;
+
     if (mounted &&
-        currentSelectedArea != null &&
-        currentSelectedArea != _previousSelectedArea) {
+        (currentSelectedArea != null || currentSelectedSpot != null)) {
       final screenWidth = MediaQuery.of(context).size.width;
       final isMobile = screenWidth < 768;
-      if (isMobile) {
+      if (isMobile && currentSelectedArea != _previousSelectedArea) {
         _previousSelectedArea = currentSelectedArea;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            _showStatusBottomSheet(context, _mapNotifier);
+            _showDetailsBottomSheet(context, _mapNotifier);
           }
         });
       }
@@ -138,11 +150,12 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
               actions: [
-                if (notifier.selectedDisplayArea?.geoArea != null)
+                if (notifier.selectedDisplayArea?.geoArea != null ||
+                    notifier.selectedDisplaySpot?.spot != null)
                   IconButton(
                     icon: const Icon(Icons.info_outline),
-                    onPressed: () => _showStatusBottomSheet(context, notifier),
-                    tooltip: 'Show Area Details',
+                    onPressed: () => _showDetailsBottomSheet(context, notifier),
+                    tooltip: 'Show Details',
                   ),
               ],
             ),
@@ -154,6 +167,19 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                 perf.PerformanceOverlay(
                   areas: _getAllAreas(notifier),
                   showOverlay: true,
+                ),
+                // Spot detail panel
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: SpotDetailPanel(),
+                ),
+                // Spot category filters
+                Positioned(
+                  top: 16,
+                  right: 16,
+                  child: SpotCategoryFilters(),
                 ),
               ],
             ),
@@ -177,12 +203,51 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                     children: [
                       // App header
                       _buildAppHeader(),
+                      // Tab bar for Areas vs Spots
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: DefaultTabController(
+                          length: 2,
+                          child: TabBar(
+                            labelColor: AppTheme.primaryColor,
+                            unselectedLabelColor: Colors.grey,
+                            indicatorColor: AppTheme.primaryColor,
+                            tabs: const [
+                              Tab(
+                                icon: Icon(Icons.location_city),
+                                text: 'Areas',
+                              ),
+                              Tab(icon: Icon(Icons.place), text: 'Spots'),
+                            ],
+                          ),
+                        ),
+                      ),
                       // Sidebar content
                       Expanded(
-                        child: HierarchicalAreaList(
-                          boundaryData: notifier.boundaryData,
-                          notifier: notifier,
-                          selectedArea: notifier.selectedDisplayArea?.geoArea,
+                        child: DefaultTabController(
+                          length: 2,
+                          child: TabBarView(
+                            children: [
+                              // Areas tab
+                              HierarchicalAreaList(
+                                boundaryData: notifier.boundaryData,
+                                notifier: notifier,
+                                selectedArea:
+                                    notifier.selectedDisplayArea?.geoArea,
+                              ),
+                              // Spots tab
+                              SpotList(showSearchBar: true),
+                            ],
+                          ),
                         ),
                       ),
                     ],
@@ -230,6 +295,21 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                                   areas: _getAllAreas(notifier),
                                   showOverlay: true,
                                 ),
+                                // Spot detail panel for desktop
+                                Positioned(
+                                  bottom: 16,
+                                  left: 16,
+                                  right: 16,
+                                  child: SpotDetailPanel(),
+                                ),
+                                // Spot category filters for desktop
+                                Positioned(
+                                  top: 16,
+                                  left: 16,
+                                  child: SpotCategoryFilters(
+                                    isCompactMode: true,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -246,17 +326,70 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
     );
   }
 
-  // Mobile drawer containing the area list
+  // Mobile drawer containing the area list and spot controls
   Widget _buildMobileDrawer(OverpassMapNotifier notifier) {
     return Drawer(
       child: Column(
         children: [
           _buildAppHeader(),
+          // Tab bar for Areas vs Spots
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: DefaultTabController(
+              length: 2,
+              child: TabBar(
+                labelColor: AppTheme.primaryColor,
+                unselectedLabelColor: Colors.grey,
+                indicatorColor: AppTheme.primaryColor,
+                tabs: const [
+                  Tab(icon: Icon(Icons.location_city), text: 'Areas'),
+                  Tab(icon: Icon(Icons.place), text: 'Spots'),
+                ],
+              ),
+            ),
+          ),
           Expanded(
-            child: HierarchicalAreaList(
-              boundaryData: notifier.boundaryData,
-              notifier: notifier,
-              selectedArea: notifier.selectedDisplayArea?.geoArea,
+            child: DefaultTabController(
+              length: 2,
+              child: TabBarView(
+                children: [
+                  // Areas tab
+                  HierarchicalAreaList(
+                    boundaryData: notifier.boundaryData,
+                    notifier: notifier,
+                    selectedArea: notifier.selectedDisplayArea?.geoArea,
+                  ),
+                  // Spots tab
+                  Column(
+                    children: [
+                      // Spot category filters (compact version for drawer)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        child: SpotCategoryFilters(),
+                      ),
+                      // Spot list
+                      Expanded(
+                        child: SpotList(
+                          showSearchBar: true,
+                          onSpotTapped: (spot) {
+                            // Close drawer when spot is tapped
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -264,8 +397,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
     );
   }
 
-  // Bottom sheet for status card on mobile
-  void _showStatusBottomSheet(
+  // Bottom sheet for details (areas or spots) on mobile
+  void _showDetailsBottomSheet(
     BuildContext context,
     OverpassMapNotifier notifier,
   ) {
@@ -274,71 +407,88 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       barrierColor: Colors.transparent, // No darkening of background
-      builder: (context) => Container(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.7,
-        ),
-        decoration: const BoxDecoration(
-          color: AppTheme.cardColor,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(AppTheme.radiusXl),
-            topRight: Radius.circular(AppTheme.radiusXl),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Bottom sheet handle
-            Container(
-              margin: const EdgeInsets.only(top: AppTheme.spacingMd),
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppTheme.borderColor,
-                borderRadius: BorderRadius.circular(2),
-              ),
+      isDismissible: true, // Allow dismissing by tapping outside
+      enableDrag: true, // Allow dragging to dismiss
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.35, // 35% of screen height
+        minChildSize: 0.2, // Minimum 20% when collapsed
+        maxChildSize: 0.8, // Maximum 80% when expanded
+        builder: (context, scrollController) => Container(
+          decoration: const BoxDecoration(
+            color: AppTheme.cardColor,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(AppTheme.radiusXl),
+              topRight: Radius.circular(AppTheme.radiusXl),
             ),
-            // Header
-            Padding(
-              padding: const EdgeInsets.all(AppTheme.spacingLg),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: AppTheme.primaryColor,
-                    size: 24,
-                  ),
-                  const SizedBox(width: AppTheme.spacingMd),
-                  Expanded(
-                    child: Text(
-                      'Area Details',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.w600,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 10,
+                offset: Offset(0, -2),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              // Drag handle
+              Container(
+                margin: const EdgeInsets.only(top: AppTheme.spacingMd),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.borderColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              // Header
+              Padding(
+                padding: const EdgeInsets.all(AppTheme.spacingLg),
+                child: Row(
+                  children: [
+                    Icon(
+                      notifier.selectedDisplaySpot != null
+                          ? Icons.place
+                          : Icons.info_outline,
+                      color: AppTheme.primaryColor,
+                      size: 24,
+                    ),
+                    const SizedBox(width: AppTheme.spacingMd),
+                    Expanded(
+                      child: Text(
+                        notifier.selectedDisplaySpot != null
+                            ? 'Spot Details'
+                            : 'Area Details',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                    color: AppTheme.textSecondary,
-                  ),
-                ],
-              ),
-            ),
-            // Status card content
-            Flexible(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  AppTheme.spacingLg,
-                  0,
-                  AppTheme.spacingLg,
-                  AppTheme.spacingLg,
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                      color: AppTheme.textSecondary,
+                    ),
+                  ],
                 ),
-                child: StatusCard(notifier: notifier),
               ),
-            ),
-          ],
+              // Content (spot details or area status card)
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  padding: const EdgeInsets.fromLTRB(
+                    AppTheme.spacingLg,
+                    0,
+                    AppTheme.spacingLg,
+                    AppTheme.spacingLg,
+                  ),
+                  child: notifier.selectedDisplaySpot != null
+                      ? SpotDetailPanel()
+                      : StatusCard(notifier: notifier),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -505,6 +655,13 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
         ),
         // Use the animated area layer
         RepaintBoundary(child: notifier.animatedAreaLayer),
+        // Add spot markers
+        MarkerLayer(
+          markers: [
+            ...notifier.nameMarkers,
+            ...notifier.spotMarkers,
+          ],
+        ),
       ],
     );
   }
@@ -512,49 +669,70 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
   void _handleMapTap(OverpassMapNotifier notifier, LatLng latLng) {
     if (notifier.boundaryData == null) return;
 
-    final allGeoAreas = [
-      ...notifier.boundaryData!.cities,
-      ...notifier.boundaryData!.bezirke,
-      ...notifier.boundaryData!.stadtteile,
-    ];
+    // Only check stadtteile for map taps - most precise level
+    final stadtteile = notifier.boundaryData!.stadtteile;
 
     GeographicArea? tappedArea;
-    double minDistance = double.infinity;
 
-    for (final area in allGeoAreas) {
-      if (area.coordinates.isNotEmpty && area.coordinates.first.isNotEmpty) {
-        // Calculate center of area (basic implementation)
-        double areaLat = 0;
-        double areaLng = 0;
-        int pointCount = 0;
-
-        for (var ring in area.coordinates) {
-          for (var coord in ring) {
-            areaLng += coord[0];
-            areaLat += coord[1];
-            pointCount++;
-          }
-        }
-
-        if (pointCount > 0) {
-          final center = LatLng(areaLat / pointCount, areaLng / pointCount);
-
-          // Calculate distance using Haversine formula
-          final distance = _calculateDistance(center, latLng);
-
-          if (distance < minDistance) {
-            minDistance = distance;
-            tappedArea = area;
-          }
-        }
+    // Check if the tap point is inside any stadtteil polygon
+    for (final area in stadtteile) {
+      if (_isPointInArea(latLng, area)) {
+        tappedArea = area;
+        break; // Found the area, no need to check others
       }
     }
 
-    // Select the closest area (within reasonable distance)
-    if (minDistance < 5.0) {
-      // Within 5km
-      notifier.selectArea(tappedArea);
+    // Select the exact area that was tapped
+    if (tappedArea != null) {
+      notifier.selectArea(tappedArea, moveCamera: false);
     }
+  }
+
+  /// Check if a point is inside a geographic area using point-in-polygon algorithm
+  bool _isPointInArea(LatLng point, GeographicArea area) {
+    if (area.coordinates.isEmpty) return false;
+
+    // Check each ring (outer boundary and holes)
+    for (int ringIndex = 0; ringIndex < area.coordinates.length; ringIndex++) {
+      final ring = area.coordinates[ringIndex];
+      if (ring.isEmpty) continue;
+
+      final isInside = _isPointInPolygon(point, ring);
+
+      if (ringIndex == 0) {
+        // First ring is the outer boundary
+        if (!isInside) return false; // Point must be inside outer boundary
+      } else {
+        // Subsequent rings are holes
+        if (isInside) return false; // Point must NOT be inside holes
+      }
+    }
+
+    return true; // Point is inside outer boundary and not in any holes
+  }
+
+  /// Point-in-polygon algorithm using ray casting
+  bool _isPointInPolygon(LatLng point, List<List<double>> polygon) {
+    if (polygon.length < 3)
+      return false; // Need at least 3 points for a polygon
+
+    bool inside = false;
+    int j = polygon.length - 1;
+
+    for (int i = 0; i < polygon.length; j = i++) {
+      final xi = polygon[i][1]; // latitude
+      final yi = polygon[i][0]; // longitude
+      final xj = polygon[j][1]; // latitude
+      final yj = polygon[j][0]; // longitude
+
+      if (((yi > point.longitude) != (yj > point.longitude)) &&
+          (point.latitude <
+              (xj - xi) * (point.longitude - yi) / (yj - yi) + xi)) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
   }
 
   double _calculateDistance(LatLng point1, LatLng point2) {

@@ -36,6 +36,17 @@ flutter run -d web-server --web-port 3000 --wasm
 Visit: http://localhost:3000
 
 ### Deploy Updates
+
+**Option 1: Automated Script (Recommended)**
+```bash
+# Deploy to preview
+dart scripts/deploy.dart
+
+# Deploy to production
+dart scripts/deploy.dart --prod
+```
+
+**Option 2: Manual Commands**
 ```bash
 flutter build web --wasm --release && netlify deploy --prod --dir=build/web
 ```
