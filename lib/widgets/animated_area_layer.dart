@@ -16,8 +16,14 @@ class AnimatedAreaLayer extends StatefulWidget {
   final VoidCallback? onAnimationComplete;
   final GeographicArea? selectedArea;
   final Set<int>? visitedAreaIds;
+  final Set<int>? completedAreaIds;
+  final Set<int>? partialAreaIds;
+  final Set<int>? unvisitedAreaIds;
   final Color selectionColor;
   final Color visitedColor;
+  final Color completedColor;
+  final Color partialColor;
+  final Color unvisitedColor;
 
   const AnimatedAreaLayer({
     super.key,
@@ -29,15 +35,22 @@ class AnimatedAreaLayer extends StatefulWidget {
     this.onAnimationComplete,
     this.selectedArea,
     this.visitedAreaIds,
+    this.completedAreaIds,
+    this.partialAreaIds,
+    this.unvisitedAreaIds,
     this.selectionColor = Colors.orange,
     this.visitedColor = Colors.purple,
+    this.completedColor = Colors.green,
+    this.partialColor = Colors.amber,
+    this.unvisitedColor = Colors.grey,
   });
 
   @override
   State<AnimatedAreaLayer> createState() => _AnimatedAreaLayerState();
 }
 
-class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProviderStateMixin {
+class _AnimatedAreaLayerState extends State<AnimatedAreaLayer>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late AnimationController _pulseController;
@@ -166,7 +179,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
           final defaultColor = _getAreaColor(area);
           final shader = widget.shadersByAreaId?[area.id];
 
-          // Determine visual properties based on state
+          // Determine visual properties based on exploration state
           Color fillColor;
           double fillOpacity;
           double borderWidth;
@@ -175,46 +188,67 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
           double pulseScale = 1.0;
 
           final isSelected = widget.selectedArea?.id == area.id;
+          final isCompleted =
+              widget.completedAreaIds?.contains(area.id) == true;
+          final isPartial = widget.partialAreaIds?.contains(area.id) == true;
+          final isUnvisited =
+              widget.unvisitedAreaIds?.contains(area.id) == true;
+
+          // Handle backward compatibility with visitedAreaIds
           final isVisited = widget.visitedAreaIds?.contains(area.id) == true;
 
-          if (isSelected && isVisited) {
-            // Both selected AND visited: enhanced orange fill with thick dashed purple border
+          // Prioritize exploration states over old visited system
+          if (isSelected) {
+            // Selected area: always gets selection color with pulsing
             fillColor = widget.selectionColor;
             fillOpacity = 0.5;
             borderWidth = 4.0;
-            isDashed = true;
             hasShadow = true;
             pulseScale = _pulseAnimation.value;
-          } else if (isSelected) {
-            // Only selected: bright orange fill with pulsing effect
-            fillColor = widget.selectionColor;
+          } else if (isCompleted) {
+            // Completed areas: vibrant green with solid fill
+            fillColor = widget.completedColor;
+            fillOpacity = 0.6;
+            borderWidth = 3.0;
+            hasShadow = true;
+          } else if (isPartial) {
+            // Partial areas: amber/yellow with moderate fill
+            fillColor = widget.partialColor;
             fillOpacity = 0.4;
-            borderWidth = 3.5;
-            hasShadow = true;
-            pulseScale = _pulseAnimation.value;
+            borderWidth = 2.5;
+            isDashed = true;
+          } else if (isUnvisited) {
+            // Unvisited areas: light gray with minimal fill
+            fillColor = widget.unvisitedColor;
+            fillOpacity = 0.15;
+            borderWidth = 1.5;
           } else if (isVisited) {
-            // Only visited: purple fill with dashed border
+            // Fallback to old visited system for backward compatibility
             fillColor = widget.visitedColor;
             fillOpacity = 0.25;
             borderWidth = 3.0;
             isDashed = true;
           } else {
-            // Default: transparent with thin solid border
+            // Default: completely transparent
             fillColor = defaultColor;
             fillOpacity = 0.0;
-            borderWidth = 1.5;
+            borderWidth = 1.0;
           }
 
           // Enhanced border color logic
           Color borderColor;
-          if (isSelected && isVisited) {
-            borderColor = widget.visitedColor.withValues(alpha: 0.9);
-          } else if (isSelected) {
+          if (isSelected) {
             borderColor = widget.selectionColor.withValues(alpha: 0.9);
+          } else if (isCompleted) {
+            borderColor = widget.completedColor.withValues(alpha: 0.9);
+          } else if (isPartial) {
+            borderColor = widget.partialColor.withValues(alpha: 0.8);
+          } else if (isUnvisited) {
+            borderColor = widget.unvisitedColor.withValues(alpha: 0.6);
           } else if (isVisited) {
             borderColor = widget.visitedColor.withValues(alpha: 0.8);
           } else {
-            borderColor = defaultColor.withValues(alpha: 0.8);
+            borderColor = defaultColor.withValues(alpha: 0.3);
           }
 
           return AnimatedArea(
@@ -226,7 +260,11 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
             shader: shader,
             isDashed: isDashed,
             hasShadow: hasShadow,
-            shadowColor: isSelected ? widget.selectionColor.withValues(alpha: 0.3) : null,
+            shadowColor: isSelected
+                ? widget.selectionColor.withValues(alpha: 0.3)
+                : isCompleted
+                ? widget.completedColor.withValues(alpha: 0.2)
+                : null,
           );
         }).toList();
 

@@ -18,13 +18,16 @@ class SpotDetailPanel extends StatelessWidget {
         }
 
         return Container(
-          margin: const EdgeInsets.all(16),
+          constraints: const BoxConstraints(
+            maxWidth: 320,
+            maxHeight: 200,
+          ),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withOpacity(0.15),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -34,9 +37,9 @@ class SpotDetailPanel extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header with close button
+              // Compact header
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: _getCategoryColor(selectedSpot.category),
                   borderRadius: const BorderRadius.only(
@@ -45,188 +48,180 @@ class SpotDetailPanel extends StatelessWidget {
                   ),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
                       _getCategoryIcon(selectedSpot.category),
                       color: Colors.white,
-                      size: 24,
+                      size: 18,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         selectedSpot.name,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     IconButton(
                       onPressed: () => notifier.selectSpot(null),
-                      icon: const Icon(Icons.close, color: Colors.white),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 28,
+                        minHeight: 28,
+                      ),
+                      padding: EdgeInsets.zero,
                     ),
                   ],
                 ),
               ),
 
-              // Content
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Category badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getCategoryColor(
-                          selectedSpot.category,
-                        ).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        selectedSpot.category.toUpperCase(),
-                        style: TextStyle(
-                          color: _getCategoryColor(selectedSpot.category),
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Description
-                    if (selectedSpot.spot.description != null) ...[
-                      Text(
-                        selectedSpot.spot.description!,
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                      const SizedBox(height: 12),
-                    ],
-
-                    // Tags
-                    if (selectedSpot.spot.tags.isNotEmpty) ...[
-                      Wrap(
-                        spacing: 6,
-                        runSpacing: 6,
-                        children: selectedSpot.spot.tags.map((tag) {
-                          return Container(
+              // Compact content
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Category and stats in one row
+                      Row(
+                        children: [
+                          Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade200,
+                              color: _getCategoryColor(
+                                selectedSpot.category,
+                              ).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              tag,
-                              style: const TextStyle(fontSize: 11),
+                              selectedSpot.category.toUpperCase(),
+                              style: TextStyle(
+                                color: _getCategoryColor(selectedSpot.category),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-
-                    // User stats
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.visibility,
-                          size: 16,
-                          color: Colors.grey.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Visited ${selectedSpot.visitCount} times',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey.shade600,
                           ),
-                        ),
-                      ],
-                    ),
+                          const Spacer(),
+                          // Quick stats
+                          if (selectedSpot.isVisited) ...[
+                            Icon(
+                              Icons.visibility,
+                              size: 12,
+                              color: Colors.purple,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${selectedSpot.visitCount}',
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
+                          if (selectedSpot.isFavorite) ...[
+                            if (selectedSpot.isVisited)
+                              const SizedBox(width: 6),
+                            const Icon(
+                              Icons.favorite,
+                              size: 12,
+                              color: Colors.red,
+                            ),
+                          ],
+                          if (selectedSpot.userData.userRating != null) ...[
+                            if (selectedSpot.isVisited ||
+                                selectedSpot.isFavorite)
+                              const SizedBox(width: 6),
+                            Icon(Icons.star, size: 12, color: Colors.amber),
+                            const SizedBox(width: 2),
+                            Text(
+                              '${selectedSpot.userData.userRating!.toStringAsFixed(1)}',
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ],
+                        ],
+                      ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 8),
 
-                    // Action buttons
-                    Row(
-                      children: [
-                        // Visit button
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: () => notifier.incrementSpotVisitCount(
+                      // Quick action buttons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildQuickActionButton(
+                            icon: Icons.add_location,
+                            label: 'Visit',
+                            onTap: () => notifier.incrementSpotVisitCount(
                               selectedSpot.id,
                             ),
-                            icon: const Icon(Icons.add_location, size: 18),
-                            label: const Text('Mark Visited'),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                            ),
                           ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        // Favorite button
-                        IconButton(
-                          onPressed: () =>
-                              notifier.toggleSpotFavorite(selectedSpot.id),
-                          icon: Icon(
-                            selectedSpot.isFavorite
+                          _buildQuickActionButton(
+                            icon: selectedSpot.isFavorite
                                 ? Icons.favorite
                                 : Icons.favorite_border,
-                            color: selectedSpot.isFavorite
-                                ? Colors.red
-                                : Colors.grey,
+                            label: 'Fav',
+                            color: selectedSpot.isFavorite ? Colors.red : null,
+                            onTap: () =>
+                                notifier.toggleSpotFavorite(selectedSpot.id),
                           ),
-                        ),
-                      ],
-                    ),
-
-                    // Rating
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Text(
-                          'Rate this spot:',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        const SizedBox(width: 8),
-                        ...List.generate(5, (index) {
-                          final rating = index + 1;
-                          final currentRating =
-                              selectedSpot.userData.userRating ?? 0;
-                          return GestureDetector(
-                            onTap: () => notifier.setSpotRating(
-                              selectedSpot.id,
-                              rating.toDouble(),
+                          _buildQuickActionButton(
+                            icon: Icons.my_location,
+                            label: 'Center',
+                            onTap: () => notifier.selectSpot(
+                              selectedSpot.spot,
+                              moveCamera: true,
                             ),
-                            child: Icon(
-                              rating <= currentRating
-                                  ? Icons.star
-                                  : Icons.star_border,
-                              color: Colors.amber,
-                              size: 20,
-                            ),
-                          );
-                        }),
-                      ],
-                    ),
-                  ],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
           ),
         );
       },
+    );
+  }
+
+  Widget _buildQuickActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+    Color? color,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 16, color: color ?? Colors.grey.shade700),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                color: color ?? Colors.grey.shade700,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

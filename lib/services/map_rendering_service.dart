@@ -64,9 +64,15 @@ class MapRenderingService {
     Map<int, ui.Shader>? shadersByAreaId,
     VoidCallback? onAnimationComplete,
     GeographicArea? selectedArea,
-    Set<int>? visitedAreaIds,
+    Set<int>? visitedAreaIds, // Keep for backward compatibility
+    Set<int>? completedAreaIds,
+    Set<int>? partialAreaIds,
+    Set<int>? unvisitedAreaIds,
     Color selectionColor = Colors.orange,
-    Color visitedColor = Colors.purple,
+    Color visitedColor = Colors.purple, // Keep for backward compatibility
+    Color completedColor = Colors.green,
+    Color partialColor = Colors.amber,
+    Color unvisitedColor = Colors.grey,
   }) {
     return AnimatedAreaLayer(
       areas: areas,
@@ -77,8 +83,14 @@ class MapRenderingService {
       onAnimationComplete: onAnimationComplete,
       selectedArea: selectedArea,
       visitedAreaIds: visitedAreaIds,
+      completedAreaIds: completedAreaIds,
+      partialAreaIds: partialAreaIds,
+      unvisitedAreaIds: unvisitedAreaIds,
       selectionColor: selectionColor,
       visitedColor: visitedColor,
+      completedColor: completedColor,
+      partialColor: partialColor,
+      unvisitedColor: unvisitedColor,
     );
   }
 
@@ -98,7 +110,8 @@ class MapRenderingService {
     Color visitedColor = Colors.purple,
   }) {
     return areas.map((area) {
-      final defaultColor = colorsByType?[area.type] ?? _getDefaultColor(area.type);
+      final defaultColor =
+          colorsByType?[area.type] ?? _getDefaultColor(area.type);
 
       // Determine fill color based on state
       Color fillColor;
@@ -121,7 +134,9 @@ class MapRenderingService {
       return AnimatedArea(
         geoArea: area,
         fillColor: fillColor,
-        borderColor: borderColorOverrides?[area.id] ?? defaultColor.withValues(alpha: 0.8),
+        borderColor:
+            borderColorOverrides?[area.id] ??
+            defaultColor.withValues(alpha: 0.8),
         fillOpacity: fillOpacity,
         borderWidth: defaultBorderWidth,
         shader: shadersByAreaId?[area.id],

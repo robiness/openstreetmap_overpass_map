@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -11,7 +12,6 @@ import 'package:overpass_map/theme/app_theme.dart';
 import 'package:overpass_map/widgets/control_panel.dart';
 import 'package:overpass_map/widgets/hierarchical_area_list.dart';
 import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
-import 'package:overpass_map/widgets/spot_category_filters.dart';
 import 'package:overpass_map/widgets/spot_detail_panel.dart';
 import 'package:overpass_map/widgets/spot_list.dart';
 import 'package:overpass_map/widgets/status_card.dart';
@@ -175,12 +175,6 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                   right: 16,
                   child: SpotDetailPanel(),
                 ),
-                // Spot category filters
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: SpotCategoryFilters(),
-                ),
               ],
             ),
           );
@@ -298,17 +292,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                                 // Spot detail panel for desktop
                                 Positioned(
                                   bottom: 16,
-                                  left: 16,
                                   right: 16,
                                   child: SpotDetailPanel(),
-                                ),
-                                // Spot category filters for desktop
-                                Positioned(
-                                  top: 16,
-                                  left: 16,
-                                  child: SpotCategoryFilters(
-                                    isCompactMode: true,
-                                  ),
                                 ),
                               ],
                             ),
@@ -371,11 +356,6 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                   // Spots tab
                   Column(
                     children: [
-                      // Spot category filters (compact version for drawer)
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        child: SpotCategoryFilters(),
-                      ),
                       // Spot list
                       Expanded(
                         child: SpotList(
