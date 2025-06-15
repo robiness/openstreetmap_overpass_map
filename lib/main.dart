@@ -6,12 +6,12 @@ import 'package:overpass_map/data/osm_models.dart';
 import 'package:overpass_map/data/overpass_api.dart';
 import 'package:overpass_map/overpass_map_notifier.dart';
 import 'package:overpass_map/theme/app_theme.dart';
-import 'package:overpass_map/widgets/ui/control_panel.dart';
-import 'package:overpass_map/widgets/ui/hierarchical_area_list.dart';
-import 'package:overpass_map/widgets/ui/performance_overlay.dart' as perf;
-import 'package:overpass_map/widgets/ui/spot_detail_panel.dart';
-import 'package:overpass_map/widgets/ui/spot_list.dart';
-import 'package:overpass_map/widgets/ui/status_card.dart';
+import 'package:overpass_map/widgets/control_panel.dart';
+import 'package:overpass_map/widgets/hierarchical_area_list.dart';
+import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
+import 'package:overpass_map/widgets/spot_detail_panel.dart';
+import 'package:overpass_map/widgets/spot_list.dart';
+import 'package:overpass_map/widgets/status_card.dart';
 import 'package:provider/provider.dart';
 
 void main() {

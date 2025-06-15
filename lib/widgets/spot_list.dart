@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../data/spot.dart';
-import '../../overpass_map_notifier.dart';
+import '../data/spot.dart';
+import '../overpass_map_notifier.dart';
 
 class SpotList extends StatefulWidget {
   final bool showSearchBar;

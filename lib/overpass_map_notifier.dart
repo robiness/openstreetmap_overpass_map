@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/overpass_api.dart';
-import 'package:overpass_map/widgets/map/animated_area_layer.dart';
+import 'package:overpass_map/map/animated_area_layer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/osm_models.dart';
