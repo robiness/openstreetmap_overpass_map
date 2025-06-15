@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../overpass_map_notifier.dart';
 import '../theme/app_theme.dart';
 
@@ -34,7 +35,7 @@ class StatusCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: _getAreaTypeColor(
                 selectedArea.geoArea.type,
-              ).withOpacity(0.1),
+              ).withValues(alpha: 0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(AppTheme.radiusLg),
                 topRight: Radius.circular(AppTheme.radiusLg),
@@ -43,7 +44,7 @@ class StatusCard extends StatelessWidget {
                 bottom: BorderSide(
                   color: _getAreaTypeColor(
                     selectedArea.geoArea.type,
-                  ).withOpacity(0.2),
+                  ).withValues(alpha: 0.2),
                 ),
               ),
             ),
@@ -65,11 +66,10 @@ class StatusCard extends StatelessWidget {
                           Expanded(
                             child: Text(
                               selectedArea.name,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: AppTheme.textPrimary,
-                                  ),
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: AppTheme.textPrimary,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -81,26 +81,25 @@ class StatusCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: _getAreaTypeColor(
                                 selectedArea.geoArea.type,
-                              ).withOpacity(0.15),
+                              ).withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(
                                 AppTheme.radiusSm,
                               ),
                               border: Border.all(
                                 color: _getAreaTypeColor(
                                   selectedArea.geoArea.type,
-                                ).withOpacity(0.3),
+                                ).withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
                               selectedArea.geoArea.type.toUpperCase(),
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    color: _getAreaTypeColor(
-                                      selectedArea.geoArea.type,
-                                    ),
-                                    fontSize: 10,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                                color: _getAreaTypeColor(
+                                  selectedArea.geoArea.type,
+                                ),
+                                fontSize: 10,
+                              ),
                             ),
                           ),
                         ],
@@ -108,10 +107,9 @@ class StatusCard extends StatelessWidget {
                       if (selectedArea.geoArea.adminLevel > 0)
                         Text(
                           'Admin Level ${selectedArea.geoArea.adminLevel}',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: AppTheme.textTertiary,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.textTertiary,
+                          ),
                         ),
                     ],
                   ),
@@ -151,15 +149,15 @@ class StatusCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        AppTheme.getVisitedColor().withOpacity(0.05),
-                        AppTheme.getVisitedColor().withOpacity(0.1),
+                        AppTheme.getVisitedColor().withValues(alpha: 0.05),
+                        AppTheme.getVisitedColor()..withValues(alpha: 0.1),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                     border: Border.all(
-                      color: AppTheme.getVisitedColor().withOpacity(0.2),
+                      color: AppTheme.getVisitedColor().withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
@@ -168,8 +166,7 @@ class StatusCard extends StatelessWidget {
                       _buildCountButton(
                         icon: Icons.remove,
                         onPressed: selectedArea.visitCount > 0
-                            ? () =>
-                                  notifier.decrementVisitCount(selectedArea.id)
+                            ? () => notifier.decrementVisitCount(selectedArea.id)
                             : null,
                         isEnabled: selectedArea.visitCount > 0,
                       ),
@@ -182,18 +179,16 @@ class StatusCard extends StatelessWidget {
                           children: [
                             Text(
                               selectedArea.visitCount.toString(),
-                              style: Theme.of(context).textTheme.headlineMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w700,
-                                    color: AppTheme.getVisitedColor(),
-                                  ),
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.w700,
+                                color: AppTheme.getVisitedColor(),
+                              ),
                             ),
                             Text(
                               selectedArea.visitCount == 1 ? 'Visit' : 'Visits',
-                              style: Theme.of(context).textTheme.bodySmall
-                                  ?.copyWith(
-                                    color: AppTheme.textSecondary,
-                                  ),
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppTheme.textSecondary,
+                              ),
                             ),
                           ],
                         ),
@@ -204,8 +199,7 @@ class StatusCard extends StatelessWidget {
                       // Increment button
                       _buildCountButton(
                         icon: Icons.add,
-                        onPressed: () =>
-                            notifier.incrementVisitCount(selectedArea.id),
+                        onPressed: () => notifier.incrementVisitCount(selectedArea.id),
                         isEnabled: true,
                       ),
                     ],
@@ -226,11 +220,10 @@ class StatusCard extends StatelessWidget {
                         const SizedBox(width: AppTheme.spacingSm),
                         Text(
                           'This area has been visited',
-                          style: Theme.of(context).textTheme.bodySmall
-                              ?.copyWith(
-                                color: AppTheme.getVisitedColor(),
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.getVisitedColor(),
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -298,9 +291,8 @@ class StatusCard extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       opacity: isEnabled ? 1.0 : 0.5,
       child: Material(
-        color: isEnabled
-            ? AppTheme.getVisitedColor().withOpacity(0.1)
-            : AppTheme.textTertiary.withOpacity(0.1),
+        color: isEnabled ? AppTheme.getVisitedColor().withValues(alpha: 0.1) : AppTheme.textTertiary
+          ..withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppTheme.radiusSm),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppTheme.radiusSm),
@@ -312,16 +304,14 @@ class StatusCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
               border: Border.all(
                 color: isEnabled
-                    ? AppTheme.getVisitedColor().withOpacity(0.3)
-                    : AppTheme.textTertiary.withOpacity(0.3),
+                    ? AppTheme.getVisitedColor().withValues(alpha: 0.3)
+                    : AppTheme.textTertiary.withValues(alpha: 0.3),
               ),
             ),
             child: Icon(
               icon,
               size: 18,
-              color: isEnabled
-                  ? AppTheme.getVisitedColor()
-                  : AppTheme.textTertiary,
+              color: isEnabled ? AppTheme.getVisitedColor() : AppTheme.textTertiary,
             ),
           ),
         ),

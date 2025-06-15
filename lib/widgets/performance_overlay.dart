@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+
 import '../models/osm_models.dart';
 
 /// Performance monitoring overlay for debugging map rendering
@@ -55,13 +56,11 @@ class _PerformanceOverlayState extends State<PerformanceOverlay> {
   Map<String, dynamic> _calculateStats() {
     int totalPoints = 0;
     int heavyAreas = 0;
-    int totalRings = 0;
 
     for (final area in widget.areas) {
       int areaPoints = 0;
       for (final ring in area.coordinates) {
         areaPoints += ring.length;
-        totalRings++;
       }
       totalPoints += areaPoints;
 
@@ -72,10 +71,7 @@ class _PerformanceOverlayState extends State<PerformanceOverlay> {
       'areas': widget.areas.length,
       'totalPoints': totalPoints,
       'heavyAreas': heavyAreas,
-      'avgPoints':
-          widget.areas.isEmpty
-              ? 0
-              : (totalPoints / widget.areas.length).round(),
+      'avgPoints': widget.areas.isEmpty ? 0 : (totalPoints / widget.areas.length).round(),
       'fps': fps.toStringAsFixed(1),
     };
   }

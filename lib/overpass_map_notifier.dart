@@ -21,10 +21,15 @@ class DisplayableArea {
 
   // Delegate properties for easier access in UI
   int get id => geoArea.id;
+
   String get name => geoArea.name;
+
   String get type => geoArea.type;
+
   int get adminLevel => geoArea.adminLevel;
+
   List<List<List<double>>> get coordinates => geoArea.coordinates;
+
   int get visitCount => userArea.visitCount;
 }
 
@@ -34,6 +39,7 @@ class OverpassMapNotifier extends ChangeNotifier {
   final OverpassApi _api;
 
   BoundaryData? _boundaryData;
+
   BoundaryData? get boundaryData => _boundaryData;
 
   // Removed rendering mode selection - now only using animated layer
@@ -42,9 +48,11 @@ class OverpassMapNotifier extends ChangeNotifier {
   bool get enableAnimations => true; // Always enabled
 
   Duration _animationDuration = const Duration(milliseconds: 1000);
+
   Duration get animationDuration => _animationDuration;
 
   Curve _animationCurve = Curves.easeInOut;
+
   Curve get animationCurve => _animationCurve;
 
   // Renamed from _userAreaVisitData to make it package-private for testing access
@@ -53,19 +61,20 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   // Spots data
   List<Spot> _spots = [];
+
   List<Spot> get spots => _spots;
 
   Map<int, UserSpotData> userSpotData = {};
   static const String _userSpotDataKey = 'user_spot_data';
 
-  // Spot filtering and display - simplified to always show all spots
-  bool _showSpots = true;
   bool get showSpots => true; // Always show spots now
 
   String _dataSource = "unknown";
+
   String get dataSource => _dataSource;
 
   int _dataLoadDuration = 0;
+
   int get dataLoadDuration => _dataLoadDuration;
 
   bool _isLoading = false;
@@ -95,18 +104,15 @@ class OverpassMapNotifier extends ChangeNotifier {
   DisplayableArea? get selectedDisplayArea {
     if (_rawSelectedArea == null) return null;
     // Use the renamed field here
-    final userVisits =
-        userAreaVisitData[_rawSelectedArea!.id] ??
-        UserAreaData(areaId: _rawSelectedArea!.id);
+    final userVisits = userAreaVisitData[_rawSelectedArea!.id] ?? UserAreaData(areaId: _rawSelectedArea!.id);
     return DisplayableArea(geoArea: _rawSelectedArea!, userArea: userVisits);
   }
 
   Spot? _selectedSpot;
+
   DisplayableSpot? get selectedDisplaySpot {
     if (_selectedSpot == null) return null;
-    final userData =
-        userSpotData[_selectedSpot!.id] ??
-        UserSpotData(spotId: _selectedSpot!.id);
+    final userData = userSpotData[_selectedSpot!.id] ?? UserSpotData(spotId: _selectedSpot!.id);
     return DisplayableSpot(spot: _selectedSpot!, userData: userData);
   }
 
@@ -203,8 +209,7 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   void decrementVisitCount(int areaId) {
     // Use the renamed field here
-    if (userAreaVisitData.containsKey(areaId) &&
-        userAreaVisitData[areaId]!.visitCount > 0) {
+    if (userAreaVisitData.containsKey(areaId) && userAreaVisitData[areaId]!.visitCount > 0) {
       userAreaVisitData[areaId]!.visitCount--;
       _saveUserVisitData();
       notifyListeners();
@@ -220,54 +225,8 @@ class OverpassMapNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<DisplayableArea> _getDisplayableAreas(List<GeographicArea> geoAreas) {
-    return geoAreas.map((geo) {
-      // Use the renamed field here
-      final userVisits =
-          userAreaVisitData[geo.id] ?? UserAreaData(areaId: geo.id);
-      return DisplayableArea(geoArea: geo, userArea: userVisits);
-    }).toList();
-  }
-
-  // Removed displayedPolygons getter since we only use animated rendering now
-
-  /// Get markers for area names
-  List<Marker> get nameMarkers {
-    // Temporarily disabled area labels
-    return [];
-
-    // Original implementation commented out:
-    // if (_boundaryData == null) return [];
-
-    // List<GeographicArea> areasForMarkers = [];
-
-    // if (_showCityOutline) {
-    //   areasForMarkers.addAll(_boundaryData!.cities);
-    // }
-    // if (_showBezirke) {
-    //   areasForMarkers.addAll(_boundaryData!.bezirke);
-    // }
-    // if (_showStadtteile) {
-    //   areasForMarkers.addAll(_boundaryData!.stadtteile);
-    // }
-
-    // // Create DisplayableAreas to pass to MapRenderingService if it needs visit counts for markers
-    // List<DisplayableArea> displayableAreasForMarkers = _getDisplayableAreas(
-    //   areasForMarkers,
-    // );
-
-    // // Assuming MapRenderingService.createAreaMarkers can now take List<DisplayableArea>
-    // // or you adapt it to take GeographicArea and a lookup map for visit counts.
-    // // For now, let's assume it's adapted or we pass GeographicArea and handle count in UI.
-    // return MapRenderingService.createAreaMarkersWithVisits(
-    //   displayableAreasForMarkers,
-    // );
-  }
-
   /// Get markers for spots
   List<Marker> get spotMarkers {
-    if (!_showSpots) return [];
-
     final displayableSpots = filteredDisplayableSpots;
     return displayableSpots.map((displayableSpot) {
       return Marker(
@@ -281,9 +240,7 @@ class OverpassMapNotifier extends ChangeNotifier {
               color: _getSpotColor(displayableSpot),
               shape: BoxShape.circle,
               border: Border.all(
-                color: _selectedSpot?.id == displayableSpot.id
-                    ? Colors.orange
-                    : Colors.white,
+                color: _selectedSpot?.id == displayableSpot.id ? Colors.orange : Colors.white,
                 width: 2,
               ),
             ),
@@ -471,8 +428,7 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   /// Get the next available spot ID to avoid conflicts
   int _getNextAvailableSpotId() {
-    if (_spots.isEmpty)
-      return 1000000; // Start from a high number for generated spots
+    if (_spots.isEmpty) return 1000000; // Start from a high number for generated spots
     return _spots.map((s) => s.id).reduce((a, b) => a > b ? a : b) + 1;
   }
 
@@ -483,10 +439,12 @@ class OverpassMapNotifier extends ChangeNotifier {
     return Spot(
       id: spotId,
       name: "${area.name} Center",
-      category: 'viewpoint', // Default to viewpoint for generated spots
+      category: 'viewpoint',
+      // Default to viewpoint for generated spots
       location: centerPoint,
       description: "Explore the center of ${area.name}",
-      tags: ['generated', 'area_center'], // List of strings, not map
+      tags: ['generated', 'area_center'],
+      // List of strings, not map
       createdAt: DateTime.now(),
       createdBy: 'system',
       properties: {'type': 'generated', 'area_id': area.id.toString()},
@@ -587,8 +545,7 @@ class OverpassMapNotifier extends ChangeNotifier {
       final xj = polygon[j][0];
 
       if (((yi > point.latitude) != (yj > point.latitude)) &&
-          (point.longitude <
-              (xj - xi) * (point.latitude - yi) / (yj - yi) + xi)) {
+          (point.longitude < (xj - xi) * (point.latitude - yi) / (yj - yi) + xi)) {
         inside = !inside;
       }
       j = i;
@@ -658,9 +615,7 @@ class OverpassMapNotifier extends ChangeNotifier {
     final totalSpots = spotsInArea.length;
     final visitedSpots = spotsInArea
         .where(
-          (s) =>
-              userSpotData[s.id]?.visitCount != null &&
-              userSpotData[s.id]!.visitCount > 0,
+          (s) => userSpotData[s.id]?.visitCount != null && userSpotData[s.id]!.visitCount > 0,
         )
         .length;
 
@@ -690,15 +645,11 @@ class OverpassMapNotifier extends ChangeNotifier {
 
     // Process all stadtteile
     for (final area in _boundaryData!.stadtteile) {
-      final spotsInArea = _spots
-          .where((s) => s.parentAreaId == area.id)
-          .toList();
+      final spotsInArea = _spots.where((s) => s.parentAreaId == area.id).toList();
       final totalSpots = spotsInArea.length;
       final visitedSpots = spotsInArea
           .where(
-            (s) =>
-                userSpotData[s.id]?.visitCount != null &&
-                userSpotData[s.id]!.visitCount > 0,
+            (s) => userSpotData[s.id]?.visitCount != null && userSpotData[s.id]!.visitCount > 0,
           )
           .length;
 
@@ -722,8 +673,7 @@ class OverpassMapNotifier extends ChangeNotifier {
 
     return _boundaryData!.stadtteile
         .map((area) {
-          final userData =
-              userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
+          final userData = userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
           return DisplayableArea(geoArea: area, userArea: userData);
         })
         .where(
@@ -746,8 +696,7 @@ class OverpassMapNotifier extends ChangeNotifier {
     };
 
     for (final area in _boundaryData!.stadtteile) {
-      final userData =
-          userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
+      final userData = userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
       stats['total_areas'] = stats['total_areas']! + 1;
       stats['total_spots'] = stats['total_spots']! + userData.totalSpots;
       stats['visited_spots'] = stats['visited_spots']! + userData.visitedSpots;
@@ -872,8 +821,7 @@ class OverpassMapNotifier extends ChangeNotifier {
     final unvisitedAreaIds = <int>{};
 
     for (final area in areasToShow) {
-      final userData =
-          userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
+      final userData = userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
       switch (userData.explorationStatus) {
         case AreaExplorationStatus.completed:
           completedAreaIds.add(area.id);

@@ -109,7 +109,7 @@ class CustomAreaPainter extends CustomPainter {
     // Simple dashed effect by drawing with reduced opacity and thicker lines
     // This is a simplified approach - for true dashes, we'd need path measurement
     final dashedPaint = Paint()
-      ..color = paint.color.withValues(alpha: paint.color.alpha * 0.7)
+      ..color = paint.color.withValues(alpha: paint.color.a * 0.7)
       ..style = paint.style
       ..strokeWidth = paint.strokeWidth * 1.2
       ..strokeJoin = paint.strokeJoin
@@ -158,12 +158,12 @@ class CustomAreaPainter extends CustomPainter {
 
   Offset _latLngToScreenPoint(LatLng latLng, Size size) {
     // Convert lat/lng to map coordinates using Flutter Map's camera
-    final point = camera.project(latLng);
+    final point = camera.projectAtZoom(latLng);
 
     // Convert to screen coordinates
-    final centerPoint = camera.project(camera.center);
-    final dx = (point.x - centerPoint.x) + size.width / 2;
-    final dy = (point.y - centerPoint.y) + size.height / 2;
+    final centerPoint = camera.projectAtZoom(camera.center);
+    final dx = (point.dx - centerPoint.dx) + size.width / 2;
+    final dy = (point.dy - centerPoint.dy) + size.height / 2;
 
     return Offset(dx, dy);
   }

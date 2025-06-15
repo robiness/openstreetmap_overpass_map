@@ -45,7 +45,7 @@ class _SpotListState extends State<SpotList> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black..withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -222,7 +222,7 @@ class _SpotListState extends State<SpotList> {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isSelected ? Colors.orange.withOpacity(0.1) : Colors.white,
+        color: isSelected ? Colors.orange.withValues(alpha: 0.1) : Colors.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isSelected ? Colors.orange : Colors.grey.shade300,
@@ -276,15 +276,14 @@ class _SpotListState extends State<SpotList> {
                   const Icon(Icons.favorite, size: 14, color: Colors.red),
                 ],
                 if (spot.userData.userRating != null) ...[
-                  if (spot.isVisited || spot.isFavorite)
-                    const SizedBox(width: 8),
+                  if (spot.isVisited || spot.isFavorite) const SizedBox(width: 8),
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       const Icon(Icons.star, size: 14, color: Colors.amber),
                       const SizedBox(width: 2),
                       Text(
-                        '${spot.userData.userRating!.toStringAsFixed(1)}',
+                        spot.userData.userRating!.toStringAsFixed(1),
                         style: const TextStyle(fontSize: 12),
                       ),
                     ],
@@ -362,8 +361,7 @@ class _SpotListState extends State<SpotList> {
     // Filter by search query
     var filtered = spots.where((spot) {
       if (_searchQuery.isEmpty) return true;
-      return spot.name.toLowerCase().contains(_searchQuery) ||
-          spot.category.toLowerCase().contains(_searchQuery);
+      return spot.name.toLowerCase().contains(_searchQuery) || spot.category.toLowerCase().contains(_searchQuery);
     }).toList();
 
     // Sort
@@ -373,9 +371,7 @@ class _SpotListState extends State<SpotList> {
           return a.name.compareTo(b.name);
         case 'category':
           final categoryCompare = a.category.compareTo(b.category);
-          return categoryCompare != 0
-              ? categoryCompare
-              : a.name.compareTo(b.name);
+          return categoryCompare != 0 ? categoryCompare : a.name.compareTo(b.name);
         case 'visits':
           final visitCompare = b.visitCount.compareTo(
             a.visitCount,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../overpass_map_notifier.dart';
 import '../theme/app_theme.dart';
 
@@ -73,8 +74,7 @@ class ControlPanel extends StatelessWidget {
                   icon: Icons.location_city,
                   color: AppTheme.getCityColor(),
                   isEnabled: notifier.showCityOutline,
-                  onChanged: (value) =>
-                      notifier.toggleCityOutline(value ?? false),
+                  onChanged: (value) => notifier.toggleCityOutline(value ?? false),
                 ),
 
                 const SizedBox(height: AppTheme.spacingSm),
@@ -98,8 +98,7 @@ class ControlPanel extends StatelessWidget {
                   icon: Icons.home_work,
                   color: AppTheme.getStadtteilColor(),
                   isEnabled: notifier.showStadtteile,
-                  onChanged: (value) =>
-                      notifier.toggleStadtteile(value ?? false),
+                  onChanged: (value) => notifier.toggleStadtteile(value ?? false),
                 ),
               ],
             ),
@@ -122,10 +121,10 @@ class ControlPanel extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       decoration: BoxDecoration(
-        color: isEnabled ? color.withOpacity(0.05) : Colors.transparent,
+        color: isEnabled ? color.withValues(alpha: 0.05) : Colors.transparent,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(
-          color: isEnabled ? color.withOpacity(0.3) : AppTheme.borderColor,
+          color: isEnabled ? color.withValues(alpha: 0.3) : AppTheme.borderColor,
           width: isEnabled ? 1.5 : 1,
         ),
       ),
@@ -142,9 +141,8 @@ class ControlPanel extends StatelessWidget {
                   duration: const Duration(milliseconds: 200),
                   padding: const EdgeInsets.all(AppTheme.spacingSm),
                   decoration: BoxDecoration(
-                    color: isEnabled
-                        ? color.withOpacity(0.15)
-                        : AppTheme.textTertiary.withOpacity(0.1),
+                    color: isEnabled ? color.withValues(alpha: 0.15) : AppTheme.textTertiary
+                      ..withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                   ),
                   child: Icon(
@@ -163,20 +161,14 @@ class ControlPanel extends StatelessWidget {
                       Text(
                         title,
                         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                          color: isEnabled
-                              ? AppTheme.textPrimary
-                              : AppTheme.textSecondary,
-                          fontWeight: isEnabled
-                              ? FontWeight.w600
-                              : FontWeight.w500,
+                          color: isEnabled ? AppTheme.textPrimary : AppTheme.textSecondary,
+                          fontWeight: isEnabled ? FontWeight.w600 : FontWeight.w500,
                         ),
                       ),
                       Text(
                         subtitle,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: isEnabled
-                              ? AppTheme.textSecondary
-                              : AppTheme.textTertiary,
+                          color: isEnabled ? AppTheme.textSecondary : AppTheme.textTertiary,
                         ),
                       ),
                     ],

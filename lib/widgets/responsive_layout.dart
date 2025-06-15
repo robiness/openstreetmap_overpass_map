@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../theme/app_theme.dart';
 
 class ResponsiveLayout extends StatelessWidget {
@@ -18,7 +19,6 @@ class ResponsiveLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 1024;
     final isTablet = screenWidth > 768 && screenWidth <= 1024;
     final isMobile = screenWidth <= 768;
 
@@ -241,7 +241,7 @@ class ResponsiveLayout extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingSm),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white..withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: const Icon(
@@ -268,7 +268,7 @@ class ResponsiveLayout extends StatelessWidget {
                   Text(
                     'Geographic Boundary Explorer',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
               ],
@@ -286,7 +286,7 @@ class ResponsiveLayout extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingXs),
             decoration: BoxDecoration(
-              color: AppTheme.primaryColor.withOpacity(0.1),
+              color: AppTheme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: Icon(

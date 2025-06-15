@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/spot.dart';
 import '../overpass_map_notifier.dart';
 
 class SpotDetailPanel extends StatelessWidget {
@@ -27,7 +26,7 @@ class SpotDetailPanel extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.15),
+                color: Colors.black..withValues(alpha: 0.15),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -104,7 +103,7 @@ class SpotDetailPanel extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: _getCategoryColor(
                                 selectedSpot.category,
-                              ).withOpacity(0.1),
+                              ).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -131,8 +130,7 @@ class SpotDetailPanel extends StatelessWidget {
                             ),
                           ],
                           if (selectedSpot.isFavorite) ...[
-                            if (selectedSpot.isVisited)
-                              const SizedBox(width: 6),
+                            if (selectedSpot.isVisited) const SizedBox(width: 6),
                             const Icon(
                               Icons.favorite,
                               size: 12,
@@ -140,13 +138,11 @@ class SpotDetailPanel extends StatelessWidget {
                             ),
                           ],
                           if (selectedSpot.userData.userRating != null) ...[
-                            if (selectedSpot.isVisited ||
-                                selectedSpot.isFavorite)
-                              const SizedBox(width: 6),
+                            if (selectedSpot.isVisited || selectedSpot.isFavorite) const SizedBox(width: 6),
                             Icon(Icons.star, size: 12, color: Colors.amber),
                             const SizedBox(width: 2),
                             Text(
-                              '${selectedSpot.userData.userRating!.toStringAsFixed(1)}',
+                              selectedSpot.userData.userRating!.toStringAsFixed(1),
                               style: const TextStyle(fontSize: 10),
                             ),
                           ],
@@ -167,13 +163,10 @@ class SpotDetailPanel extends StatelessWidget {
                             ),
                           ),
                           _buildQuickActionButton(
-                            icon: selectedSpot.isFavorite
-                                ? Icons.favorite
-                                : Icons.favorite_border,
+                            icon: selectedSpot.isFavorite ? Icons.favorite : Icons.favorite_border,
                             label: 'Fav',
                             color: selectedSpot.isFavorite ? Colors.red : null,
-                            onTap: () =>
-                                notifier.toggleSpotFavorite(selectedSpot.id),
+                            onTap: () => notifier.toggleSpotFavorite(selectedSpot.id),
                           ),
                           _buildQuickActionButton(
                             icon: Icons.my_location,

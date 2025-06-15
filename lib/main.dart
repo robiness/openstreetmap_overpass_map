@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
@@ -72,24 +69,12 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
 
           EdgeInsets padding;
           if (isMobile) {
-            // On mobile, account for app bar and bottom sheet
-            final appBarHeight = kToolbarHeight;
-            final statusBarHeight = MediaQuery.of(context).padding.top;
-            final bottomSheetHeight =
-                screenHeight * 0.35; // 35% of screen for bottom sheet
-            final availableMapHeight =
-                screenHeight -
-                statusBarHeight -
-                appBarHeight -
-                bottomSheetHeight;
-
+            final bottomSheetHeight = screenHeight * 0.35;
             padding = EdgeInsets.only(
               top: 20.0, // Minimal top padding
               left: 20.0, // Reduced side padding for mobile
               right: 20.0,
-              bottom:
-                  bottomSheetHeight +
-                  20.0, // Account for bottom sheet + padding
+              bottom: bottomSheetHeight + 20.0, // Account for bottom sheet + padding
             );
           } else {
             // Desktop layout - use original padding
@@ -110,8 +95,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
     final currentSelectedArea = _mapNotifier.selectedDisplayArea?.geoArea;
     final currentSelectedSpot = _mapNotifier.selectedDisplaySpot?.spot;
 
-    if (mounted &&
-        (currentSelectedArea != null || currentSelectedSpot != null)) {
+    if (mounted && (currentSelectedArea != null || currentSelectedSpot != null)) {
       final screenWidth = MediaQuery.of(context).size.width;
       final isMobile = screenWidth < 768;
       if (isMobile && currentSelectedArea != _previousSelectedArea) {
@@ -150,8 +134,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
               actions: [
-                if (notifier.selectedDisplayArea?.geoArea != null ||
-                    notifier.selectedDisplaySpot?.spot != null)
+                if (notifier.selectedDisplayArea?.geoArea != null || notifier.selectedDisplaySpot?.spot != null)
                   IconButton(
                     icon: const Icon(Icons.info_outline),
                     onPressed: () => _showDetailsBottomSheet(context, notifier),
@@ -203,7 +186,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                           color: Colors.white,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black..withValues(alpha: 0.1),
                               blurRadius: 4,
                               offset: const Offset(0, 2),
                             ),
@@ -235,8 +218,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                               HierarchicalAreaList(
                                 boundaryData: notifier.boundaryData,
                                 notifier: notifier,
-                                selectedArea:
-                                    notifier.selectedDisplayArea?.geoArea,
+                                selectedArea: notifier.selectedDisplayArea?.geoArea,
                               ),
                               // Spots tab
                               SpotList(showSearchBar: true),
@@ -323,7 +305,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black..withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -426,18 +408,14 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      notifier.selectedDisplaySpot != null
-                          ? Icons.place
-                          : Icons.info_outline,
+                      notifier.selectedDisplaySpot != null ? Icons.place : Icons.info_outline,
                       color: AppTheme.primaryColor,
                       size: 24,
                     ),
                     const SizedBox(width: AppTheme.spacingMd),
                     Expanded(
                       child: Text(
-                        notifier.selectedDisplaySpot != null
-                            ? 'Spot Details'
-                            : 'Area Details',
+                        notifier.selectedDisplaySpot != null ? 'Spot Details' : 'Area Details',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: AppTheme.textPrimary,
                           fontWeight: FontWeight.w600,
@@ -462,9 +440,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                     AppTheme.spacingLg,
                     AppTheme.spacingLg,
                   ),
-                  child: notifier.selectedDisplaySpot != null
-                      ? SpotDetailPanel()
-                      : StatusCard(notifier: notifier),
+                  child: notifier.selectedDisplaySpot != null ? SpotDetailPanel() : StatusCard(notifier: notifier),
                 ),
               ),
             ],
@@ -486,7 +462,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingSm),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: const Icon(Icons.map, color: Colors.white, size: 24),
@@ -508,7 +484,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                 Text(
                   'Geographic Boundary Explorer',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -571,7 +547,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               color: AppTheme.cardColor,
               borderRadius: BorderRadius.circular(AppTheme.radiusXl),
               boxShadow: AppTheme.shadowLg,
-              border: Border.all(color: AppTheme.errorColor.withOpacity(0.3)),
+              border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -638,7 +614,6 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
         // Add spot markers
         MarkerLayer(
           markers: [
-            ...notifier.nameMarkers,
             ...notifier.spotMarkers,
           ],
         ),
@@ -693,8 +668,9 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
 
   /// Point-in-polygon algorithm using ray casting
   bool _isPointInPolygon(LatLng point, List<List<double>> polygon) {
-    if (polygon.length < 3)
+    if (polygon.length < 3) {
       return false; // Need at least 3 points for a polygon
+    }
 
     bool inside = false;
     int j = polygon.length - 1;
@@ -706,35 +682,12 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
       final yj = polygon[j][0]; // longitude
 
       if (((yi > point.longitude) != (yj > point.longitude)) &&
-          (point.latitude <
-              (xj - xi) * (point.longitude - yi) / (yj - yi) + xi)) {
+          (point.latitude < (xj - xi) * (point.longitude - yi) / (yj - yi) + xi)) {
         inside = !inside;
       }
     }
 
     return inside;
-  }
-
-  double _calculateDistance(LatLng point1, LatLng point2) {
-    // Simple distance calculation using Haversine formula
-    const double earthRadius = 6371; // Earth radius in kilometers
-
-    final double lat1Rad = point1.latitude * (math.pi / 180);
-    final double lat2Rad = point2.latitude * (math.pi / 180);
-    final double deltaLatRad =
-        (point2.latitude - point1.latitude) * (math.pi / 180);
-    final double deltaLngRad =
-        (point2.longitude - point1.longitude) * (math.pi / 180);
-
-    final double a =
-        math.pow(math.sin(deltaLatRad / 2), 2) +
-        math.cos(lat1Rad) *
-            math.cos(lat2Rad) *
-            math.pow(math.sin(deltaLngRad / 2), 2);
-
-    final double c = 2 * math.asin(math.sqrt(a));
-
-    return earthRadius * c;
   }
 
   /// Get all areas for performance monitoring
