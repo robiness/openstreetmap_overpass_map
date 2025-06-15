@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-import '../data/osm_models.dart';
+import '../../data/osm_models.dart';
 import 'custom_area_painter.dart';
 
 /// An animated layer for drawing geographic areas with custom paint
@@ -49,8 +49,7 @@ class AnimatedAreaLayer extends StatefulWidget {
   State<AnimatedAreaLayer> createState() => _AnimatedAreaLayerState();
 }
 
-class _AnimatedAreaLayerState extends State<AnimatedAreaLayer>
-    with TickerProviderStateMixin {
+class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
   late AnimationController _pulseController;
@@ -188,11 +187,9 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer>
           double pulseScale = 1.0;
 
           final isSelected = widget.selectedArea?.id == area.id;
-          final isCompleted =
-              widget.completedAreaIds?.contains(area.id) == true;
+          final isCompleted = widget.completedAreaIds?.contains(area.id) == true;
           final isPartial = widget.partialAreaIds?.contains(area.id) == true;
-          final isUnvisited =
-              widget.unvisitedAreaIds?.contains(area.id) == true;
+          final isUnvisited = widget.unvisitedAreaIds?.contains(area.id) == true;
 
           // Handle backward compatibility with visitedAreaIds
           final isVisited = widget.visitedAreaIds?.contains(area.id) == true;
