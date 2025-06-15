@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overpass_map/models/boundary_data.dart'; // For BoundaryData
-import 'package:overpass_map/models/spot.dart';
+import 'package:overpass_map/data/spot.dart';
 import 'package:overpass_map/models/user_area_data.dart';
 import 'package:overpass_map/overpass_api.dart'; // For CityDataResult
 import 'package:overpass_map/overpass_map_notifier.dart';

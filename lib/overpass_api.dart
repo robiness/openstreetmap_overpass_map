@@ -1,14 +1,13 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:overpass_map/services/cache_service.dart';
+import 'package:overpass_map/data/cache_service.dart';
 
+import 'data/spot.dart';
 import 'models/boundary_data.dart'; // Use this BoundaryData
-import 'models/spot.dart';
 
 class CityDataResult {
-  final BoundaryData?
-  data; // This will now be the BoundaryData from overpass_json_parser
+  final BoundaryData? data; // This will now be the BoundaryData from overpass_json_parser
   final String source;
   final int duration;
   final String query;
@@ -53,8 +52,7 @@ out geom;
 """;
 
     final cacheResponse = await _cacheService.get(query);
-    final cachedJsonData =
-        cacheResponse?['data']; // This is Map<String, dynamic>
+    final cachedJsonData = cacheResponse?['data']; // This is Map<String, dynamic>
     final cacheSource = cacheResponse?['source'] as String? ?? 'cache_error';
     final cacheDuration = cacheResponse?['duration'] as int? ?? 0;
 
@@ -198,9 +196,7 @@ out geom $maxSpots;
     final spots = <Spot>[];
 
     for (final element in elements) {
-      if (element['type'] == 'node' &&
-          element['lat'] != null &&
-          element['lon'] != null) {
+      if (element['type'] == 'node' && element['lat'] != null && element['lon'] != null) {
         try {
           final spot = Spot.fromOsmNode(element as Map<String, dynamic>);
           spots.add(spot);

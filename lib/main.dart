@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:overpass_map/models/osm_models.dart';
+import 'package:overpass_map/data/osm_models.dart';
 import 'package:overpass_map/overpass_api.dart';
 import 'package:overpass_map/overpass_map_notifier.dart';
 import 'package:overpass_map/theme/app_theme.dart';

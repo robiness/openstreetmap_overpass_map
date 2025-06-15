@@ -3,7 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 
-import '../models/osm_models.dart';
+import '../data/osm_models.dart';
 import 'custom_area_painter.dart';
 
 /// An animated layer for drawing geographic areas with custom paint

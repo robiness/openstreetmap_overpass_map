@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../models/osm_models.dart';
+import '../data/osm_models.dart';
 
 /// A custom painter for drawing geographic areas with animation support
 class CustomAreaPainter extends CustomPainter {

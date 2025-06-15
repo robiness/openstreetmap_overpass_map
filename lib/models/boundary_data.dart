@@ -1,4 +1,4 @@
-import 'osm_models.dart';
+import '../data/osm_models.dart';
 
 /// Parses Overpass/OSM JSON data and produces lists of GeographicArea objects for city, bezirk, and stadtteil boundaries.
 class BoundaryData {

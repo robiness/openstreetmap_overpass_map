@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/boundary_data.dart';
-import '../models/osm_models.dart';
+import '../data/osm_models.dart';
 import '../overpass_map_notifier.dart';
 import '../theme/app_theme.dart';
 

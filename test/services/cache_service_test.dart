@@ -1,7 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
+import 'package:overpass_map/data/cache_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:overpass_map/services/cache_service.dart';
 
 void main() {
   late CacheService cacheService;
@@ -108,7 +109,7 @@ void main() {
     test('should remove an item from cache', () async {
       // Arrange
       await cacheService.put(testRequestIdentifier, testData);
-      
+
       // Act
       await cacheService.invalidate(testRequestIdentifier);
       final result = await cacheService.get(testRequestIdentifier);
@@ -147,7 +148,7 @@ void main() {
       // Arrange
       final String validKeyId = 'valid_item';
       final String expiredKeyId = 'expired_item';
-      
+
       await cacheService.put(validKeyId, {'info': 'i am valid'}, ttl: const Duration(hours: 1));
       await cacheService.put(expiredKeyId, {'info': 'i am expired'}, ttl: const Duration(milliseconds: 1));
 
@@ -169,15 +170,15 @@ void main() {
     test('should handle corrupted cache entries during cleanExpired gracefully', () async {
       // Arrange
       final String corruptedKey = generateTestKey("corrupted_entry_clean_test");
-      final String validKeyId = 'valid_clean_test'; // This ID does not need to be hashed by generateTestKey if it's a direct requestIdentifier
+      final String validKeyId =
+          'valid_clean_test'; // This ID does not need to be hashed by generateTestKey if it's a direct requestIdentifier
       await cacheService.put(validKeyId, {'info': 'valid'}, ttl: const Duration(hours: 1));
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(corruptedKey, "this is not valid json");
-      
+
       final String missingExpiresAtKey = generateTestKey("missing_expires_at_key_clean");
       await prefs.setString(missingExpiresAtKey, json.encode({'data': 'some data'}));
-
 
       // Act & Assert
       // Expect cleanExpired to run without throwing an error
@@ -185,8 +186,12 @@ void main() {
 
       // Corrupted and malformed entries should be removed
       expect(prefs.getString(corruptedKey), null, reason: "Corrupted key should be removed by cleanExpired");
-      expect(prefs.getString(missingExpiresAtKey), null, reason: "Key missing expiresAt should be removed by cleanExpired");
-      
+      expect(
+        prefs.getString(missingExpiresAtKey),
+        null,
+        reason: "Key missing expiresAt should be removed by cleanExpired",
+      );
+
       // Valid entry should still exist
       final validResult = await cacheService.get(validKeyId);
       expect(validResult?['source'], 'cache');
@@ -207,10 +212,9 @@ void main() {
     // Assert
     expect(result?['data'], null);
     expect(result?['source'], 'cache_miss'); // Or could be 'cache_error', depending on desired behavior
-    
+
     // Verify it was removed
     final currentPrefs = await SharedPreferences.getInstance();
     expect(currentPrefs.getString(key), null);
   });
-
 }

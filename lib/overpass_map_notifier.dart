@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/overpass_api.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // For persistence
+import 'package:overpass_map/widgets/animated_area_layer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'data/osm_models.dart';
+import 'data/spot.dart';
 import 'models/boundary_data.dart';
-import 'models/osm_models.dart';
-import 'models/spot.dart';
-import 'models/user_area_data.dart'; // Import the new model
-import 'services/map_rendering_service.dart';
+import 'models/user_area_data.dart';
 
 // Define a class to combine GeographicArea with its UserAreaData for UI convenience
 class DisplayableArea {
@@ -321,7 +321,7 @@ class OverpassMapNotifier extends ChangeNotifier {
         allElements.addAll(_boundaryData!.stadtteile);
 
         if (allElements.isNotEmpty) {
-          _boundsToFit = MapRenderingService.calculateBounds(allElements);
+          _boundsToFit = calculateBounds(allElements);
         }
 
         // Fetch spots for the city
@@ -751,7 +751,7 @@ class OverpassMapNotifier extends ChangeNotifier {
       if (area != null) {
         // Only set bounds to fit if camera movement is requested
         if (moveCamera) {
-          _boundsToFit = MapRenderingService.calculateBounds([area]);
+          _boundsToFit = calculateBounds([area]);
         }
         // Use the renamed field here
         userAreaVisitData.putIfAbsent(
@@ -838,7 +838,7 @@ class OverpassMapNotifier extends ChangeNotifier {
       }
     }
 
-    return MapRenderingService.createAnimatedAreaLayer(
+    return AnimatedAreaLayer(
       areas: areasToShow,
       animationDuration: _animationDuration,
       animationCurve: _animationCurve,
@@ -877,4 +877,39 @@ class OverpassMapNotifier extends ChangeNotifier {
   }
 
   List<Marker> markers = [];
+
+  /// Calculate bounds for fitting all areas on map
+  static LatLngBounds calculateBounds(List<GeographicArea> areas) {
+    if (areas.isEmpty) {
+      // Default to Cologne if no areas
+      return LatLngBounds(
+        const LatLng(50.8, 6.8),
+        const LatLng(51.0, 7.1),
+      );
+    }
+
+    double minLat = double.infinity;
+    double maxLat = double.negativeInfinity;
+    double minLng = double.infinity;
+    double maxLng = double.negativeInfinity;
+
+    for (final area in areas) {
+      for (final ring in area.coordinates) {
+        for (final coord in ring) {
+          final lng = coord[0];
+          final lat = coord[1];
+
+          minLat = minLat < lat ? minLat : lat;
+          maxLat = maxLat > lat ? maxLat : lat;
+          minLng = minLng < lng ? minLng : lng;
+          maxLng = maxLng > lng ? maxLng : lng;
+        }
+      }
+    }
+
+    return LatLngBounds(
+      LatLng(minLat, minLng),
+      LatLng(maxLat, maxLng),
+    );
+  }
 }
