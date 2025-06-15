@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:overpass_map/overpass_api.dart';
+import 'package:overpass_map/data/overpass_api.dart';
 
 Future<void> main() async {
   print('Starting Cologne data fetch...');

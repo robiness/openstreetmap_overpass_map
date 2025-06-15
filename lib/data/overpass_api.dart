@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:overpass_map/data/cache_service.dart';
 
-import 'data/spot.dart';
-import 'models/boundary_data.dart'; // Use this BoundaryData
+import '../models/boundary_data.dart'; // Use this BoundaryData
+import 'spot.dart';
 
 class CityDataResult {
   final BoundaryData? data; // This will now be the BoundaryData from overpass_json_parser

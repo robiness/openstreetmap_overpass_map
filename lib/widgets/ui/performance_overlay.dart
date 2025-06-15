@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
-import '../data/osm_models.dart';
+import '../../data/osm_models.dart';
 
 /// Performance monitoring overlay for debugging map rendering
 class PerformanceOverlay extends StatefulWidget {

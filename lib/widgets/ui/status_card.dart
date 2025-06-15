@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../overpass_map_notifier.dart';
-import '../theme/app_theme.dart';
+import '../../overpass_map_notifier.dart';
+import '../../theme/app_theme.dart';
 
 class StatusCard extends StatelessWidget {
   final OverpassMapNotifier notifier;

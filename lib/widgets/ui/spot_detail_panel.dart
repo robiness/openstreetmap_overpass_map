@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../overpass_map_notifier.dart';
+import '../../overpass_map_notifier.dart';
 
 class SpotDetailPanel extends StatelessWidget {
   const SpotDetailPanel({super.key});

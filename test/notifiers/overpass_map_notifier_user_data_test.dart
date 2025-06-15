@@ -1,18 +1,17 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:overpass_map/models/boundary_data.dart'; // For BoundaryData
+import 'package:overpass_map/data/overpass_api.dart'; // For CityDataResult
 import 'package:overpass_map/data/spot.dart';
+import 'package:overpass_map/models/boundary_data.dart'; // For BoundaryData
 import 'package:overpass_map/models/user_area_data.dart';
-import 'package:overpass_map/overpass_api.dart'; // For CityDataResult
 import 'package:overpass_map/overpass_map_notifier.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Define a Fake OverpassApi for testing
 class FakeOverpassApi implements OverpassApi {
   // You can add properties to this fake to control its behavior in tests
-  CityDataResult Function(String cityName, {int cityAdminLevel})?
-  getCityDataHandler;
+  CityDataResult Function(String cityName, {int cityAdminLevel})? getCityDataHandler;
 
   @override
   Future<CityDataResult> getCityData(
@@ -58,13 +57,12 @@ void main() {
     fakeOverpassApi = FakeOverpassApi();
 
     // Configure the default handler for getCityData for most tests
-    fakeOverpassApi.getCityDataHandler = (city, {int? cityAdminLevel}) =>
-        CityDataResult(
-          data: BoundaryData({}), // Empty BoundaryData
-          source: 'fake',
-          duration: 0,
-          query: 'test_query',
-        );
+    fakeOverpassApi.getCityDataHandler = (city, {int? cityAdminLevel}) => CityDataResult(
+      data: BoundaryData({}), // Empty BoundaryData
+      source: 'fake',
+      duration: 0,
+      query: 'test_query',
+    );
 
     notifier = OverpassMapNotifier(fakeOverpassApi); // Inject the fake API
     await Future.delayed(

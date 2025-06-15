@@ -3,8 +3,8 @@ import 'dart:convert'; // For json.encode/decode if persisting UserAreaData map
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:overpass_map/overpass_api.dart';
-import 'package:overpass_map/widgets/animated_area_layer.dart';
+import 'package:overpass_map/data/overpass_api.dart';
+import 'package:overpass_map/widgets/map/animated_area_layer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/osm_models.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../models/boundary_data.dart';
-import '../data/osm_models.dart';
-import '../overpass_map_notifier.dart';
-import '../theme/app_theme.dart';
+import '../../data/osm_models.dart';
+import '../../models/boundary_data.dart';
+import '../../overpass_map_notifier.dart';
+import '../../theme/app_theme.dart';
 
 /// A hierarchical, scrollable list widget that displays cities, bezirke, and stadtteile
 /// with visual differentiation and visit count information
