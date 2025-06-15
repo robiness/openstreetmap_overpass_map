@@ -604,10 +604,13 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
         },
       ),
       children: [
-        TileLayer(
-          urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-          userAgentPackageName: 'com.example.overpass_map',
-          tileProvider: CancellableNetworkTileProvider(),
+        Opacity(
+          opacity: 0.2,
+          child: TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.overpass_map',
+            tileProvider: CancellableNetworkTileProvider(),
+          ),
         ),
         // Use the animated area layer
         RepaintBoundary(child: notifier.animatedAreaLayer),

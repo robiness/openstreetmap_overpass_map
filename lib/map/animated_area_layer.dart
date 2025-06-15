@@ -9,11 +9,8 @@ import 'custom_area_painter.dart';
 /// An animated layer for drawing geographic areas with custom paint
 class AnimatedAreaLayer extends StatefulWidget {
   final List<GeographicArea> areas;
-  final Map<String, Color>? colorsByType;
-  final Duration animationDuration;
   final Curve animationCurve;
   final Map<int, ui.Shader>? shadersByAreaId;
-  final VoidCallback? onAnimationComplete;
   final GeographicArea? selectedArea;
   final Set<int>? visitedAreaIds;
   final Set<int>? completedAreaIds;
@@ -28,11 +25,8 @@ class AnimatedAreaLayer extends StatefulWidget {
   const AnimatedAreaLayer({
     super.key,
     required this.areas,
-    this.colorsByType,
-    this.animationDuration = const Duration(milliseconds: 1000),
     this.animationCurve = Curves.easeInOut,
     this.shadersByAreaId,
-    this.onAnimationComplete,
     this.selectedArea,
     this.visitedAreaIds,
     this.completedAreaIds,
@@ -52,22 +46,17 @@ class AnimatedAreaLayer extends StatefulWidget {
 class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
     _setupAnimation();
-    _setupPulseAnimation();
     _animationController.forward();
-    // Start pulsing animation for visual feedback
-    _pulseController.repeat(reverse: true);
   }
 
   void _setupAnimation() {
     _animationController = AnimationController(
-      duration: widget.animationDuration,
+      duration: Duration(milliseconds: 500),
       vsync: this,
     );
 
@@ -75,30 +64,6 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
       parent: _animationController,
       curve: widget.animationCurve,
     );
-
-    _animationController.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        widget.onAnimationComplete?.call();
-      }
-    });
-  }
-
-  void _setupPulseAnimation() {
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
-      vsync: this,
-    );
-
-    _pulseAnimation =
-        Tween<double>(
-          begin: 0.8,
-          end: 1.2,
-        ).animate(
-          CurvedAnimation(
-            parent: _pulseController,
-            curve: Curves.easeInOut,
-          ),
-        );
   }
 
   @override
@@ -110,57 +75,12 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
       _animationController.reset();
       _animationController.forward();
     }
-
-    // Update animation duration if changed
-    if (widget.animationDuration != oldWidget.animationDuration) {
-      _animationController.duration = widget.animationDuration;
-    }
   }
 
   @override
   void dispose() {
     _animationController.dispose();
-    _pulseController.dispose();
     super.dispose();
-  }
-
-  Color _getAreaColor(GeographicArea area) {
-    return widget.colorsByType?[area.type] ?? _getDefaultColor(area.type);
-  }
-
-  Color _getDefaultColor(String type) {
-    switch (type) {
-      case 'city':
-        return Colors.red;
-      case 'bezirk':
-        return Colors.blue;
-      case 'stadtteil':
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  /// Animate to a specific area by focusing on it
-  void animateToArea(
-    GeographicArea area, {
-    Color? highlightColor,
-    Duration? duration,
-  }) {
-    // This could be enhanced to create a special animation for the selected area
-    _animationController.reset();
-    _animationController.forward();
-  }
-
-  /// Start pulsing animation for a specific area
-  void startPulsingArea(int areaId) {
-    // Implementation for pulsing animation could be added here
-    _animationController.repeat(reverse: true);
-  }
-
-  /// Stop any ongoing animations
-  void stopAnimations() {
-    _animationController.stop();
   }
 
   @override
@@ -175,8 +95,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
 
         // Create animated areas
         final animatedAreas = widget.areas.map((area) {
-          final defaultColor = _getAreaColor(area);
-          final shader = widget.shadersByAreaId?[area.id];
+          final defaultColor = Colors.grey;
 
           // Determine visual properties based on exploration state
           Color fillColor;
@@ -184,7 +103,6 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
           double borderWidth;
           bool isDashed = false;
           bool hasShadow = false;
-          double pulseScale = 1.0;
 
           final isSelected = widget.selectedArea?.id == area.id;
           final isCompleted = widget.completedAreaIds?.contains(area.id) == true;
@@ -201,7 +119,6 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
             fillOpacity = 0.5;
             borderWidth = 4.0;
             hasShadow = true;
-            pulseScale = _pulseAnimation.value;
           } else if (isCompleted) {
             // Completed areas: vibrant green with solid fill
             fillColor = widget.completedColor;
@@ -250,11 +167,10 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
 
           return AnimatedArea(
             geoArea: area,
-            fillColor: fillColor,
-            borderColor: borderColor,
+            fillColor: Colors.grey,
+            borderColor: Colors.black,
             fillOpacity: fillOpacity,
-            borderWidth: borderWidth * pulseScale,
-            shader: shader,
+            borderWidth: 5,
             isDashed: isDashed,
             hasShadow: hasShadow,
             shadowColor: isSelected
@@ -266,6 +182,7 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
         }).toList();
 
         return CustomPaint(
+          isComplex: true,
           painter: CustomAreaPainter(
             areas: animatedAreas,
             camera: mapState,
@@ -274,57 +191,6 @@ class _AnimatedAreaLayerState extends State<AnimatedAreaLayer> with TickerProvid
           size: Size.infinite,
         );
       },
-    );
-  }
-}
-
-/// Helper methods for creating shaders
-class AreaShaders {
-  /// Create a linear gradient shader
-  static ui.Shader createLinearGradient({
-    required List<Color> colors,
-    required Offset from,
-    required Offset to,
-    List<double>? stops,
-  }) {
-    return ui.Gradient.linear(
-      from,
-      to,
-      colors,
-      stops,
-    );
-  }
-
-  /// Create a radial gradient shader
-  static ui.Shader createRadialGradient({
-    required List<Color> colors,
-    required Offset center,
-    required double radius,
-    List<double>? stops,
-  }) {
-    return ui.Gradient.radial(
-      center,
-      radius,
-      colors,
-      stops,
-    );
-  }
-
-  /// Create a sweep gradient shader (circular gradient)
-  static ui.Shader createSweepGradient({
-    required List<Color> colors,
-    required Offset center,
-    double startAngle = 0.0,
-    double endAngle = 6.283185307179586, // 2 * pi
-    List<double>? stops,
-  }) {
-    return ui.Gradient.sweep(
-      center,
-      colors,
-      stops,
-      TileMode.clamp,
-      startAngle,
-      endAngle,
     );
   }
 }

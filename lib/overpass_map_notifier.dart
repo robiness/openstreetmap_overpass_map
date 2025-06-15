@@ -47,10 +47,6 @@ class OverpassMapNotifier extends ChangeNotifier {
   // Animation settings - always enabled
   bool get enableAnimations => true; // Always enabled
 
-  Duration _animationDuration = const Duration(milliseconds: 1000);
-
-  Duration get animationDuration => _animationDuration;
-
   Curve _animationCurve = Curves.easeInOut;
 
   Curve get animationCurve => _animationCurve;
@@ -840,7 +836,6 @@ class OverpassMapNotifier extends ChangeNotifier {
 
     return AnimatedAreaLayer(
       areas: areasToShow,
-      animationDuration: _animationDuration,
       animationCurve: _animationCurve,
       selectedArea: _rawSelectedArea,
       completedAreaIds: completedAreaIds,
@@ -851,16 +846,6 @@ class OverpassMapNotifier extends ChangeNotifier {
       partialColor: Colors.amber.shade600,
       unvisitedColor: Colors.grey.shade400,
     );
-  }
-
-  // Removed setRenderingMode method since we only use animated rendering now
-
-  // Removed toggleAnimations method since animations are always enabled now
-
-  /// Set animation duration
-  void setAnimationDuration(Duration duration) {
-    _animationDuration = duration;
-    notifyListeners();
   }
 
   /// Set animation curve
