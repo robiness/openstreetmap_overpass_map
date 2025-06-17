@@ -836,22 +836,7 @@ class OverpassMapNotifier extends ChangeNotifier {
 
     return AnimatedAreaLayer(
       areas: areasToShow,
-      animationCurve: _animationCurve,
-      selectedArea: _rawSelectedArea,
-      completedAreaIds: completedAreaIds,
-      partialAreaIds: partialAreaIds,
-      unvisitedAreaIds: unvisitedAreaIds,
-      selectionColor: Colors.orange,
-      completedColor: Colors.green.shade600,
-      partialColor: Colors.amber.shade600,
-      unvisitedColor: Colors.grey.shade400,
     );
-  }
-
-  /// Set animation curve
-  void setAnimationCurve(Curve curve) {
-    _animationCurve = curve;
-    notifyListeners();
   }
 
   /// Animate to a specific area

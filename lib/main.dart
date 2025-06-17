@@ -8,7 +8,6 @@ import 'package:overpass_map/overpass_map_notifier.dart';
 import 'package:overpass_map/theme/app_theme.dart';
 import 'package:overpass_map/widgets/control_panel.dart';
 import 'package:overpass_map/widgets/hierarchical_area_list.dart';
-import 'package:overpass_map/widgets/performance_overlay.dart' as perf;
 import 'package:overpass_map/widgets/spot_detail_panel.dart';
 import 'package:overpass_map/widgets/spot_list.dart';
 import 'package:overpass_map/widgets/status_card.dart';
@@ -146,11 +145,6 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
             body: Stack(
               children: [
                 _buildMapView(notifier),
-                // Performance overlay for mobile
-                perf.PerformanceOverlay(
-                  areas: _getAllAreas(notifier),
-                  showOverlay: true,
-                ),
                 // Spot detail panel
                 Positioned(
                   bottom: 16,
@@ -267,10 +261,6 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                             child: Stack(
                               children: [
                                 _buildMapView(notifier),
-                                perf.PerformanceOverlay(
-                                  areas: _getAllAreas(notifier),
-                                  showOverlay: true,
-                                ),
                                 // Spot detail panel for desktop
                                 Positioned(
                                   bottom: 16,
@@ -613,13 +603,13 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
           ),
         ),
         // Use the animated area layer
-        RepaintBoundary(child: notifier.animatedAreaLayer),
+        notifier.animatedAreaLayer,
         // Add spot markers
-        MarkerLayer(
-          markers: [
-            ...notifier.spotMarkers,
-          ],
-        ),
+        // MarkerLayer(
+        //   markers: [
+        //     ...notifier.spotMarkers,
+        //   ],
+        // ),
       ],
     );
   }

@@ -8,50 +8,38 @@ import '../../data/osm_models.dart';
 
 /// A custom painter for drawing geographic areas with animation support
 class CustomAreaPainter extends CustomPainter {
-  final List<AnimatedArea> areas;
+  final List<GeographicArea> areas;
   final MapCamera camera;
-  final Animation<double>? animation;
 
-  CustomAreaPainter({required this.areas, required this.camera, this.animation}) : super(repaint: animation);
+  CustomAreaPainter({required this.areas, required this.camera});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = Offset.zero & size;
-    canvas.clipRect(rect);
     for (final animatedArea in areas) {
       _paintArea(canvas, size, animatedArea);
     }
   }
 
-  void _paintArea(Canvas canvas, Size size, AnimatedArea animatedArea) {
-    final area = animatedArea.geoArea;
-    final animationValue = animation?.value ?? 1.0;
-
-    // Create animated paint for border
-    final borderPaint = Paint()
-      ..color =
-          Color.lerp(
-            animatedArea.borderColor.withValues(alpha: 0.0),
-            animatedArea.borderColor,
-            animationValue,
-          ) ??
-          animatedArea.borderColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = animatedArea.borderWidth * animationValue
-      ..strokeJoin = StrokeJoin.round
-      ..strokeCap = StrokeCap.round;
-
+  void _paintArea(Canvas canvas, Size size, GeographicArea area) {
     // Convert coordinates to screen points and draw
     for (final coordinateRing in area.coordinates) {
-      final path = _createPathFromCoordinates(coordinateRing, size);
+      final path = _createPathFromCoordinates(coordinateRing);
 
       if (path != null) {
-        canvas.drawPath(path, borderPaint);
         canvas.drawPath(
           path,
           Paint()
-            ..color = Colors.green.withOpacity(0.5)
-            ..strokeWidth = animatedArea.borderWidth * animationValue,
+            ..color = Colors.yellow.withValues(alpha: 1)
+            ..strokeWidth = 5,
+        );
+        canvas.drawPath(
+          path,
+          Paint()
+            ..color = Colors.black.withValues(alpha: 1)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 5
+            ..strokeJoin = StrokeJoin.round
+            ..strokeCap = StrokeCap.round,
         );
       }
     }
@@ -59,7 +47,6 @@ class CustomAreaPainter extends CustomPainter {
 
   ui.Path? _createPathFromCoordinates(
     List<List<double>> coordinates,
-    Size size,
   ) {
     if (coordinates.isEmpty) return null;
 
@@ -87,88 +74,9 @@ class CustomAreaPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomAreaPainter oldDelegate) {
-    return oldDelegate.areas != areas || oldDelegate.camera != camera || oldDelegate.animation != animation;
+    return oldDelegate.areas != areas || oldDelegate.camera != camera;
   }
 
   @override
-  bool hitTest(Offset position) => true;
-}
-
-/// Data class for an area with animation properties
-class AnimatedArea {
-  final GeographicArea geoArea;
-  final Color fillColor;
-  final Color borderColor;
-  final double fillOpacity;
-  final double borderWidth;
-  final ui.Shader? shader;
-  final bool isDashed;
-  final bool hasShadow;
-  final Color? shadowColor;
-
-  const AnimatedArea({
-    required this.geoArea,
-    required this.fillColor,
-    required this.borderColor,
-    this.fillOpacity = 0.3,
-    this.borderWidth = 2.0,
-    this.shader,
-    this.isDashed = false,
-    this.hasShadow = false,
-    this.shadowColor,
-  });
-
-  AnimatedArea copyWith({
-    GeographicArea? geoArea,
-    Color? fillColor,
-    Color? borderColor,
-    double? fillOpacity,
-    double? borderWidth,
-    ui.Shader? shader,
-    bool? isDashed,
-    bool? hasShadow,
-    Color? shadowColor,
-  }) {
-    return AnimatedArea(
-      geoArea: geoArea ?? this.geoArea,
-      fillColor: fillColor ?? this.fillColor,
-      borderColor: borderColor ?? this.borderColor,
-      fillOpacity: fillOpacity ?? this.fillOpacity,
-      borderWidth: borderWidth ?? this.borderWidth,
-      shader: shader ?? this.shader,
-      isDashed: isDashed ?? this.isDashed,
-      hasShadow: hasShadow ?? this.hasShadow,
-      shadowColor: shadowColor ?? this.shadowColor,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is AnimatedArea &&
-        other.geoArea == geoArea &&
-        other.fillColor == fillColor &&
-        other.borderColor == borderColor &&
-        other.fillOpacity == fillOpacity &&
-        other.borderWidth == borderWidth &&
-        other.shader == shader &&
-        other.isDashed == isDashed &&
-        other.hasShadow == hasShadow &&
-        other.shadowColor == shadowColor;
-  }
-
-  @override
-  int get hashCode {
-    return Object.hash(
-      geoArea,
-      fillColor,
-      borderColor,
-      fillOpacity,
-      borderWidth,
-      shader,
-      isDashed,
-      hasShadow,
-      shadowColor,
-    );
-  }
+  bool hitTest(Offset position) => false;
 }
