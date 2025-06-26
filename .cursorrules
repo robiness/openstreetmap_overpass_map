@@ -1,1 +1,2 @@
 If asked to start the app. It always means starting it as a web app in chrome with wasm enabled on port 3000. If port 3000 is used already we kill the process and start the app again.
+We do not use build methods. Instead of creating a _build method we create a new Widget.

@@ -1,4 +1,4 @@
-import '../data/osm_models.dart';
+import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 
 /// Parses Overpass/OSM JSON data and produces lists of GeographicArea objects for city, bezirk, and stadtteil boundaries.
 class BoundaryData {
@@ -8,7 +8,8 @@ class BoundaryData {
   final List<GeographicArea> stadtteile = [];
 
   /// Parses the provided Overpass JSON string.
-  BoundaryData(this.rawJson) { // Accept raw JSON in constructor
+  BoundaryData(this.rawJson) {
+    // Accept raw JSON in constructor
     final List elements = rawJson['elements'] ?? [];
 
     // Parse relations directly since geometry is embedded in members
@@ -17,10 +18,14 @@ class BoundaryData {
         final relation = OsmRelation.fromJson(element);
         final tags = relation.tags;
 
-        if (tags['boundary'] == 'administrative' && tags.containsKey('admin_level')) {
-          final int adminLevel = int.tryParse(tags['admin_level'].toString()) ?? 0;
+        if (tags['boundary'] == 'administrative' &&
+            tags.containsKey('admin_level')) {
+          final int adminLevel =
+              int.tryParse(tags['admin_level'].toString()) ?? 0;
           final String name = tags['name']?.toString() ?? 'Unknown';
-          print('Processing relation ${relation.id}: $name, admin_level: $adminLevel');
+          print(
+            'Processing relation ${relation.id}: $name, admin_level: $adminLevel',
+          );
 
           String type;
           if (adminLevel == 6) {
@@ -68,7 +73,9 @@ class BoundaryData {
           if (outerWays.isNotEmpty) {
             print('Found ${outerWays.length} outer ways for $name');
             final combinedOuters = _combineWays(outerWays);
-            print('Combined into ${combinedOuters.length} continuous polygons for $name');
+            print(
+              'Combined into ${combinedOuters.length} continuous polygons for $name',
+            );
 
             // Add combined outer ways
             coordinates.addAll(combinedOuters);
@@ -89,7 +96,9 @@ class BoundaryData {
               coordinates: coordinates,
             );
 
-            print('Created $type area: $name with ${coordinates.length} coordinate rings');
+            print(
+              'Created $type area: $name with ${coordinates.length} coordinate rings',
+            );
 
             if (type == 'city') {
               cities.add(area);
@@ -120,7 +129,9 @@ class BoundaryData {
       List<List<double>> currentPolygon = remaining.removeAt(0);
       bool foundConnection = true;
 
-      print('_combineWays: Starting new polygon with ${currentPolygon.length} points');
+      print(
+        '_combineWays: Starting new polygon with ${currentPolygon.length} points',
+      );
 
       // Keep trying to connect ways until no more connections are found
       while (foundConnection && remaining.isNotEmpty) {
@@ -135,7 +146,9 @@ class BoundaryData {
             currentPolygon.addAll(way.skip(1));
             remaining.removeAt(i);
             foundConnection = true;
-            print('_combineWays: Connected way at end, now ${currentPolygon.length} points');
+            print(
+              '_combineWays: Connected way at end, now ${currentPolygon.length} points',
+            );
             break;
           }
           // Check if this way connects to the start of current polygon
@@ -144,7 +157,9 @@ class BoundaryData {
             currentPolygon.insertAll(0, way.take(way.length - 1));
             remaining.removeAt(i);
             foundConnection = true;
-            print('_combineWays: Connected way at start, now ${currentPolygon.length} points');
+            print(
+              '_combineWays: Connected way at start, now ${currentPolygon.length} points',
+            );
             break;
           }
           // Check if this way connects reversed to the end
@@ -154,23 +169,32 @@ class BoundaryData {
             currentPolygon.addAll(reversedWay.skip(1));
             remaining.removeAt(i);
             foundConnection = true;
-            print('_combineWays: Connected reversed way at end, now ${currentPolygon.length} points');
+            print(
+              '_combineWays: Connected reversed way at end, now ${currentPolygon.length} points',
+            );
             break;
           }
           // Check if this way connects reversed to the start
           else if (_pointsEqual(currentPolygon.first, way.first)) {
             // Connect reversed at the start, skip first point and reverse
             final reversedWay = way.reversed.toList();
-            currentPolygon.insertAll(0, reversedWay.take(reversedWay.length - 1));
+            currentPolygon.insertAll(
+              0,
+              reversedWay.take(reversedWay.length - 1),
+            );
             remaining.removeAt(i);
             foundConnection = true;
-            print('_combineWays: Connected reversed way at start, now ${currentPolygon.length} points');
+            print(
+              '_combineWays: Connected reversed way at start, now ${currentPolygon.length} points',
+            );
             break;
           }
         }
       }
 
-      print('_combineWays: Completed polygon with ${currentPolygon.length} points');
+      print(
+        '_combineWays: Completed polygon with ${currentPolygon.length} points',
+      );
       result.add(currentPolygon);
     }
 
@@ -180,7 +204,9 @@ class BoundaryData {
 
   /// Helper method to check if two coordinate points are equal (within a small tolerance)
   bool _pointsEqual(List<double> point1, List<double> point2) {
-    const tolerance = 0.0000001; // Very small tolerance for floating point comparison
-    return (point1[0] - point2[0]).abs() < tolerance && (point1[1] - point2[1]).abs() < tolerance;
+    const tolerance =
+        0.0000001; // Very small tolerance for floating point comparison
+    return (point1[0] - point2[0]).abs() < tolerance &&
+        (point1[1] - point2[1]).abs() < tolerance;
   }
 }

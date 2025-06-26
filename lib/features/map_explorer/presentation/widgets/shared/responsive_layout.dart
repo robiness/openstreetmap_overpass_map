@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../theme/app_theme.dart';
+import 'package:overpass_map/app/theme/app_theme.dart';
 
 class ResponsiveLayout extends StatelessWidget {
   final Widget sidebar;

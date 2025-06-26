@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
-
-import '../../data/osm_models.dart';
-import '../../models/boundary_data.dart';
-import '../../overpass_map_notifier.dart';
-import '../../theme/app_theme.dart';
+import 'package:overpass_map/app/theme/app_theme.dart';
+import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
+import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
+import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 
 /// A hierarchical, scrollable list widget that displays cities, bezirke, and stadtteile
 /// with visual differentiation and visit count information
 class HierarchicalAreaList extends StatelessWidget {
   final BoundaryData? boundaryData;
-  final OverpassMapNotifier notifier;
   final GeographicArea? selectedArea;
+  final Map<int, UserAreaData> userVisitData;
+  final Function(GeographicArea) onAreaTapped;
+  final Function(int) onIncrementVisit;
+  final Function(int) onDecrementVisit;
 
   const HierarchicalAreaList({
     super.key,
     required this.boundaryData,
-    required this.notifier,
     this.selectedArea,
+    required this.userVisitData,
+    required this.onAreaTapped,
+    required this.onIncrementVisit,
+    required this.onDecrementVisit,
   });
 
   @override
@@ -295,7 +300,7 @@ class HierarchicalAreaList extends StatelessWidget {
     required IconData icon,
     required Color color,
   }) {
-    final visitCount = notifier.userAreaVisitData[area.id]?.visitCount ?? 0;
+    final visitCount = userVisitData[area.id]?.visitCount ?? 0;
     final isSelected = selectedArea?.id == area.id;
     final isVisited = visitCount > 0;
 
@@ -368,7 +373,7 @@ class HierarchicalAreaList extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(12.0),
-          onTap: () => notifier.selectArea(area),
+          onTap: () => onAreaTapped(area),
           child: Padding(
             padding: EdgeInsets.only(
               left: leftPadding,
@@ -510,31 +515,14 @@ class HierarchicalAreaList extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      InkWell(
-                        onTap: () => notifier.decrementVisitCount(area.id),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Container(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Icon(
-                            Icons.remove_circle_outline,
-                            size: 16,
-                            color: visitCount > 0
-                                ? Colors.purple.shade600
-                                : Colors.grey[400],
-                          ),
-                        ),
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () => onDecrementVisit(area.id),
                       ),
-                      InkWell(
-                        onTap: () => notifier.incrementVisitCount(area.id),
-                        borderRadius: BorderRadius.circular(6),
-                        child: Container(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Icon(
-                            Icons.add_circle_outline,
-                            size: 16,
-                            color: Colors.purple.shade600,
-                          ),
-                        ),
+                      Text('$visitCount'),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () => onIncrementVisit(area.id),
                       ),
                     ],
                   ),

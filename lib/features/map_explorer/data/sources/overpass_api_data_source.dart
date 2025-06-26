@@ -1,13 +1,14 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:overpass_map/data/cache_service.dart';
+import 'package:overpass_map/features/map_explorer/data/sources/cache_service.dart';
 
 import '../models/boundary_data.dart'; // Use this BoundaryData
-import 'spot.dart';
+import '../../domain/entities/spot.dart';
 
 class CityDataResult {
-  final BoundaryData? data; // This will now be the BoundaryData from overpass_json_parser
+  final BoundaryData?
+  data; // This will now be the BoundaryData from overpass_json_parser
   final String source;
   final int duration;
   final String query;
@@ -20,13 +21,14 @@ class CityDataResult {
   });
 }
 
-class OverpassApi {
+class OverpassApiDataSource {
   final String _baseUrl;
   final CacheService _cacheService;
 
-  OverpassApi({String baseUrl = 'https://overpass-api.de/api/interpreter'})
-    : _baseUrl = baseUrl,
-      _cacheService = CacheService();
+  OverpassApiDataSource({
+    String baseUrl = 'https://overpass-api.de/api/interpreter',
+  }) : _baseUrl = baseUrl,
+       _cacheService = CacheService();
 
   Future<CityDataResult> getCityData(
     String cityName, {
@@ -52,7 +54,8 @@ out geom;
 """;
 
     final cacheResponse = await _cacheService.get(query);
-    final cachedJsonData = cacheResponse?['data']; // This is Map<String, dynamic>
+    final cachedJsonData =
+        cacheResponse?['data']; // This is Map<String, dynamic>
     final cacheSource = cacheResponse?['source'] as String? ?? 'cache_error';
     final cacheDuration = cacheResponse?['duration'] as int? ?? 0;
 
@@ -196,7 +199,9 @@ out geom $maxSpots;
     final spots = <Spot>[];
 
     for (final element in elements) {
-      if (element['type'] == 'node' && element['lat'] != null && element['lon'] != null) {
+      if (element['type'] == 'node' &&
+          element['lat'] != null &&
+          element['lon'] != null) {
         try {
           final spot = Spot.fromOsmNode(element as Map<String, dynamic>);
           spots.add(spot);

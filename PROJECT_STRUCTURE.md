@@ -75,7 +75,7 @@ Each feature folder is a microcosm of the app's architecture:
 ### `presentation/`
 - **Contains:** All UI-related code.
 - **`bloc/`**: The BLoCs or Cubits for this feature, along with their associated `state` and `event` files.
-- **`widgets/`**: Reusable widgets that are specific to this feature.
+- **`widgets/`**: Reusable widgets that are specific to this feature. For clarity, this directory is often subdivided by component role (e.g., `map/`, `panel/`, `lists/`).
 - **`<feature_name>_screen.dart`**: The main widget that assembles the feature's UI.
 
 ### `domain/`
