@@ -1,4 +1,46 @@
-# 🗺️ Development Roadmap
+# 🗺️ Roadmap
+
+This document outlines the phased development plan for the Social Exploration Game.
+
+## 📱 Development Phases
+
+### **Phase 0: Foundation (Current)**
+- ✅ **Web Platform**: A robust map explorer for desktop and mobile browsers, built with Flutter and compiled to WebAssembly for high performance.
+- ✅ **Geographic Visualization**: Initial city boundaries (e.g., Cologne) and POIs via Overpass API.
+- ✅ **Local Data**: Simple visit tracking using SharedPreferences.
+
+### **Phase 1: Social MVP on Web**
+- **Primary Target**: Enhancing the existing web application (desktop & mobile) with social features.
+- 🔄 **User Authentication**: Supabase Auth for user accounts.
+- 🔄 **GPS Check-ins**: Using browser location services for area verification on mobile devices.
+- 🔄 **Progress Tracking**: Cloud-synced completion status for the initial city's neighborhoods.
+- 🔄 **Basic Achievements**: First set of exploration milestones and badges.
+- 🔄 **Offline-First Storage**: Migrating data to a local SQLite database, synced with Supabase.
+- **Future Goal**: Native mobile apps (Android/iOS) will be considered after the web MVP is validated, to offer enhanced features like background services and push notifications.
+
+### **Phase 2: Advanced Social Features**
+- ❌ **Friend System**: Connect with other explorers, friend requests
+- ❌ **Real-time Activity**: Live friend activity feeds and notifications
+- ❌ **Group Challenges**: Multi-player exploration challenges
+- ❌ **Photo Sharing**: Location-based photo challenges and sharing
+- ❌ **Leaderboards**: Community competition and rankings
+- ❌ **Social Discovery**: Find and connect with nearby explorers
+
+### **Phase 3: Rich Content & Gamification**
+- ❌ **Multi-City Support**: Ability to switch between different cities and explore their unique neighborhoods.
+- ❌ **POI Database**: Detailed information per stadtteil/neighborhood.
+- ❌ **Location Stories**: Historical facts, local trivia, hidden gems
+- ❌ **Advanced Achievements**: Complex unlock conditions and skill trees
+- ❌ **User-Generated Content**: Reviews, custom spots, area recommendations
+- ❌ **Seasonal Events**: Time-limited challenges and special rewards
+- ❌ **Analytics Dashboard**: Personal exploration insights and city trends
+
+### **Phase 4: Business Integration & AR**
+- ❌ **Event Integration**: Castell Club events and local business partnerships
+- ❌ **AR Features**: Augmented reality navigation and discovery
+- ❌ **Local Business Network**: Promoted locations, discounts, partnerships
+- ❌ **Advanced Analytics**: Business insights and community engagement metrics
+- ❌ **Monetization**: Premium features, business partnerships, event promotion
 
 ## Current Status: Phase 1 Complete ✅
 

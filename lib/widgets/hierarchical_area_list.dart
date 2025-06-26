@@ -343,7 +343,9 @@ class HierarchicalAreaList extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12.0), // More rounded corners
-        border: borderWidth > 0 ? Border.all(color: borderColor, width: borderWidth) : null,
+        border: borderWidth > 0
+            ? Border.all(color: borderColor, width: borderWidth)
+            : null,
         boxShadow: isSelected
             ? [
                 BoxShadow(
@@ -403,7 +405,9 @@ class HierarchicalAreaList extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(4.0),
                   decoration: BoxDecoration(
-                    color: (isSelected || isVisited) ? color.withValues(alpha: 0.15) : Colors.transparent,
+                    color: (isSelected || isVisited)
+                        ? color.withValues(alpha: 0.15)
+                        : Colors.transparent,
                     borderRadius: BorderRadius.circular(6.0),
                   ),
                   child: Icon(
@@ -425,8 +429,12 @@ class HierarchicalAreaList extends StatelessWidget {
                       Text(
                         area.name,
                         style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          fontSize: 14 - (level * 0.5), // Smaller text for lower levels
+                          fontWeight: isSelected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          fontSize:
+                              14 -
+                              (level * 0.5), // Smaller text for lower levels
                           color: isSelected
                               ? Colors.orange.shade700
                               : isVisited
@@ -510,7 +518,9 @@ class HierarchicalAreaList extends StatelessWidget {
                           child: Icon(
                             Icons.remove_circle_outline,
                             size: 16,
-                            color: visitCount > 0 ? Colors.purple.shade600 : Colors.grey[400],
+                            color: visitCount > 0
+                                ? Colors.purple.shade600
+                                : Colors.grey[400],
                           ),
                         ),
                       ),

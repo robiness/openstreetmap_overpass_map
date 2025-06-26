@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Overpass Map Explorer',
+      title: 'Social Exploration Game',
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
       home: const MapExplorerScreen(),
@@ -73,7 +73,9 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               top: 20.0, // Minimal top padding
               left: 20.0, // Reduced side padding for mobile
               right: 20.0,
-              bottom: bottomSheetHeight + 20.0, // Account for bottom sheet + padding
+              bottom:
+                  bottomSheetHeight +
+                  20.0, // Account for bottom sheet + padding
             );
           } else {
             // Desktop layout - use original padding
@@ -94,7 +96,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
     final currentSelectedArea = _mapNotifier.selectedDisplayArea?.geoArea;
     final currentSelectedSpot = _mapNotifier.selectedDisplaySpot?.spot;
 
-    if (mounted && (currentSelectedArea != null || currentSelectedSpot != null)) {
+    if (mounted &&
+        (currentSelectedArea != null || currentSelectedSpot != null)) {
       final screenWidth = MediaQuery.of(context).size.width;
       final isMobile = screenWidth < 768;
       if (isMobile && currentSelectedArea != _previousSelectedArea) {
@@ -133,7 +136,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
               actions: [
-                if (notifier.selectedDisplayArea?.geoArea != null || notifier.selectedDisplaySpot?.spot != null)
+                if (notifier.selectedDisplayArea?.geoArea != null ||
+                    notifier.selectedDisplaySpot?.spot != null)
                   IconButton(
                     icon: const Icon(Icons.info_outline),
                     onPressed: () => _showDetailsBottomSheet(context, notifier),
@@ -212,7 +216,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                               HierarchicalAreaList(
                                 boundaryData: notifier.boundaryData,
                                 notifier: notifier,
-                                selectedArea: notifier.selectedDisplayArea?.geoArea,
+                                selectedArea:
+                                    notifier.selectedDisplayArea?.geoArea,
                               ),
                               // Spots tab
                               SpotList(showSearchBar: true),
@@ -358,9 +363,12 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: Colors.transparent, // No darkening of background
-      isDismissible: true, // Allow dismissing by tapping outside
-      enableDrag: true, // Allow dragging to dismiss
+      barrierColor: Colors.transparent,
+      // No darkening of background
+      isDismissible: true,
+      // Allow dismissing by tapping outside
+      enableDrag: true,
+      // Allow dragging to dismiss
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.35, // 35% of screen height
         minChildSize: 0.2, // Minimum 20% when collapsed
@@ -398,14 +406,18 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                 child: Row(
                   children: [
                     Icon(
-                      notifier.selectedDisplaySpot != null ? Icons.place : Icons.info_outline,
+                      notifier.selectedDisplaySpot != null
+                          ? Icons.place
+                          : Icons.info_outline,
                       color: AppTheme.primaryColor,
                       size: 24,
                     ),
                     const SizedBox(width: AppTheme.spacingMd),
                     Expanded(
                       child: Text(
-                        notifier.selectedDisplaySpot != null ? 'Spot Details' : 'Area Details',
+                        notifier.selectedDisplaySpot != null
+                            ? 'Spot Details'
+                            : 'Area Details',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: AppTheme.textPrimary,
                           fontWeight: FontWeight.w600,
@@ -430,7 +442,9 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
                     AppTheme.spacingLg,
                     AppTheme.spacingLg,
                   ),
-                  child: notifier.selectedDisplaySpot != null ? SpotDetailPanel() : StatusCard(notifier: notifier),
+                  child: notifier.selectedDisplaySpot != null
+                      ? SpotDetailPanel()
+                      : StatusCard(notifier: notifier),
                 ),
               ),
             ],
@@ -537,7 +551,9 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
               color: AppTheme.cardColor,
               borderRadius: BorderRadius.circular(AppTheme.radiusXl),
               boxShadow: AppTheme.shadowLg,
-              border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppTheme.errorColor.withValues(alpha: 0.3),
+              ),
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -578,7 +594,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: const LatLng(50.9375, 6.9603), // Cologne
+        initialCenter: const LatLng(50.9375, 6.9603),
+        // Cologne
         initialZoom: 10.0,
         interactionOptions: const InteractionOptions(
           flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
@@ -602,14 +619,7 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
             tileProvider: CancellableNetworkTileProvider(),
           ),
         ),
-        // Use the animated area layer
         notifier.animatedAreaLayer,
-        // Add spot markers
-        // MarkerLayer(
-        //   markers: [
-        //     ...notifier.spotMarkers,
-        //   ],
-        // ),
       ],
     );
   }
@@ -675,7 +685,8 @@ class _MapExplorerScreenState extends State<MapExplorerScreen> {
       final yj = polygon[j][0]; // longitude
 
       if (((yi > point.longitude) != (yj > point.longitude)) &&
-          (point.latitude < (xj - xi) * (point.longitude - yi) / (yj - yi) + xi)) {
+          (point.latitude <
+              (xj - xi) * (point.longitude - yi) / (yj - yi) + xi)) {
         inside = !inside;
       }
     }

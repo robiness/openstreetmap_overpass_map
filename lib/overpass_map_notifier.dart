@@ -100,7 +100,9 @@ class OverpassMapNotifier extends ChangeNotifier {
   DisplayableArea? get selectedDisplayArea {
     if (_rawSelectedArea == null) return null;
     // Use the renamed field here
-    final userVisits = userAreaVisitData[_rawSelectedArea!.id] ?? UserAreaData(areaId: _rawSelectedArea!.id);
+    final userVisits =
+        userAreaVisitData[_rawSelectedArea!.id] ??
+        UserAreaData(areaId: _rawSelectedArea!.id);
     return DisplayableArea(geoArea: _rawSelectedArea!, userArea: userVisits);
   }
 
@@ -108,7 +110,9 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   DisplayableSpot? get selectedDisplaySpot {
     if (_selectedSpot == null) return null;
-    final userData = userSpotData[_selectedSpot!.id] ?? UserSpotData(spotId: _selectedSpot!.id);
+    final userData =
+        userSpotData[_selectedSpot!.id] ??
+        UserSpotData(spotId: _selectedSpot!.id);
     return DisplayableSpot(spot: _selectedSpot!, userData: userData);
   }
 
@@ -205,7 +209,8 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   void decrementVisitCount(int areaId) {
     // Use the renamed field here
-    if (userAreaVisitData.containsKey(areaId) && userAreaVisitData[areaId]!.visitCount > 0) {
+    if (userAreaVisitData.containsKey(areaId) &&
+        userAreaVisitData[areaId]!.visitCount > 0) {
       userAreaVisitData[areaId]!.visitCount--;
       _saveUserVisitData();
       notifyListeners();
@@ -236,7 +241,9 @@ class OverpassMapNotifier extends ChangeNotifier {
               color: _getSpotColor(displayableSpot),
               shape: BoxShape.circle,
               border: Border.all(
-                color: _selectedSpot?.id == displayableSpot.id ? Colors.orange : Colors.white,
+                color: _selectedSpot?.id == displayableSpot.id
+                    ? Colors.orange
+                    : Colors.white,
                 width: 2,
               ),
             ),
@@ -424,7 +431,8 @@ class OverpassMapNotifier extends ChangeNotifier {
 
   /// Get the next available spot ID to avoid conflicts
   int _getNextAvailableSpotId() {
-    if (_spots.isEmpty) return 1000000; // Start from a high number for generated spots
+    if (_spots.isEmpty)
+      return 1000000; // Start from a high number for generated spots
     return _spots.map((s) => s.id).reduce((a, b) => a > b ? a : b) + 1;
   }
 
@@ -541,7 +549,8 @@ class OverpassMapNotifier extends ChangeNotifier {
       final xj = polygon[j][0];
 
       if (((yi > point.latitude) != (yj > point.latitude)) &&
-          (point.longitude < (xj - xi) * (point.latitude - yi) / (yj - yi) + xi)) {
+          (point.longitude <
+              (xj - xi) * (point.latitude - yi) / (yj - yi) + xi)) {
         inside = !inside;
       }
       j = i;
@@ -611,7 +620,9 @@ class OverpassMapNotifier extends ChangeNotifier {
     final totalSpots = spotsInArea.length;
     final visitedSpots = spotsInArea
         .where(
-          (s) => userSpotData[s.id]?.visitCount != null && userSpotData[s.id]!.visitCount > 0,
+          (s) =>
+              userSpotData[s.id]?.visitCount != null &&
+              userSpotData[s.id]!.visitCount > 0,
         )
         .length;
 
@@ -641,11 +652,15 @@ class OverpassMapNotifier extends ChangeNotifier {
 
     // Process all stadtteile
     for (final area in _boundaryData!.stadtteile) {
-      final spotsInArea = _spots.where((s) => s.parentAreaId == area.id).toList();
+      final spotsInArea = _spots
+          .where((s) => s.parentAreaId == area.id)
+          .toList();
       final totalSpots = spotsInArea.length;
       final visitedSpots = spotsInArea
           .where(
-            (s) => userSpotData[s.id]?.visitCount != null && userSpotData[s.id]!.visitCount > 0,
+            (s) =>
+                userSpotData[s.id]?.visitCount != null &&
+                userSpotData[s.id]!.visitCount > 0,
           )
           .length;
 
@@ -669,7 +684,8 @@ class OverpassMapNotifier extends ChangeNotifier {
 
     return _boundaryData!.stadtteile
         .map((area) {
-          final userData = userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
+          final userData =
+              userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
           return DisplayableArea(geoArea: area, userArea: userData);
         })
         .where(
@@ -692,7 +708,8 @@ class OverpassMapNotifier extends ChangeNotifier {
     };
 
     for (final area in _boundaryData!.stadtteile) {
-      final userData = userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
+      final userData =
+          userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
       stats['total_areas'] = stats['total_areas']! + 1;
       stats['total_spots'] = stats['total_spots']! + userData.totalSpots;
       stats['visited_spots'] = stats['visited_spots']! + userData.visitedSpots;
@@ -817,7 +834,8 @@ class OverpassMapNotifier extends ChangeNotifier {
     final unvisitedAreaIds = <int>{};
 
     for (final area in areasToShow) {
-      final userData = userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
+      final userData =
+          userAreaVisitData[area.id] ?? UserAreaData(areaId: area.id);
       switch (userData.explorationStatus) {
         case AreaExplorationStatus.completed:
           completedAreaIds.add(area.id);

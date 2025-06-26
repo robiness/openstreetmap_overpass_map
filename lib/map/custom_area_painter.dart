@@ -29,15 +29,9 @@ class CustomAreaPainter extends CustomPainter {
         canvas.drawPath(
           path,
           Paint()
-            ..color = Colors.yellow.withValues(alpha: 1)
-            ..strokeWidth = 5,
-        );
-        canvas.drawPath(
-          path,
-          Paint()
             ..color = Colors.black.withValues(alpha: 1)
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 5
+            ..strokeWidth = 2
             ..strokeJoin = StrokeJoin.round
             ..strokeCap = StrokeCap.round,
         );
