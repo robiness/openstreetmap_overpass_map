@@ -32,7 +32,7 @@ This project is evolving from a map explorer into a full-fledged social explorat
 - **Phase 3: Rich Content** - Adding detailed location data, stories, and user-generated content.
 - **Phase 4: Business & AR** - Integrating local businesses and augmented reality features.
 
-📚 See the detailed [ROADMAP.md](ROADMAP.md) and [ARCHITECTURE.md](ARCHITECTURE.md) for a full breakdown of our plans.
+📚 See the detailed [ROADMAP.md](ROADMAP.md), [ARCHITECTURE.md](ARCHITECTURE.md), and [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) for a full breakdown of our plans.
 
 ## 🚀 Quick Start
 
@@ -98,3 +98,4 @@ flutter build web --wasm --release && netlify deploy --prod --dir=build/web
 - [**Project Issues**](https://github.com/your-username/your-repo/issues) - Bug reports and feature requests
 - [Flutter Documentation](https://docs.flutter.dev/) - General Flutter resources
 - [Overpass API Documentation](https://wiki.openstreetmap.org/wiki/Overpass_API) - For geographic data queries
+- [Project Structure Guide](PROJECT_STRUCTURE.md) - For how to organize code and features.
