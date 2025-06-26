@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overpass_map/app/core/responsive_layout.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_state.dart';
@@ -23,23 +24,25 @@ class MapExplorerScreen extends StatelessWidget {
               child: CircularProgressIndicator(),
             ),
             loadSuccess: (boundaryData, spots, selectedArea, userVisitData) {
-              final screenWidth = MediaQuery.of(context).size.width;
-              final isMobile = screenWidth < 768;
-
-              if (isMobile) {
-                return MobileLayout(
+              return ResponsiveLayout(
+                mobile: MobileLayout(
                   boundaryData: boundaryData,
                   spots: spots,
                   selectedArea: selectedArea,
-                );
-              } else {
-                return DesktopLayout(
+                ),
+                // TODO: Create a dedicated TabletLayout
+                tablet: MobileLayout(
+                  boundaryData: boundaryData,
+                  spots: spots,
+                  selectedArea: selectedArea,
+                ),
+                desktop: DesktopLayout(
                   boundaryData: boundaryData,
                   spots: spots,
                   selectedArea: selectedArea,
                   userVisitData: userVisitData,
-                );
-              }
+                ),
+              );
             },
             loadFailure: (error) => Center(
               child: StatusCard(
