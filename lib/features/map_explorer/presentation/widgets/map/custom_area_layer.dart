@@ -20,7 +20,7 @@ class CustomAreaLayer extends StatelessWidget {
   Widget build(BuildContext context) {
     final camera = MapCamera.of(context);
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+      behavior: HitTestBehavior.translucent,
       onTapDown: (details) {
         print('Tapped at: ${details.localPosition}');
         if (onAreaTap == null) return;
@@ -30,9 +30,7 @@ class CustomAreaLayer extends StatelessWidget {
         // Iterate backwards to check top-most layers first
         for (final area in areas.reversed) {
           for (final polygonRings in area.coordinates) {
-            final polygon = polygonRings
-                .map((coords) => LatLng(coords[1], coords[0]))
-                .toList();
+            final polygon = polygonRings.map((coords) => LatLng(coords[1], coords[0])).toList();
             if (_isPointInPolygon(tappedLatLng, polygon)) {
               onAreaTap!(area);
               return; // Stop after finding the first match
@@ -63,14 +61,10 @@ class CustomAreaLayer extends StatelessWidget {
       final p1 = polygon[i];
       final p2 = polygon[j];
 
-      final isYBetween =
-          (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
+      final isYBetween = (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
       final isXBefore =
           point.longitude <
-          (p2.longitude - p1.longitude) *
-                  (point.latitude - p1.latitude) /
-                  (p2.latitude - p1.latitude) +
-              p1.longitude;
+          (p2.longitude - p1.longitude) * (point.latitude - p1.latitude) / (p2.latitude - p1.latitude) + p1.longitude;
 
       if (isYBetween && isXBefore) {
         isInside = !isInside;

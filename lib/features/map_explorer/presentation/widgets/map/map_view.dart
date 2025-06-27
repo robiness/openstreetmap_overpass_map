@@ -36,9 +36,12 @@ class MapView extends StatelessWidget {
       options: MapOptions(
         initialCenter: const LatLng(50.9375, 6.9603), // Cologne
         initialZoom: 10,
+        minZoom: 8,
+        maxZoom: 18,
         onTap: (tapPosition, latLng) {
           // Deselect if tapping on the map background
-          context.read<MapBloc>().add(const MapEvent.areaSelected(area: null));
+          final bloc = context.read<MapBloc>();
+          bloc.add(const MapEvent.areaSelected(area: null));
         },
       ),
       children: [
