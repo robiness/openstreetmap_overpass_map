@@ -8,6 +8,7 @@ import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_area_layer.dart';
+import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_spot_layer.dart';
 
 class MapView extends StatefulWidget {
   final BoundaryData boundaryData;
@@ -47,7 +48,7 @@ class _MapViewState extends State<MapView> {
       mapController: _mapController,
       options: MapOptions(
         initialCenter: const LatLng(50.9375, 6.9603), // Cologne
-        initialZoom: 10,
+        initialZoom: 11,
         minZoom: 8,
         maxZoom: 18,
         onTap: (tapPosition, latLng) {
@@ -73,6 +74,13 @@ class _MapViewState extends State<MapView> {
             } else {
               bloc.add(MapEvent.areaSelected(area: area));
             }
+          },
+        ),
+        CustomSpotLayer(
+          spots: widget.spots,
+          onSpotTap: (spot) {
+            // TODO: Handle spot selection and detail display
+            print('Tapped spot: ${spot.name} (${spot.category})');
           },
         ),
       ],
