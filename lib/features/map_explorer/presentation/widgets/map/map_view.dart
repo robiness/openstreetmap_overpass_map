@@ -9,13 +9,12 @@ import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_area_layer.dart';
 
-class MapView extends StatelessWidget {
+class MapView extends StatefulWidget {
   final BoundaryData boundaryData;
   final List<Spot> spots;
   final GeographicArea? selectedArea;
-  final MapController _mapController = MapController();
 
-  MapView({
+  const MapView({
     super.key,
     required this.boundaryData,
     required this.spots,
@@ -23,12 +22,25 @@ class MapView extends StatelessWidget {
   });
 
   @override
+  State<MapView> createState() => _MapViewState();
+}
+
+class _MapViewState extends State<MapView> {
+  final MapController _mapController = MapController();
+
+  @override
+  void dispose() {
+    _mapController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Combine all boundaries into a single list to be drawn
     final allAreas = [
-      ...boundaryData.cities,
-      ...boundaryData.bezirke,
-      ...boundaryData.stadtteile,
+      ...widget.boundaryData.cities,
+      ...widget.boundaryData.bezirke,
+      ...widget.boundaryData.stadtteile,
     ];
 
     return FlutterMap(
@@ -52,10 +64,10 @@ class MapView extends StatelessWidget {
         ),
         CustomAreaLayer(
           areas: allAreas,
-          selectedArea: selectedArea,
+          selectedArea: widget.selectedArea,
           onAreaTap: (area) {
             final bloc = context.read<MapBloc>();
-            if (selectedArea?.id == area.id) {
+            if (widget.selectedArea?.id == area.id) {
               // Deselect if tapped again
               bloc.add(const MapEvent.areaSelected(area: null));
             } else {

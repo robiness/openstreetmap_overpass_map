@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
@@ -20,22 +19,11 @@ class MobileLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Social Exploration Game'),
-        backgroundColor: AppTheme.primaryColor,
-        foregroundColor: Colors.white,
+      body: MapView(
+        boundaryData: boundaryData,
+        spots: spots,
+        selectedArea: selectedArea,
       ),
-      body: Stack(
-        children: [
-          MapView(
-            boundaryData: boundaryData,
-            spots: spots,
-            selectedArea: selectedArea,
-          ),
-          // We can add a bottom sheet here for details
-        ],
-      ),
-      // We could have a drawer with the HierarchicalAreaList
     );
   }
 }
