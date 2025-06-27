@@ -28,8 +28,26 @@ class CustomAreaLayer extends StatelessWidget {
 
         final tappedLatLng = camera.offsetToCrs(details.localPosition);
 
-        // Iterate backwards to check top-most layers first
+        // First check if tap is on the selected area (since it's drawn on top)
+        if (selectedArea != null) {
+          for (final polygonRings in selectedArea!.coordinates) {
+            final polygon = polygonRings
+                .map((coords) => LatLng(coords[1], coords[0]))
+                .toList();
+            if (_isPointInPolygon(tappedLatLng, polygon)) {
+              onAreaTap!(selectedArea!);
+              return; // Stop after finding the match
+            }
+          }
+        }
+
+        // Then check other areas (iterate backwards to check top-most layers first)
         for (final area in areas.reversed) {
+          // Skip the selected area since we already checked it
+          if (selectedArea != null && area.id == selectedArea!.id) {
+            continue;
+          }
+
           for (final polygonRings in area.coordinates) {
             final polygon = polygonRings
                 .map((coords) => LatLng(coords[1], coords[0]))

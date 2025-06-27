@@ -19,9 +19,17 @@ class CustomAreaPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // First pass: draw all non-selected areas
     for (final area in areas) {
       final isSelected = area.id == selectedArea?.id;
-      _paintArea(canvas, size, area, isSelected);
+      if (!isSelected) {
+        _paintArea(canvas, size, area, false);
+      }
+    }
+
+    // Second pass: draw selected area on top
+    if (selectedArea != null) {
+      _paintArea(canvas, size, selectedArea!, true);
     }
   }
 
