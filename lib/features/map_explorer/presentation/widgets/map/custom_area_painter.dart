@@ -9,28 +9,50 @@ import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 class CustomAreaPainter extends CustomPainter {
   final List<GeographicArea> areas;
   final MapCamera camera;
+  final GeographicArea? selectedArea;
 
-  CustomAreaPainter({required this.areas, required this.camera});
+  CustomAreaPainter({
+    required this.areas,
+    required this.camera,
+    this.selectedArea,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final animatedArea in areas) {
-      _paintArea(canvas, size, animatedArea);
+    for (final area in areas) {
+      final isSelected = area.id == selectedArea?.id;
+      _paintArea(canvas, size, area, isSelected);
     }
   }
 
-  void _paintArea(Canvas canvas, Size size, GeographicArea area) {
+  void _paintArea(
+    Canvas canvas,
+    Size size,
+    GeographicArea area,
+    bool isSelected,
+  ) {
     // Convert coordinates to screen points and draw
     for (final coordinateRing in area.coordinates) {
       final path = _createPathFromCoordinates(coordinateRing);
 
       if (path != null) {
+        // Draw the fill for selected area
+        if (isSelected) {
+          canvas.drawPath(
+            path,
+            Paint()
+              ..color = Colors.blue.withAlpha(77)
+              ..style = PaintingStyle.fill,
+          );
+        }
+
+        // Draw the border
         canvas.drawPath(
           path,
           Paint()
-            ..color = Colors.black.withValues(alpha: 1)
+            ..color = isSelected ? Colors.blue : Colors.black
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 2
+            ..strokeWidth = isSelected ? 3.0 : 2.0
             ..strokeJoin = StrokeJoin.round
             ..strokeCap = StrokeCap.round,
         );
@@ -67,7 +89,9 @@ class CustomAreaPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomAreaPainter oldDelegate) {
-    return oldDelegate.areas != areas || oldDelegate.camera != camera;
+    return oldDelegate.areas != areas ||
+        oldDelegate.camera != camera ||
+        oldDelegate.selectedArea != selectedArea;
   }
 
   @override

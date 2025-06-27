@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/app/core/responsive_layout.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
-import 'package:overpass_map/features/map_explorer/presentation/bloc/map_state.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/layout/desktop_layout.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/layout/mobile_layout.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/shared/status_card.dart';

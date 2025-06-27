@@ -1,9 +1,14 @@
 import 'package:bloc/bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
+import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
-import 'package:overpass_map/features/map_explorer/presentation/bloc/map_event.dart';
-import 'package:overpass_map/features/map_explorer/presentation/bloc/map_state.dart';
+import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
+
+part 'map_bloc.freezed.dart';
+part 'map_event.dart';
+part 'map_state.dart';
 
 class MapBloc extends Bloc<MapEvent, MapState> {
   final MapRepository _mapRepository;
@@ -50,7 +55,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   Future<void> _onAreaSelected(
     Emitter<MapState> emit,
-    GeographicArea area,
+    GeographicArea? area,
   ) async {
     state.whenOrNull(
       loadSuccess: (boundaryData, spots, _, userVisitData) {

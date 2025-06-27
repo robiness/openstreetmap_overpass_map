@@ -1,10 +1,4 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
-import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
-import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
-import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
-
-part 'map_state.freezed.dart';
+part of 'map_bloc.dart';
 
 @freezed
 class MapState with _$MapState {

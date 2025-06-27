@@ -6,7 +6,6 @@ import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
-import 'package:overpass_map/features/map_explorer/presentation/bloc/map_event.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/lists/hierarchical_area_list.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/map_view.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/shared/app_header.dart';
