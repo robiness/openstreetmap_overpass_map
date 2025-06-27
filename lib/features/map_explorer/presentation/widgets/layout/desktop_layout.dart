@@ -14,14 +14,18 @@ class DesktopLayout extends StatelessWidget {
   final BoundaryData boundaryData;
   final List<Spot> spots;
   final GeographicArea? selectedArea;
+  final Spot? selectedSpot;
   final Map<int, UserAreaData> userVisitData;
+  final Map<int, UserSpotData> userSpotVisitData;
 
   const DesktopLayout({
     super.key,
     required this.boundaryData,
     required this.spots,
     this.selectedArea,
+    this.selectedSpot,
     required this.userVisitData,
+    this.userSpotVisitData = const {},
   });
 
   @override
@@ -58,6 +62,9 @@ class DesktopLayout extends StatelessWidget {
             boundaryData: boundaryData,
             spots: spots,
             selectedArea: selectedArea,
+            selectedSpot: selectedSpot,
+            userSpotVisitData: userSpotVisitData,
+            userAreaVisitData: userVisitData,
           ),
         ),
       ],

@@ -22,27 +22,42 @@ class MapExplorerScreen extends StatelessWidget {
             loadInProgress: () => const Center(
               child: CircularProgressIndicator(),
             ),
-            loadSuccess: (boundaryData, spots, selectedArea, userVisitData) {
-              return ResponsiveLayout(
-                mobile: MobileLayout(
-                  boundaryData: boundaryData,
-                  spots: spots,
-                  selectedArea: selectedArea,
-                ),
-                // TODO: Create a dedicated TabletLayout
-                tablet: MobileLayout(
-                  boundaryData: boundaryData,
-                  spots: spots,
-                  selectedArea: selectedArea,
-                ),
-                desktop: DesktopLayout(
-                  boundaryData: boundaryData,
-                  spots: spots,
-                  selectedArea: selectedArea,
-                  userVisitData: userVisitData,
-                ),
-              );
-            },
+            loadSuccess:
+                (
+                  boundaryData,
+                  spots,
+                  selectedArea,
+                  selectedSpot,
+                  userVisitData,
+                  userSpotVisitData,
+                ) {
+                  return ResponsiveLayout(
+                    mobile: MobileLayout(
+                      boundaryData: boundaryData,
+                      spots: spots,
+                      selectedArea: selectedArea,
+                      selectedSpot: selectedSpot,
+                      userSpotVisitData: userSpotVisitData,
+                      userAreaVisitData: userVisitData,
+                    ),
+                    tablet: MobileLayout(
+                      boundaryData: boundaryData,
+                      spots: spots,
+                      selectedArea: selectedArea,
+                      selectedSpot: selectedSpot,
+                      userSpotVisitData: userSpotVisitData,
+                      userAreaVisitData: userVisitData,
+                    ),
+                    desktop: DesktopLayout(
+                      boundaryData: boundaryData,
+                      spots: spots,
+                      selectedArea: selectedArea,
+                      selectedSpot: selectedSpot,
+                      userVisitData: userVisitData,
+                      userSpotVisitData: userSpotVisitData,
+                    ),
+                  );
+                },
             loadFailure: (error) => Center(
               child: StatusCard(
                 message: 'Failed to load map data:\n$error',

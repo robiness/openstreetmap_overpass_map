@@ -3,18 +3,19 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
-import 'dart:math' as dart;
 
 /// A custom painter for drawing spots (POIs) on the map
 class CustomSpotPainter extends CustomPainter {
   final List<Spot> spots;
   final MapCamera camera;
   final Spot? selectedSpot;
+  final Map<int, UserSpotData> userSpotVisitData;
 
   CustomSpotPainter({
     required this.spots,
     required this.camera,
     this.selectedSpot,
+    this.userSpotVisitData = const {},
   });
 
   @override
@@ -35,9 +36,11 @@ class CustomSpotPainter extends CustomPainter {
 
   void _paintSpot(Canvas canvas, Spot spot, bool isSelected) {
     final screenPoint = camera.latLngToScreenOffset(spot.location);
+    final spotVisitData = userSpotVisitData[spot.id];
+    final isVisited = spotVisitData != null && spotVisitData.visitCount > 0;
 
-    // Get colors and size based on category and selection state
-    final colors = _getCategoryColors(spot.category);
+    // Get colors and size based on category, selection state, and visit status
+    final colors = _getCategoryColors(spot.category, isVisited);
     final size = isSelected ? 16.0 : 12.0;
     final borderWidth = isSelected ? 3.0 : 2.0;
 
@@ -62,6 +65,11 @@ class CustomSpotPainter extends CustomPainter {
     // Draw icon or symbol for the category
     _drawCategoryIcon(canvas, screenPoint, spot.category, size, colors.icon);
 
+    // Draw visit indicator for visited spots
+    if (isVisited && !isSelected) {
+      _drawVisitIndicator(canvas, screenPoint, size + borderWidth);
+    }
+
     // Draw selection indicator
     if (isSelected) {
       canvas.drawCircle(
@@ -73,6 +81,41 @@ class CustomSpotPainter extends CustomPainter {
           ..strokeWidth = 2.0,
       );
     }
+  }
+
+  void _drawVisitIndicator(Canvas canvas, Offset center, double outerRadius) {
+    // Draw a small checkmark to indicate visited status
+    final checkPath = ui.Path();
+    final checkSize = 4.0;
+    final checkCenter = center.translate(outerRadius * 0.6, -outerRadius * 0.6);
+
+    // Draw small circle background for checkmark
+    canvas.drawCircle(
+      checkCenter,
+      checkSize + 1,
+      Paint()
+        ..color = Colors.green
+        ..style = PaintingStyle.fill,
+    );
+
+    // Draw checkmark
+    final paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
+
+    checkPath.moveTo(checkCenter.dx - checkSize * 0.5, checkCenter.dy);
+    checkPath.lineTo(
+      checkCenter.dx - checkSize * 0.1,
+      checkCenter.dy + checkSize * 0.3,
+    );
+    checkPath.lineTo(
+      checkCenter.dx + checkSize * 0.5,
+      checkCenter.dy - checkSize * 0.3,
+    );
+
+    canvas.drawPath(checkPath, paint);
   }
 
   void _drawCategoryIcon(
@@ -275,7 +318,21 @@ class CustomSpotPainter extends CustomPainter {
     );
   }
 
-  SpotColors _getCategoryColors(String category) {
+  SpotColors _getCategoryColors(String category, bool isVisited) {
+    final baseColors = _getBaseCategoryColors(category);
+
+    if (isVisited) {
+      // Darken colors for visited spots
+      return SpotColors(
+        baseColors.main.withValues(alpha: 0.8),
+        baseColors.icon,
+      );
+    }
+
+    return baseColors;
+  }
+
+  SpotColors _getBaseCategoryColors(String category) {
     switch (category) {
       case 'restaurant':
         return SpotColors(Colors.red.shade600, Colors.white);
@@ -299,7 +356,8 @@ class CustomSpotPainter extends CustomPainter {
   bool shouldRepaint(CustomSpotPainter oldDelegate) {
     return oldDelegate.spots != spots ||
         oldDelegate.camera != camera ||
-        oldDelegate.selectedSpot != selectedSpot;
+        oldDelegate.selectedSpot != selectedSpot ||
+        oldDelegate.userSpotVisitData != userSpotVisitData;
   }
 
   @override
@@ -376,18 +434,11 @@ class CustomSpotPainter extends CustomPainter {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared &&
-          distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle
     return distanceSquared <= radiusSquared;
-  }
-
-  double _calculateDistance(Offset point1, Offset point2) {
-    final dx = point1.dx - point2.dx;
-    final dy = point1.dy - point2.dy;
-    return dart.sqrt(dx * dx + dy * dy);
   }
 }
 

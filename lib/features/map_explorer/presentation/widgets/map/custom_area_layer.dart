@@ -2,18 +2,21 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
+import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_area_painter.dart';
 
 class CustomAreaLayer extends StatelessWidget {
   final List<GeographicArea> areas;
   final void Function(GeographicArea)? onAreaTap;
   final GeographicArea? selectedArea;
+  final Map<int, UserAreaData> userVisitData;
 
   const CustomAreaLayer({
     super.key,
     required this.areas,
     this.onAreaTap,
     this.selectedArea,
+    this.userVisitData = const {},
   });
 
   @override
@@ -64,6 +67,7 @@ class CustomAreaLayer extends StatelessWidget {
           areas: areas,
           camera: camera,
           selectedArea: selectedArea,
+          userVisitData: userVisitData,
         ),
         size: Size.infinite,
       ),

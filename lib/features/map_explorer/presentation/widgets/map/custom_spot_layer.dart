@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
@@ -9,12 +7,14 @@ class CustomSpotLayer extends StatelessWidget {
   final List<Spot> spots;
   final void Function(Spot)? onSpotTap;
   final Spot? selectedSpot;
+  final Map<int, UserSpotData> userSpotVisitData;
 
   const CustomSpotLayer({
     super.key,
     required this.spots,
     this.onSpotTap,
     this.selectedSpot,
+    this.userSpotVisitData = const {},
   });
 
   @override
@@ -37,6 +37,7 @@ class CustomSpotLayer extends StatelessWidget {
           spots: spots,
           camera: camera,
           selectedSpot: selectedSpot,
+          userSpotVisitData: userSpotVisitData,
         ),
         size: Size.infinite,
       ),
@@ -120,8 +121,7 @@ class CustomSpotLayer extends StatelessWidget {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared &&
-          distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle
