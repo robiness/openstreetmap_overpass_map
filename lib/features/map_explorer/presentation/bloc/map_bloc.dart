@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
@@ -39,18 +40,86 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         cityAdminLevel: adminLevel,
       );
 
-      final spots = await _mapRepository.getSpots(cityName: cityName);
+      final allSpots = await _mapRepository.getSpots(cityName: cityName);
+
+      // Filter spots to get exactly one per area (Stadtteil)
+      final spotsToShow = _getOneSpotPerArea(
+        areas: boundaryData.stadtteile,
+        spots: allSpots,
+      );
 
       emit(
         MapState.loadSuccess(
           boundaryData: boundaryData,
-          spots: spots,
+          spots: spotsToShow,
           userVisitData: {}, // Start with empty visit data
         ),
       );
     } catch (e) {
       emit(MapState.loadFailure(error: e.toString()));
     }
+  }
+
+  List<Spot> _getOneSpotPerArea({
+    required List<GeographicArea> areas,
+    required List<Spot> spots,
+  }) {
+    final spotsForAreas = <Spot>[];
+    final assignedSpotIds = <int>{};
+
+    for (final area in areas) {
+      for (final spot in spots) {
+        if (assignedSpotIds.contains(spot.id)) {
+          continue; // This spot is already assigned to another area
+        }
+
+        bool isInside = false;
+        for (final polygonRing in area.coordinates) {
+          final polygonLatLng = polygonRing
+              .map((coords) => LatLng(coords[1], coords[0]))
+              .toList();
+          if (_isPointInPolygon(spot.location, polygonLatLng)) {
+            isInside = true;
+            break;
+          }
+        }
+        if (isInside) {
+          spotsForAreas.add(spot);
+          assignedSpotIds.add(spot.id);
+          break; // Found a spot for this area, move to the next area
+        }
+      }
+    }
+    return spotsForAreas;
+  }
+
+  bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
+    if (polygon.length < 3) {
+      return false;
+    }
+
+    bool isInside = false;
+    int j = polygon.length - 1;
+    for (int i = 0; i < polygon.length; i++) {
+      final p1 = polygon[i];
+      final p2 = polygon[j];
+
+      final isYBetween =
+          (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
+      final isXBefore =
+          point.longitude <
+          (p2.longitude - p1.longitude) *
+                  (point.latitude - p1.latitude) /
+                  (p2.latitude - p1.latitude) +
+              p1.longitude;
+
+      if (isYBetween && isXBefore) {
+        isInside = !isInside;
+      }
+      j = i;
+    }
+
+    return isInside;
   }
 
   Future<void> _onAreaSelected(

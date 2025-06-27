@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
+import 'dart:math' as dart;
 
 /// A custom painter for drawing spots (POIs) on the map
 class CustomSpotPainter extends CustomPainter {
@@ -296,11 +297,98 @@ class CustomSpotPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomSpotPainter oldDelegate) {
-    return oldDelegate.spots != spots || oldDelegate.camera != camera || oldDelegate.selectedSpot != selectedSpot;
+    return oldDelegate.spots != spots ||
+        oldDelegate.camera != camera ||
+        oldDelegate.selectedSpot != selectedSpot;
   }
 
   @override
-  bool hitTest(Offset position) => false;
+  bool hitTest(Offset position) {
+    // Test spots in reverse order (same as painting order - selected spot is painted last)
+    final spotsToTest = <Spot>[];
+    final nonSelectedSpots = <Spot>[];
+
+    // Separate selected and non-selected spots
+    for (final spot in spots) {
+      final isSelected = spot.id == selectedSpot?.id;
+      if (isSelected) {
+        spotsToTest.add(spot); // Selected spot will be tested last
+      } else {
+        nonSelectedSpots.add(spot);
+      }
+    }
+
+    // Test non-selected spots first, then selected spot (matching paint order)
+    for (final spot in nonSelectedSpots) {
+      if (_testSpotHit(position, spot, false)) {
+        return true;
+      }
+    }
+
+    // Test selected spot last (it's painted on top)
+    for (final spot in spotsToTest) {
+      if (_testSpotHit(position, spot, true)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _testSpotHit(Offset position, Spot spot, bool isSelected) {
+    final screenPoint = camera.latLngToScreenOffset(spot.location);
+    final spotSize = isSelected ? 16.0 : 12.0;
+    final borderWidth = isSelected ? 3.0 : 2.0;
+
+    // Test selection indicator first (outermost ring)
+    if (isSelected) {
+      final selectionRadius = spotSize + borderWidth + 2;
+      if (_isPointInCircle(
+        position,
+        screenPoint,
+        selectionRadius,
+        selectionRadius - 2,
+      )) {
+        return true; // Hit the selection ring
+      }
+    }
+
+    // Test main circle with white border
+    final totalRadius = spotSize + borderWidth;
+    if (_isPointInCircle(position, screenPoint, totalRadius)) {
+      return true; // Hit the main circle (including border)
+    }
+
+    return false;
+  }
+
+  bool _isPointInCircle(
+    Offset point,
+    Offset center,
+    double radius, [
+    double? innerRadius,
+  ]) {
+    final dx = point.dx - center.dx;
+    final dy = point.dy - center.dy;
+    final distanceSquared = dx * dx + dy * dy;
+    final radiusSquared = radius * radius;
+
+    // If innerRadius is specified, test for ring (between inner and outer radius)
+    if (innerRadius != null) {
+      final innerRadiusSquared = innerRadius * innerRadius;
+      return distanceSquared <= radiusSquared &&
+          distanceSquared >= innerRadiusSquared;
+    }
+
+    // Otherwise test for filled circle
+    return distanceSquared <= radiusSquared;
+  }
+
+  double _calculateDistance(Offset point1, Offset point2) {
+    final dx = point1.dx - point2.dx;
+    final dy = point1.dy - point2.dy;
+    return dart.sqrt(dx * dx + dy * dy);
+  }
 }
 
 class SpotColors {
