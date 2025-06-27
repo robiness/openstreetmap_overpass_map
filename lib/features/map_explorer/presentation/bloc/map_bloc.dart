@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
@@ -27,6 +28,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         spotSelected: (spot) => _onSpotSelected(emit, spot),
         incrementSpotVisit: (spotId) => _onIncrementSpotVisit(emit, spotId),
         decrementSpotVisit: (spotId) => _onDecrementSpotVisit(emit, spotId),
+        toggleDebugMode: () => _onToggleDebugMode(emit),
       );
     });
   }
@@ -57,6 +59,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           spots: spotsToShow,
           userVisitData: {}, // Start with empty visit data
           userSpotVisitData: {}, // Start with empty spot visit data
+          isDebugModeEnabled: kDebugMode, // Auto-enable in debug builds
         ),
       );
     } catch (e) {
@@ -139,6 +142,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
+            isDebugModeEnabled,
           ) {
             emit(
               MapState.loadSuccess(
@@ -148,6 +152,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: selectedSpot,
                 userVisitData: userVisitData,
                 userSpotVisitData: userSpotVisitData,
+                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -167,6 +172,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             _,
             userVisitData,
             userSpotVisitData,
+            isDebugModeEnabled,
           ) {
             // If spot is tapped, also increment visit count
             final newSpotVisitData = Map<int, UserSpotData>.from(
@@ -187,6 +193,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: spot,
                 userVisitData: userVisitData,
                 userSpotVisitData: newSpotVisitData,
+                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -203,7 +210,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
+            isDebugModeEnabled,
           ) {
+            // Only allow manual increment in debug mode
+            if (!isDebugModeEnabled) return;
+
             final newVisitData = Map<int, UserAreaData>.from(userVisitData);
             final currentData =
                 newVisitData[areaId] ?? UserAreaData(areaId: areaId);
@@ -218,6 +229,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: selectedSpot,
                 userVisitData: newVisitData,
                 userSpotVisitData: userSpotVisitData,
+                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -234,7 +246,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
+            isDebugModeEnabled,
           ) {
+            // Only allow manual decrement in debug mode
+            if (!isDebugModeEnabled) return;
+
             final newVisitData = Map<int, UserAreaData>.from(userVisitData);
             final currentData = newVisitData[areaId];
             if (currentData != null && currentData.visitCount > 0) {
@@ -249,6 +265,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                   selectedSpot: selectedSpot,
                   userVisitData: newVisitData,
                   userSpotVisitData: userSpotVisitData,
+                  isDebugModeEnabled: isDebugModeEnabled,
                 ),
               );
             }
@@ -266,7 +283,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
+            isDebugModeEnabled,
           ) {
+            // Only allow manual increment in debug mode
+            if (!isDebugModeEnabled) return;
+
             final newSpotVisitData = Map<int, UserSpotData>.from(
               userSpotVisitData,
             );
@@ -283,6 +304,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: selectedSpot,
                 userVisitData: userVisitData,
                 userSpotVisitData: newSpotVisitData,
+                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -299,7 +321,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
+            isDebugModeEnabled,
           ) {
+            // Only allow manual decrement in debug mode
+            if (!isDebugModeEnabled) return;
+
             final newSpotVisitData = Map<int, UserSpotData>.from(
               userSpotVisitData,
             );
@@ -322,9 +348,37 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                   selectedSpot: selectedSpot,
                   userVisitData: userVisitData,
                   userSpotVisitData: newSpotVisitData,
+                  isDebugModeEnabled: isDebugModeEnabled,
                 ),
               );
             }
+          },
+    );
+  }
+
+  Future<void> _onToggleDebugMode(Emitter<MapState> emit) async {
+    state.whenOrNull(
+      loadSuccess:
+          (
+            boundaryData,
+            spots,
+            selectedArea,
+            selectedSpot,
+            userVisitData,
+            userSpotVisitData,
+            isDebugModeEnabled,
+          ) {
+            emit(
+              MapState.loadSuccess(
+                boundaryData: boundaryData,
+                spots: spots,
+                selectedArea: selectedArea,
+                selectedSpot: selectedSpot,
+                userVisitData: userVisitData,
+                userSpotVisitData: userSpotVisitData,
+                isDebugModeEnabled: !isDebugModeEnabled,
+              ),
+            );
           },
     );
   }

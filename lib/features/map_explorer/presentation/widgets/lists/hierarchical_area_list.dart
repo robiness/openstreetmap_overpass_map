@@ -13,6 +13,7 @@ class HierarchicalAreaList extends StatelessWidget {
   final Function(GeographicArea) onAreaTapped;
   final Function(int) onIncrementVisit;
   final Function(int) onDecrementVisit;
+  final bool isDebugModeEnabled;
 
   const HierarchicalAreaList({
     super.key,
@@ -22,6 +23,7 @@ class HierarchicalAreaList extends StatelessWidget {
     required this.onAreaTapped,
     required this.onIncrementVisit,
     required this.onDecrementVisit,
+    required this.isDebugModeEnabled,
   });
 
   @override
@@ -506,27 +508,28 @@ class HierarchicalAreaList extends StatelessWidget {
                   const SizedBox(width: 8),
                 ],
 
-                // Enhanced visit count controls with better styling
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8.0),
+                // Debug mode: Enhanced visit count controls with better styling
+                if (isDebugModeEnabled)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove),
+                          onPressed: () => onDecrementVisit(area.id),
+                        ),
+                        Text('$visitCount'),
+                        IconButton(
+                          icon: const Icon(Icons.add),
+                          onPressed: () => onIncrementVisit(area.id),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.remove),
-                        onPressed: () => onDecrementVisit(area.id),
-                      ),
-                      Text('$visitCount'),
-                      IconButton(
-                        icon: const Icon(Icons.add),
-                        onPressed: () => onIncrementVisit(area.id),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),

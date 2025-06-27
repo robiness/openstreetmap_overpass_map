@@ -39,19 +39,38 @@ class DesktopLayout extends StatelessWidget {
             children: [
               const AppHeader(),
               Expanded(
-                child: HierarchicalAreaList(
-                  boundaryData: boundaryData,
-                  selectedArea: selectedArea,
-                  userVisitData: userVisitData,
-                  onAreaTapped: (area) => context.read<MapBloc>().add(
-                    MapEvent.areaSelected(area: area),
-                  ),
-                  onIncrementVisit: (areaId) => context.read<MapBloc>().add(
-                    MapEvent.incrementAreaVisit(areaId: areaId),
-                  ),
-                  onDecrementVisit: (areaId) => context.read<MapBloc>().add(
-                    MapEvent.decrementAreaVisit(areaId: areaId),
-                  ),
+                child: BlocBuilder<MapBloc, MapState>(
+                  builder: (context, state) {
+                    final isDebugMode = state.maybeWhen(
+                      loadSuccess:
+                          (
+                            _,
+                            _,
+                            _,
+                            _,
+                            _,
+                            _,
+                            isDebugModeEnabled,
+                          ) => isDebugModeEnabled,
+                      orElse: () => false,
+                    );
+
+                    return HierarchicalAreaList(
+                      boundaryData: boundaryData,
+                      selectedArea: selectedArea,
+                      userVisitData: userVisitData,
+                      isDebugModeEnabled: isDebugMode,
+                      onAreaTapped: (area) => context.read<MapBloc>().add(
+                        MapEvent.areaSelected(area: area),
+                      ),
+                      onIncrementVisit: (areaId) => context.read<MapBloc>().add(
+                        MapEvent.incrementAreaVisit(areaId: areaId),
+                      ),
+                      onDecrementVisit: (areaId) => context.read<MapBloc>().add(
+                        MapEvent.decrementAreaVisit(areaId: areaId),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

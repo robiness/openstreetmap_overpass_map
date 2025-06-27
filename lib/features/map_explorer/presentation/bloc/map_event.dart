@@ -22,4 +22,6 @@ class MapEvent with _$MapEvent {
 
   const factory MapEvent.decrementSpotVisit({required int spotId}) =
       _DecrementSpotVisit;
+
+  const factory MapEvent.toggleDebugMode() = _ToggleDebugMode;
 }

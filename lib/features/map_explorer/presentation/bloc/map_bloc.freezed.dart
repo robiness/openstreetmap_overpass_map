@@ -27,6 +27,7 @@ mixin _$MapEvent {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -37,6 +38,7 @@ mixin _$MapEvent {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -47,6 +49,7 @@ mixin _$MapEvent {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -58,6 +61,7 @@ mixin _$MapEvent {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -68,6 +72,7 @@ mixin _$MapEvent {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -78,6 +83,7 @@ mixin _$MapEvent {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -143,7 +149,9 @@ class __$$FetchDataRequestedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$FetchDataRequestedImpl implements _FetchDataRequested {
+class _$FetchDataRequestedImpl
+    with DiagnosticableTreeMixin
+    implements _FetchDataRequested {
   const _$FetchDataRequestedImpl({
     required this.cityName,
     required this.adminLevel,
@@ -155,8 +163,17 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
   final int adminLevel;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.fetchDataRequested(cityName: $cityName, adminLevel: $adminLevel)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.fetchDataRequested'))
+      ..add(DiagnosticsProperty('cityName', cityName))
+      ..add(DiagnosticsProperty('adminLevel', adminLevel));
   }
 
   @override
@@ -195,6 +212,7 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return fetchDataRequested(cityName, adminLevel);
   }
@@ -209,6 +227,7 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return fetchDataRequested?.call(cityName, adminLevel);
   }
@@ -223,6 +242,7 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (fetchDataRequested != null) {
@@ -241,6 +261,7 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return fetchDataRequested(this);
   }
@@ -255,6 +276,7 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return fetchDataRequested?.call(this);
   }
@@ -269,6 +291,7 @@ class _$FetchDataRequestedImpl implements _FetchDataRequested {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (fetchDataRequested != null) {
@@ -331,15 +354,23 @@ class __$$AreaSelectedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$AreaSelectedImpl implements _AreaSelected {
+class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   const _$AreaSelectedImpl({this.area});
 
   @override
   final GeographicArea? area;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.areaSelected(area: $area)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.areaSelected'))
+      ..add(DiagnosticsProperty('area', area));
   }
 
   @override
@@ -372,6 +403,7 @@ class _$AreaSelectedImpl implements _AreaSelected {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return areaSelected(area);
   }
@@ -386,6 +418,7 @@ class _$AreaSelectedImpl implements _AreaSelected {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return areaSelected?.call(area);
   }
@@ -400,6 +433,7 @@ class _$AreaSelectedImpl implements _AreaSelected {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (areaSelected != null) {
@@ -418,6 +452,7 @@ class _$AreaSelectedImpl implements _AreaSelected {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return areaSelected(this);
   }
@@ -432,6 +467,7 @@ class _$AreaSelectedImpl implements _AreaSelected {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return areaSelected?.call(this);
   }
@@ -446,6 +482,7 @@ class _$AreaSelectedImpl implements _AreaSelected {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (areaSelected != null) {
@@ -505,15 +542,25 @@ class __$$IncrementAreaVisitImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
+class _$IncrementAreaVisitImpl
+    with DiagnosticableTreeMixin
+    implements _IncrementAreaVisit {
   const _$IncrementAreaVisitImpl({required this.areaId});
 
   @override
   final int areaId;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.incrementAreaVisit(areaId: $areaId)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.incrementAreaVisit'))
+      ..add(DiagnosticsProperty('areaId', areaId));
   }
 
   @override
@@ -549,6 +596,7 @@ class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return incrementAreaVisit(areaId);
   }
@@ -563,6 +611,7 @@ class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return incrementAreaVisit?.call(areaId);
   }
@@ -577,6 +626,7 @@ class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (incrementAreaVisit != null) {
@@ -595,6 +645,7 @@ class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return incrementAreaVisit(this);
   }
@@ -609,6 +660,7 @@ class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return incrementAreaVisit?.call(this);
   }
@@ -623,6 +675,7 @@ class _$IncrementAreaVisitImpl implements _IncrementAreaVisit {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (incrementAreaVisit != null) {
@@ -682,15 +735,25 @@ class __$$DecrementAreaVisitImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
+class _$DecrementAreaVisitImpl
+    with DiagnosticableTreeMixin
+    implements _DecrementAreaVisit {
   const _$DecrementAreaVisitImpl({required this.areaId});
 
   @override
   final int areaId;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.decrementAreaVisit(areaId: $areaId)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.decrementAreaVisit'))
+      ..add(DiagnosticsProperty('areaId', areaId));
   }
 
   @override
@@ -726,6 +789,7 @@ class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return decrementAreaVisit(areaId);
   }
@@ -740,6 +804,7 @@ class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return decrementAreaVisit?.call(areaId);
   }
@@ -754,6 +819,7 @@ class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (decrementAreaVisit != null) {
@@ -772,6 +838,7 @@ class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return decrementAreaVisit(this);
   }
@@ -786,6 +853,7 @@ class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return decrementAreaVisit?.call(this);
   }
@@ -800,6 +868,7 @@ class _$DecrementAreaVisitImpl implements _DecrementAreaVisit {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (decrementAreaVisit != null) {
@@ -859,15 +928,23 @@ class __$$SpotSelectedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SpotSelectedImpl implements _SpotSelected {
+class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   const _$SpotSelectedImpl({this.spot});
 
   @override
   final Spot? spot;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.spotSelected(spot: $spot)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.spotSelected'))
+      ..add(DiagnosticsProperty('spot', spot));
   }
 
   @override
@@ -900,6 +977,7 @@ class _$SpotSelectedImpl implements _SpotSelected {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return spotSelected(spot);
   }
@@ -914,6 +992,7 @@ class _$SpotSelectedImpl implements _SpotSelected {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return spotSelected?.call(spot);
   }
@@ -928,6 +1007,7 @@ class _$SpotSelectedImpl implements _SpotSelected {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (spotSelected != null) {
@@ -946,6 +1026,7 @@ class _$SpotSelectedImpl implements _SpotSelected {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return spotSelected(this);
   }
@@ -960,6 +1041,7 @@ class _$SpotSelectedImpl implements _SpotSelected {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return spotSelected?.call(this);
   }
@@ -974,6 +1056,7 @@ class _$SpotSelectedImpl implements _SpotSelected {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (spotSelected != null) {
@@ -1032,15 +1115,25 @@ class __$$IncrementSpotVisitImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
+class _$IncrementSpotVisitImpl
+    with DiagnosticableTreeMixin
+    implements _IncrementSpotVisit {
   const _$IncrementSpotVisitImpl({required this.spotId});
 
   @override
   final int spotId;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.incrementSpotVisit(spotId: $spotId)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.incrementSpotVisit'))
+      ..add(DiagnosticsProperty('spotId', spotId));
   }
 
   @override
@@ -1076,6 +1169,7 @@ class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return incrementSpotVisit(spotId);
   }
@@ -1090,6 +1184,7 @@ class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return incrementSpotVisit?.call(spotId);
   }
@@ -1104,6 +1199,7 @@ class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (incrementSpotVisit != null) {
@@ -1122,6 +1218,7 @@ class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return incrementSpotVisit(this);
   }
@@ -1136,6 +1233,7 @@ class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return incrementSpotVisit?.call(this);
   }
@@ -1150,6 +1248,7 @@ class _$IncrementSpotVisitImpl implements _IncrementSpotVisit {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (incrementSpotVisit != null) {
@@ -1209,15 +1308,25 @@ class __$$DecrementSpotVisitImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
+class _$DecrementSpotVisitImpl
+    with DiagnosticableTreeMixin
+    implements _DecrementSpotVisit {
   const _$DecrementSpotVisitImpl({required this.spotId});
 
   @override
   final int spotId;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapEvent.decrementSpotVisit(spotId: $spotId)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.decrementSpotVisit'))
+      ..add(DiagnosticsProperty('spotId', spotId));
   }
 
   @override
@@ -1253,6 +1362,7 @@ class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(int spotId) incrementSpotVisit,
     required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
   }) {
     return decrementSpotVisit(spotId);
   }
@@ -1267,6 +1377,7 @@ class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(int spotId)? incrementSpotVisit,
     TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
   }) {
     return decrementSpotVisit?.call(spotId);
   }
@@ -1281,6 +1392,7 @@ class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(int spotId)? incrementSpotVisit,
     TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (decrementSpotVisit != null) {
@@ -1299,6 +1411,7 @@ class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
     required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
   }) {
     return decrementSpotVisit(this);
   }
@@ -1313,6 +1426,7 @@ class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
   }) {
     return decrementSpotVisit?.call(this);
   }
@@ -1327,6 +1441,7 @@ class _$DecrementSpotVisitImpl implements _DecrementSpotVisit {
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
     TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     required TResult orElse(),
   }) {
     if (decrementSpotVisit != null) {
@@ -1350,6 +1465,158 @@ abstract class _DecrementSpotVisit implements MapEvent {
 }
 
 /// @nodoc
+abstract class _$$ToggleDebugModeImplCopyWith<$Res> {
+  factory _$$ToggleDebugModeImplCopyWith(
+    _$ToggleDebugModeImpl value,
+    $Res Function(_$ToggleDebugModeImpl) then,
+  ) = __$$ToggleDebugModeImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ToggleDebugModeImplCopyWithImpl<$Res>
+    extends _$MapEventCopyWithImpl<$Res, _$ToggleDebugModeImpl>
+    implements _$$ToggleDebugModeImplCopyWith<$Res> {
+  __$$ToggleDebugModeImplCopyWithImpl(
+    _$ToggleDebugModeImpl _value,
+    $Res Function(_$ToggleDebugModeImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of MapEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ToggleDebugModeImpl
+    with DiagnosticableTreeMixin
+    implements _ToggleDebugMode {
+  const _$ToggleDebugModeImpl();
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'MapEvent.toggleDebugMode()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties..add(DiagnosticsProperty('type', 'MapEvent.toggleDebugMode'));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ToggleDebugModeImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String cityName, int adminLevel)
+    fetchDataRequested,
+    required TResult Function(GeographicArea? area) areaSelected,
+    required TResult Function(int areaId) incrementAreaVisit,
+    required TResult Function(int areaId) decrementAreaVisit,
+    required TResult Function(Spot? spot) spotSelected,
+    required TResult Function(int spotId) incrementSpotVisit,
+    required TResult Function(int spotId) decrementSpotVisit,
+    required TResult Function() toggleDebugMode,
+  }) {
+    return toggleDebugMode();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult? Function(GeographicArea? area)? areaSelected,
+    TResult? Function(int areaId)? incrementAreaVisit,
+    TResult? Function(int areaId)? decrementAreaVisit,
+    TResult? Function(Spot? spot)? spotSelected,
+    TResult? Function(int spotId)? incrementSpotVisit,
+    TResult? Function(int spotId)? decrementSpotVisit,
+    TResult? Function()? toggleDebugMode,
+  }) {
+    return toggleDebugMode?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult Function(GeographicArea? area)? areaSelected,
+    TResult Function(int areaId)? incrementAreaVisit,
+    TResult Function(int areaId)? decrementAreaVisit,
+    TResult Function(Spot? spot)? spotSelected,
+    TResult Function(int spotId)? incrementSpotVisit,
+    TResult Function(int spotId)? decrementSpotVisit,
+    TResult Function()? toggleDebugMode,
+    required TResult orElse(),
+  }) {
+    if (toggleDebugMode != null) {
+      return toggleDebugMode();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_FetchDataRequested value) fetchDataRequested,
+    required TResult Function(_AreaSelected value) areaSelected,
+    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
+    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
+    required TResult Function(_SpotSelected value) spotSelected,
+    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
+    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
+  }) {
+    return toggleDebugMode(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
+    TResult? Function(_AreaSelected value)? areaSelected,
+    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
+    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
+    TResult? Function(_SpotSelected value)? spotSelected,
+    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
+    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
+  }) {
+    return toggleDebugMode?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_FetchDataRequested value)? fetchDataRequested,
+    TResult Function(_AreaSelected value)? areaSelected,
+    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
+    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
+    TResult Function(_SpotSelected value)? spotSelected,
+    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
+    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
+    required TResult orElse(),
+  }) {
+    if (toggleDebugMode != null) {
+      return toggleDebugMode(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _ToggleDebugMode implements MapEvent {
+  const factory _ToggleDebugMode() = _$ToggleDebugModeImpl;
+}
+
+/// @nodoc
 mixin _$MapState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
@@ -1362,6 +1629,7 @@ mixin _$MapState {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )
     loadSuccess,
     required TResult Function(String error) loadFailure,
@@ -1377,6 +1645,7 @@ mixin _$MapState {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult? Function(String error)? loadFailure,
@@ -1392,6 +1661,7 @@ mixin _$MapState {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult Function(String error)? loadFailure,
@@ -1464,12 +1734,18 @@ class __$$InitialImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InitialImpl implements _Initial {
+class _$InitialImpl with DiagnosticableTreeMixin implements _Initial {
   const _$InitialImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapState.initial()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties..add(DiagnosticsProperty('type', 'MapState.initial'));
   }
 
   @override
@@ -1493,6 +1769,7 @@ class _$InitialImpl implements _Initial {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )
     loadSuccess,
     required TResult Function(String error) loadFailure,
@@ -1512,6 +1789,7 @@ class _$InitialImpl implements _Initial {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult? Function(String error)? loadFailure,
@@ -1531,6 +1809,7 @@ class _$InitialImpl implements _Initial {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult Function(String error)? loadFailure,
@@ -1607,12 +1886,20 @@ class __$$LoadInProgressImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LoadInProgressImpl implements _LoadInProgress {
+class _$LoadInProgressImpl
+    with DiagnosticableTreeMixin
+    implements _LoadInProgress {
   const _$LoadInProgressImpl();
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapState.loadInProgress()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties..add(DiagnosticsProperty('type', 'MapState.loadInProgress'));
   }
 
   @override
@@ -1636,6 +1923,7 @@ class _$LoadInProgressImpl implements _LoadInProgress {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )
     loadSuccess,
     required TResult Function(String error) loadFailure,
@@ -1655,6 +1943,7 @@ class _$LoadInProgressImpl implements _LoadInProgress {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult? Function(String error)? loadFailure,
@@ -1674,6 +1963,7 @@ class _$LoadInProgressImpl implements _LoadInProgress {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult Function(String error)? loadFailure,
@@ -1741,6 +2031,7 @@ abstract class _$$LoadSuccessImplCopyWith<$Res> {
     Spot? selectedSpot,
     Map<int, UserAreaData> userVisitData,
     Map<int, UserSpotData> userSpotVisitData,
+    bool isDebugModeEnabled,
   });
 }
 
@@ -1764,6 +2055,7 @@ class __$$LoadSuccessImplCopyWithImpl<$Res>
     Object? selectedSpot = freezed,
     Object? userVisitData = null,
     Object? userSpotVisitData = null,
+    Object? isDebugModeEnabled = null,
   }) {
     return _then(
       _$LoadSuccessImpl(
@@ -1791,6 +2083,10 @@ class __$$LoadSuccessImplCopyWithImpl<$Res>
             ? _value._userSpotVisitData
             : userSpotVisitData // ignore: cast_nullable_to_non_nullable
                   as Map<int, UserSpotData>,
+        isDebugModeEnabled: null == isDebugModeEnabled
+            ? _value.isDebugModeEnabled
+            : isDebugModeEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
       ),
     );
   }
@@ -1798,7 +2094,7 @@ class __$$LoadSuccessImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LoadSuccessImpl implements _LoadSuccess {
+class _$LoadSuccessImpl with DiagnosticableTreeMixin implements _LoadSuccess {
   const _$LoadSuccessImpl({
     required this.boundaryData,
     required final List<Spot> spots,
@@ -1806,6 +2102,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
     this.selectedSpot,
     required final Map<int, UserAreaData> userVisitData,
     required final Map<int, UserSpotData> userSpotVisitData,
+    this.isDebugModeEnabled = false,
   }) : _spots = spots,
        _userVisitData = userVisitData,
        _userSpotVisitData = userSpotVisitData;
@@ -1842,8 +2139,26 @@ class _$LoadSuccessImpl implements _LoadSuccess {
   }
 
   @override
-  String toString() {
-    return 'MapState.loadSuccess(boundaryData: $boundaryData, spots: $spots, selectedArea: $selectedArea, selectedSpot: $selectedSpot, userVisitData: $userVisitData, userSpotVisitData: $userSpotVisitData)';
+  @JsonKey()
+  final bool isDebugModeEnabled;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'MapState.loadSuccess(boundaryData: $boundaryData, spots: $spots, selectedArea: $selectedArea, selectedSpot: $selectedSpot, userVisitData: $userVisitData, userSpotVisitData: $userSpotVisitData, isDebugModeEnabled: $isDebugModeEnabled)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapState.loadSuccess'))
+      ..add(DiagnosticsProperty('boundaryData', boundaryData))
+      ..add(DiagnosticsProperty('spots', spots))
+      ..add(DiagnosticsProperty('selectedArea', selectedArea))
+      ..add(DiagnosticsProperty('selectedSpot', selectedSpot))
+      ..add(DiagnosticsProperty('userVisitData', userVisitData))
+      ..add(DiagnosticsProperty('userSpotVisitData', userSpotVisitData))
+      ..add(DiagnosticsProperty('isDebugModeEnabled', isDebugModeEnabled));
   }
 
   @override
@@ -1865,7 +2180,9 @@ class _$LoadSuccessImpl implements _LoadSuccess {
             const DeepCollectionEquality().equals(
               other._userSpotVisitData,
               _userSpotVisitData,
-            ));
+            ) &&
+            (identical(other.isDebugModeEnabled, isDebugModeEnabled) ||
+                other.isDebugModeEnabled == isDebugModeEnabled));
   }
 
   @override
@@ -1877,6 +2194,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
     selectedSpot,
     const DeepCollectionEquality().hash(_userVisitData),
     const DeepCollectionEquality().hash(_userSpotVisitData),
+    isDebugModeEnabled,
   );
 
   /// Create a copy of MapState
@@ -1899,6 +2217,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )
     loadSuccess,
     required TResult Function(String error) loadFailure,
@@ -1910,6 +2229,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
       selectedSpot,
       userVisitData,
       userSpotVisitData,
+      isDebugModeEnabled,
     );
   }
 
@@ -1925,6 +2245,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult? Function(String error)? loadFailure,
@@ -1936,6 +2257,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
       selectedSpot,
       userVisitData,
       userSpotVisitData,
+      isDebugModeEnabled,
     );
   }
 
@@ -1951,6 +2273,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult Function(String error)? loadFailure,
@@ -1964,6 +2287,7 @@ class _$LoadSuccessImpl implements _LoadSuccess {
         selectedSpot,
         userVisitData,
         userSpotVisitData,
+        isDebugModeEnabled,
       );
     }
     return orElse();
@@ -2015,6 +2339,7 @@ abstract class _LoadSuccess implements MapState {
     final Spot? selectedSpot,
     required final Map<int, UserAreaData> userVisitData,
     required final Map<int, UserSpotData> userSpotVisitData,
+    final bool isDebugModeEnabled,
   }) = _$LoadSuccessImpl;
 
   BoundaryData get boundaryData;
@@ -2023,6 +2348,7 @@ abstract class _LoadSuccess implements MapState {
   Spot? get selectedSpot;
   Map<int, UserAreaData> get userVisitData;
   Map<int, UserSpotData> get userSpotVisitData;
+  bool get isDebugModeEnabled;
 
   /// Create a copy of MapState
   /// with the given fields replaced by the non-null parameter values.
@@ -2068,15 +2394,23 @@ class __$$LoadFailureImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$LoadFailureImpl implements _LoadFailure {
+class _$LoadFailureImpl with DiagnosticableTreeMixin implements _LoadFailure {
   const _$LoadFailureImpl({required this.error});
 
   @override
   final String error;
 
   @override
-  String toString() {
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
     return 'MapState.loadFailure(error: $error)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapState.loadFailure'))
+      ..add(DiagnosticsProperty('error', error));
   }
 
   @override
@@ -2110,6 +2444,7 @@ class _$LoadFailureImpl implements _LoadFailure {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )
     loadSuccess,
     required TResult Function(String error) loadFailure,
@@ -2129,6 +2464,7 @@ class _$LoadFailureImpl implements _LoadFailure {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult? Function(String error)? loadFailure,
@@ -2148,6 +2484,7 @@ class _$LoadFailureImpl implements _LoadFailure {
       Spot? selectedSpot,
       Map<int, UserAreaData> userVisitData,
       Map<int, UserSpotData> userSpotVisitData,
+      bool isDebugModeEnabled,
     )?
     loadSuccess,
     TResult Function(String error)? loadFailure,
