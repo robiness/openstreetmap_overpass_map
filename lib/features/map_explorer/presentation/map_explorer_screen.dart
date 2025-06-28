@@ -41,7 +41,6 @@ class MapExplorerScreen extends StatelessWidget {
                   selectedSpot,
                   userVisitData,
                   userSpotVisitData,
-                  isDebugModeEnabled,
                 ) {
                   return ResponsiveLayout(
                     mobile: MobileLayout(

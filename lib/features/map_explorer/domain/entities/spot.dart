@@ -1,4 +1,8 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
+
+part 'spot.freezed.dart';
+part 'spot.g.dart';
 
 class Spot {
   final int id;
@@ -117,47 +121,19 @@ class Spot {
 }
 
 // User interaction data for spots
-class UserSpotData {
-  final int spotId;
-  int visitCount;
-  bool isFavorite;
-  DateTime? lastVisited;
-  double? userRating; // 1-5 stars
-  String? userNotes;
+@freezed
+class UserSpotData with _$UserSpotData {
+  const factory UserSpotData({
+    required int spotId,
+    @Default(0) int visitCount,
+    @Default(false) bool isFavorite,
+    DateTime? lastVisited,
+    double? userRating, // 1-5 stars
+    String? userNotes,
+  }) = _UserSpotData;
 
-  UserSpotData({
-    required this.spotId,
-    this.visitCount = 0,
-    this.isFavorite = false,
-    this.lastVisited,
-    this.userRating,
-    this.userNotes,
-  });
-
-  void incrementVisitCount() {
-    visitCount++;
-    lastVisited = DateTime.now();
-  }
-
-  Map<String, dynamic> toJson() => {
-    'spotId': spotId,
-    'visitCount': visitCount,
-    'isFavorite': isFavorite,
-    'lastVisited': lastVisited?.toIso8601String(),
-    'userRating': userRating,
-    'userNotes': userNotes,
-  };
-
-  factory UserSpotData.fromJson(Map<String, dynamic> json) => UserSpotData(
-    spotId: json['spotId'] as int,
-    visitCount: json['visitCount'] as int? ?? 0,
-    isFavorite: json['isFavorite'] as bool? ?? false,
-    lastVisited: json['lastVisited'] != null
-        ? DateTime.parse(json['lastVisited'] as String)
-        : null,
-    userRating: json['userRating'] as double?,
-    userNotes: json['userNotes'] as String?,
-  );
+  factory UserSpotData.fromJson(Map<String, dynamic> json) =>
+      _$UserSpotDataFromJson(json);
 }
 
 // Displayable spot combining spot data with user data

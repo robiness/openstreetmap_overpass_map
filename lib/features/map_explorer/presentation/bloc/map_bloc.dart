@@ -28,7 +28,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         spotSelected: (spot) => _onSpotSelected(emit, spot),
         incrementSpotVisit: (spotId) => _onIncrementSpotVisit(emit, spotId),
         decrementSpotVisit: (spotId) => _onDecrementSpotVisit(emit, spotId),
-        toggleDebugMode: () => _onToggleDebugMode(emit),
       );
     });
   }
@@ -59,7 +58,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           spots: spotsToShow,
           userVisitData: {}, // Start with empty visit data
           userSpotVisitData: {}, // Start with empty spot visit data
-          isDebugModeEnabled: kDebugMode, // Auto-enable in debug builds
         ),
       );
     } catch (e) {
@@ -142,7 +140,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
-            isDebugModeEnabled,
           ) {
             emit(
               MapState.loadSuccess(
@@ -152,7 +149,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: selectedSpot,
                 userVisitData: userVisitData,
                 userSpotVisitData: userSpotVisitData,
-                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -172,7 +168,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             _,
             userVisitData,
             userSpotVisitData,
-            isDebugModeEnabled,
           ) {
             // If spot is tapped, also increment visit count
             final newSpotVisitData = Map<int, UserSpotData>.from(
@@ -181,8 +176,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             if (spot != null) {
               final currentData =
                   newSpotVisitData[spot.id] ?? UserSpotData(spotId: spot.id);
-              currentData.incrementVisitCount();
-              newSpotVisitData[spot.id] = currentData;
+              newSpotVisitData[spot.id] = currentData.copyWith(
+                visitCount: currentData.visitCount + 1,
+                lastVisited: DateTime.now(),
+              );
             }
 
             emit(
@@ -193,7 +190,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: spot,
                 userVisitData: userVisitData,
                 userSpotVisitData: newSpotVisitData,
-                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -210,11 +206,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
-            isDebugModeEnabled,
           ) {
-            // Only allow manual increment in debug mode
-            if (!isDebugModeEnabled) return;
-
             final newVisitData = Map<int, UserAreaData>.from(userVisitData);
             final currentData =
                 newVisitData[areaId] ?? UserAreaData(areaId: areaId);
@@ -229,7 +221,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: selectedSpot,
                 userVisitData: newVisitData,
                 userSpotVisitData: userSpotVisitData,
-                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -246,29 +237,23 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
-            isDebugModeEnabled,
           ) {
-            // Only allow manual decrement in debug mode
-            if (!isDebugModeEnabled) return;
-
             final newVisitData = Map<int, UserAreaData>.from(userVisitData);
-            final currentData = newVisitData[areaId];
-            if (currentData != null && currentData.visitCount > 0) {
-              newVisitData[areaId] = currentData.copyWith(
-                visitCount: currentData.visitCount - 1,
-              );
-              emit(
-                MapState.loadSuccess(
-                  boundaryData: boundaryData,
-                  spots: spots,
-                  selectedArea: selectedArea,
-                  selectedSpot: selectedSpot,
-                  userVisitData: newVisitData,
-                  userSpotVisitData: userSpotVisitData,
-                  isDebugModeEnabled: isDebugModeEnabled,
-                ),
-              );
-            }
+            final currentData =
+                newVisitData[areaId] ?? UserAreaData(areaId: areaId);
+            newVisitData[areaId] = currentData.copyWith(
+              visitCount: currentData.visitCount - 1,
+            );
+            emit(
+              MapState.loadSuccess(
+                boundaryData: boundaryData,
+                spots: spots,
+                selectedArea: selectedArea,
+                selectedSpot: selectedSpot,
+                userVisitData: newVisitData,
+                userSpotVisitData: userSpotVisitData,
+              ),
+            );
           },
     );
   }
@@ -283,19 +268,15 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
-            isDebugModeEnabled,
           ) {
-            // Only allow manual increment in debug mode
-            if (!isDebugModeEnabled) return;
-
             final newSpotVisitData = Map<int, UserSpotData>.from(
               userSpotVisitData,
             );
             final currentData =
                 newSpotVisitData[spotId] ?? UserSpotData(spotId: spotId);
-            currentData.incrementVisitCount();
-            newSpotVisitData[spotId] = currentData;
-
+            newSpotVisitData[spotId] = currentData.copyWith(
+              visitCount: currentData.visitCount + 1,
+            );
             emit(
               MapState.loadSuccess(
                 boundaryData: boundaryData,
@@ -304,7 +285,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedSpot: selectedSpot,
                 userVisitData: userVisitData,
                 userSpotVisitData: newSpotVisitData,
-                isDebugModeEnabled: isDebugModeEnabled,
               ),
             );
           },
@@ -321,53 +301,15 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             selectedSpot,
             userVisitData,
             userSpotVisitData,
-            isDebugModeEnabled,
           ) {
-            // Only allow manual decrement in debug mode
-            if (!isDebugModeEnabled) return;
-
             final newSpotVisitData = Map<int, UserSpotData>.from(
               userSpotVisitData,
             );
-            final currentData = newSpotVisitData[spotId];
-            if (currentData != null && currentData.visitCount > 0) {
-              newSpotVisitData[spotId] = UserSpotData(
-                spotId: spotId,
-                visitCount: currentData.visitCount - 1,
-                isFavorite: currentData.isFavorite,
-                lastVisited: currentData.visitCount > 1 ? DateTime.now() : null,
-                userRating: currentData.userRating,
-                userNotes: currentData.userNotes,
-              );
-
-              emit(
-                MapState.loadSuccess(
-                  boundaryData: boundaryData,
-                  spots: spots,
-                  selectedArea: selectedArea,
-                  selectedSpot: selectedSpot,
-                  userVisitData: userVisitData,
-                  userSpotVisitData: newSpotVisitData,
-                  isDebugModeEnabled: isDebugModeEnabled,
-                ),
-              );
-            }
-          },
-    );
-  }
-
-  Future<void> _onToggleDebugMode(Emitter<MapState> emit) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            selectedArea,
-            selectedSpot,
-            userVisitData,
-            userSpotVisitData,
-            isDebugModeEnabled,
-          ) {
+            final currentData =
+                newSpotVisitData[spotId] ?? UserSpotData(spotId: spotId);
+            newSpotVisitData[spotId] = currentData.copyWith(
+              visitCount: currentData.visitCount - 1,
+            );
             emit(
               MapState.loadSuccess(
                 boundaryData: boundaryData,
@@ -375,8 +317,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
                 selectedArea: selectedArea,
                 selectedSpot: selectedSpot,
                 userVisitData: userVisitData,
-                userSpotVisitData: userSpotVisitData,
-                isDebugModeEnabled: !isDebugModeEnabled,
+                userSpotVisitData: newSpotVisitData,
               ),
             );
           },

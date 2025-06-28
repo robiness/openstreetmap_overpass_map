@@ -5,6 +5,7 @@ import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:overpass_map/features/auth/domain/repositories/auth_repository.dart';
 import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 import 'package:overpass_map/features/location/data/repositories/location_repository_impl.dart';
 import 'package:overpass_map/features/location/domain/repositories/location_repository.dart';
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
@@ -61,6 +62,9 @@ Future<void> main() async {
       ],
       child: MultiBlocProvider(
         providers: [
+          BlocProvider(
+            create: (context) => DebugBloc(),
+          ),
           BlocProvider(
             create: (context) => MapBloc(mapRepository: mapRepository)
               ..add(

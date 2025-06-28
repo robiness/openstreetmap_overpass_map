@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
+import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 
 class AppHeader extends StatelessWidget {
@@ -28,12 +29,9 @@ class AppHeader extends StatelessWidget {
           ),
           // Debug mode toggle (only visible in debug builds)
           if (kDebugMode)
-            BlocBuilder<MapBloc, MapState>(
+            BlocBuilder<DebugBloc, DebugState>(
               builder: (context, state) {
-                final isDebugMode = state.maybeWhen(
-                  loadSuccess: (_, _, _, _, _, _, isDebugModeEnabled) => isDebugModeEnabled,
-                  orElse: () => false,
-                );
+                final isDebugMode = state.isDebugModeEnabled;
 
                 return Row(
                   mainAxisSize: MainAxisSize.min,
@@ -45,10 +43,10 @@ class AppHeader extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.2),
+                          color: Colors.orange.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(4),
                           border: Border.all(
-                            color: Colors.orange.withValues(alpha: 0.5),
+                            color: Colors.orange.withOpacity(0.5),
                           ),
                         ),
                         child: const Text(
@@ -63,15 +61,19 @@ class AppHeader extends StatelessWidget {
                     const SizedBox(width: 8),
                     IconButton(
                       onPressed: () {
-                        context.read<MapBloc>().add(
-                          const MapEvent.toggleDebugMode(),
+                        context.read<DebugBloc>().add(
+                          const DebugEvent.toggleDebugMode(),
                         );
                       },
                       icon: Icon(
-                        isDebugMode ? Icons.bug_report : Icons.bug_report_outlined,
+                        isDebugMode
+                            ? Icons.bug_report
+                            : Icons.bug_report_outlined,
                         color: isDebugMode ? Colors.orange : Colors.white,
                       ),
-                      tooltip: isDebugMode ? 'Disable Debug Mode' : 'Enable Debug Mode',
+                      tooltip: isDebugMode
+                          ? 'Disable Debug Mode'
+                          : 'Enable Debug Mode',
                     ),
                   ],
                 );

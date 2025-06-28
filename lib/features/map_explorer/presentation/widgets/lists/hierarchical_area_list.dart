@@ -3,6 +3,8 @@ import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 
 /// A hierarchical, scrollable list widget that displays cities, bezirke, and stadtteile
 /// with visual differentiation and visit count information
@@ -13,7 +15,6 @@ class HierarchicalAreaList extends StatelessWidget {
   final Function(GeographicArea) onAreaTapped;
   final Function(int) onIncrementVisit;
   final Function(int) onDecrementVisit;
-  final bool isDebugModeEnabled;
 
   const HierarchicalAreaList({
     super.key,
@@ -23,7 +24,6 @@ class HierarchicalAreaList extends StatelessWidget {
     required this.onAreaTapped,
     required this.onIncrementVisit,
     required this.onDecrementVisit,
-    required this.isDebugModeEnabled,
   });
 
   @override
@@ -236,21 +236,21 @@ class HierarchicalAreaList extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            color.withValues(alpha: 0.1),
-            color..withValues(alpha: 0.05),
+            color.withOpacity(0.1),
+            color.withOpacity(0.05),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingSm),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              color: color.withOpacity(0.15),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: Icon(
@@ -278,9 +278,9 @@ class HierarchicalAreaList extends StatelessWidget {
               vertical: AppTheme.spacing2xs,
             ),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
+              color: color.withOpacity(0.15),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-              border: Border.all(color: color.withValues(alpha: 0.3)),
+              border: Border.all(color: color.withOpacity(0.3)),
             ),
             child: Text(
               count.toString(),
@@ -302,236 +302,99 @@ class HierarchicalAreaList extends StatelessWidget {
     required IconData icon,
     required Color color,
   }) {
-    final visitCount = userVisitData[area.id]?.visitCount ?? 0;
-    final isSelected = selectedArea?.id == area.id;
-    final isVisited = visitCount > 0;
+    int visitCount = userVisitData[area.id]?.visitCount ?? 0;
 
-    // Different indentation based on hierarchy level
-    final leftPadding = 16.0 + (level * 20.0);
+    // Visual states based on selection and visits
+    bool isSelected = selectedArea?.id == area.id;
+    bool isVisited = visitCount > 0;
 
-    // Enhanced state-based styling
-    Color backgroundColor;
-    Color borderColor;
-    double borderWidth;
-    IconData? stateIcon;
-    Color? stateIconColor;
+    Color tileColor = AppTheme.cardColor;
+    Color textColor = AppTheme.textPrimary;
+    Color iconColor = color;
+    FontWeight fontWeight = FontWeight.normal;
+    double elevation = 2.0;
 
-    if (isSelected && isVisited) {
-      // Both selected and visited - special combined state
-      backgroundColor = Colors.orange.withValues(alpha: 0.25);
-      borderColor = Colors.purple;
-      borderWidth = 2.5;
-      stateIcon = Icons.star;
-      stateIconColor = Colors.orange;
-    } else if (isSelected) {
-      backgroundColor = Colors.orange.withValues(alpha: 0.2);
-      borderColor = Colors.orange;
-      borderWidth = 2.0;
-      stateIcon = Icons.radio_button_checked;
-      stateIconColor = Colors.orange;
-    } else if (isVisited) {
-      backgroundColor = Colors.purple.withValues(alpha: 0.15);
-      borderColor = Colors.purple.withValues(alpha: 0.4);
-      borderWidth = 1.5;
-      stateIcon = Icons.check_circle;
-      stateIconColor = Colors.purple;
-    } else {
-      backgroundColor = Colors.transparent;
-      borderColor = Colors.transparent;
-      borderWidth = 0.0;
-      stateIcon = null;
-      stateIconColor = null;
+    if (isSelected) {
+      tileColor = AppTheme.getSelectedColor().withOpacity(0.15);
+      iconColor = AppTheme.getSelectedColor();
+      fontWeight = FontWeight.w600;
+      elevation = 4.0;
     }
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInOut,
-      margin: const EdgeInsets.only(bottom: 4.0),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12.0), // More rounded corners
-        border: borderWidth > 0
-            ? Border.all(color: borderColor, width: borderWidth)
-            : null,
-        boxShadow: isSelected
-            ? [
-                BoxShadow(
-                  color: Colors.orange.withValues(alpha: 0.3),
-                  blurRadius: 8.0,
-                  offset: const Offset(0, 2),
-                ),
-              ]
-            : isVisited
-            ? [
-                BoxShadow(
-                  color: Colors.purple.withValues(alpha: 0.2),
-                  blurRadius: 4.0,
-                  offset: const Offset(0, 1),
-                ),
-              ]
-            : null,
+    // Debug buttons
+    final debugButtons = !context.watch<DebugBloc>().state.isDebugModeEnabled
+        ? const SizedBox.shrink()
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.remove_circle_outline, size: 18),
+                color: Colors.redAccent.withOpacity(0.7),
+                onPressed: () => onDecrementVisit(area.id),
+                tooltip: 'Decrement Visit Count',
+              ),
+              IconButton(
+                icon: const Icon(Icons.add_circle_outline, size: 18),
+                color: Colors.greenAccent.withOpacity(0.7),
+                onPressed: () => onIncrementVisit(area.id),
+                tooltip: 'Increment Visit Count',
+              ),
+            ],
+          );
+
+    return Card(
+      elevation: elevation,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        side: isSelected
+            ? BorderSide(
+                color: AppTheme.getSelectedColor(),
+                width: 2.0,
+              )
+            : BorderSide(color: AppTheme.borderColor),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12.0),
-          onTap: () => onAreaTapped(area),
-          child: Padding(
-            padding: EdgeInsets.only(
-              left: leftPadding,
-              right: 12.0,
-              top: 12.0,
-              bottom: 12.0,
-            ),
-            child: Row(
-              children: [
-                // State indicator icon (before hierarchy indicator)
-                if (stateIcon != null) ...[
-                  Icon(
-                    stateIcon,
-                    color: stateIconColor,
-                    size: 16.0,
-                  ),
-                  const SizedBox(width: 8.0),
-                ],
-
-                // Hierarchy indicator
-                if (level > 0) ...[
-                  Container(
-                    width: 3.0, // Slightly thicker
-                    height: 24.0,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(1.5),
+      color: tileColor,
+      child: InkWell(
+        onTap: () => onAreaTapped(area),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppTheme.spacingMd,
+            vertical: AppTheme.spacingLg - (level * 2),
+          ),
+          child: Row(
+            children: [
+              // Left side: icon and text
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      isSelected && isVisited
+                          ? Icons.star
+                          : (isVisited ? Icons.check_circle : icon),
+                      size: 20,
+                      color: iconColor,
                     ),
-                    margin: const EdgeInsets.only(right: 8.0),
-                  ),
-                ],
-
-                // Main area icon with enhanced styling
-                Container(
-                  padding: const EdgeInsets.all(4.0),
-                  decoration: BoxDecoration(
-                    color: (isSelected || isVisited)
-                        ? color.withValues(alpha: 0.15)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: isSelected
-                        ? color
-                        : isVisited
-                        ? color.withValues(alpha: 0.8)
-                        : color.withValues(alpha: 0.7),
-                    size: 18 - (level * 2), // Smaller icons for lower levels
-                  ),
-                ),
-                const SizedBox(width: 12), // Increased spacing
-                // Area info with enhanced typography
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        area.name,
+                    const SizedBox(width: AppTheme.spacingMd),
+                    Expanded(
+                      child: Text(
+                        '${area.name} ${isVisited ? '($visitCount)' : ''}',
                         style: TextStyle(
-                          fontWeight: isSelected
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          fontSize:
-                              14 -
-                              (level * 0.5), // Smaller text for lower levels
-                          color: isSelected
-                              ? Colors.orange.shade700
-                              : isVisited
-                              ? Colors.purple.shade700
-                              : Colors.black87,
-                          letterSpacing: isSelected ? 0.5 : 0.0,
+                          fontWeight: fontWeight,
+                          color: textColor,
+                          fontSize: 13,
                         ),
-                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (level == 0) // Only show admin level for cities
-                        Text(
-                          'Admin Level ${area.adminLevel}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
 
-                // Enhanced visit count badge
-                if (visitCount > 0) ...[
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0,
-                      vertical: 4.0,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.purple.withValues(alpha: 0.15),
-                          Colors.purple.withValues(alpha: 0.25),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12.0),
-                      border: Border.all(
-                        color: Colors.purple.withValues(alpha: 0.4),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.visibility,
-                          size: 12,
-                          color: Colors.purple.shade600,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          visitCount.toString(),
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.purple.shade700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-
-                // Debug mode: Enhanced visit count controls with better styling
-                if (isDebugModeEnabled)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove),
-                          onPressed: () => onDecrementVisit(area.id),
-                        ),
-                        Text('$visitCount'),
-                        IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () => onIncrementVisit(area.id),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
+              // Right side: debug buttons
+              debugButtons,
+            ],
           ),
         ),
       ),

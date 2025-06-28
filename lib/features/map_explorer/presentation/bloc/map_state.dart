@@ -11,7 +11,6 @@ class MapState with _$MapState {
     Spot? selectedSpot,
     required Map<int, UserAreaData> userVisitData,
     required Map<int, UserSpotData> userSpotVisitData,
-    @Default(false) bool isDebugModeEnabled,
   }) = _LoadSuccess;
   const factory MapState.loadFailure({required String error}) = _LoadFailure;
 }
