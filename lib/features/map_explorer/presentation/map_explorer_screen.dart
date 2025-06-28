@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/app/core/responsive_layout.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
+import 'package:overpass_map/features/auth/presentation/widgets/user_profile_button.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/layout/desktop_layout.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/layout/mobile_layout.dart';
@@ -14,6 +15,16 @@ class MapExplorerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        elevation: 0,
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: UserProfileButton(),
+          ),
+        ],
+      ),
       backgroundColor: AppTheme.surfaceColor,
       body: BlocBuilder<MapBloc, MapState>(
         builder: (context, state) {

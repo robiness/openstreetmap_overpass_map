@@ -22,13 +22,18 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$UserProfile {
   String get id => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
-  String get username => throw _privateConstructorUsedError;
-  String get fullName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt => throw _privateConstructorUsedError;
+  String? get username => throw _privateConstructorUsedError;
+  @JsonKey(name: 'full_name')
+  String? get fullName => throw _privateConstructorUsedError;
+  @JsonKey(name: 'avatar_url')
   String? get avatarUrl => throw _privateConstructorUsedError;
+  String? get website => throw _privateConstructorUsedError;
   int get totalCheckins => throw _privateConstructorUsedError;
   int get completedStadtteile => throw _privateConstructorUsedError;
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this UserProfile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,13 +54,14 @@ abstract class $UserProfileCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String email,
-    String username,
-    String fullName,
-    String? avatarUrl,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    String? username,
+    @JsonKey(name: 'full_name') String? fullName,
+    @JsonKey(name: 'avatar_url') String? avatarUrl,
+    String? website,
     int totalCheckins,
     int completedStadtteile,
-    DateTime createdAt,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
   });
 }
 
@@ -75,13 +81,14 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
   @override
   $Res call({
     Object? id = null,
-    Object? email = null,
-    Object? username = null,
-    Object? fullName = null,
+    Object? updatedAt = freezed,
+    Object? username = freezed,
+    Object? fullName = freezed,
     Object? avatarUrl = freezed,
+    Object? website = freezed,
     Object? totalCheckins = null,
     Object? completedStadtteile = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -89,21 +96,25 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            username: null == username
+            updatedAt: freezed == updatedAt
+                ? _value.updatedAt
+                : updatedAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
+            username: freezed == username
                 ? _value.username
                 : username // ignore: cast_nullable_to_non_nullable
-                      as String,
-            fullName: null == fullName
+                      as String?,
+            fullName: freezed == fullName
                 ? _value.fullName
                 : fullName // ignore: cast_nullable_to_non_nullable
-                      as String,
+                      as String?,
             avatarUrl: freezed == avatarUrl
                 ? _value.avatarUrl
                 : avatarUrl // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            website: freezed == website
+                ? _value.website
+                : website // ignore: cast_nullable_to_non_nullable
                       as String?,
             totalCheckins: null == totalCheckins
                 ? _value.totalCheckins
@@ -113,10 +124,10 @@ class _$UserProfileCopyWithImpl<$Res, $Val extends UserProfile>
                 ? _value.completedStadtteile
                 : completedStadtteile // ignore: cast_nullable_to_non_nullable
                       as int,
-            createdAt: null == createdAt
+            createdAt: freezed == createdAt
                 ? _value.createdAt
                 : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
+                      as DateTime?,
           )
           as $Val,
     );
@@ -134,13 +145,14 @@ abstract class _$$UserProfileImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String email,
-    String username,
-    String fullName,
-    String? avatarUrl,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    String? username,
+    @JsonKey(name: 'full_name') String? fullName,
+    @JsonKey(name: 'avatar_url') String? avatarUrl,
+    String? website,
     int totalCheckins,
     int completedStadtteile,
-    DateTime createdAt,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
   });
 }
 
@@ -159,13 +171,14 @@ class __$$UserProfileImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? email = null,
-    Object? username = null,
-    Object? fullName = null,
+    Object? updatedAt = freezed,
+    Object? username = freezed,
+    Object? fullName = freezed,
     Object? avatarUrl = freezed,
+    Object? website = freezed,
     Object? totalCheckins = null,
     Object? completedStadtteile = null,
-    Object? createdAt = null,
+    Object? createdAt = freezed,
   }) {
     return _then(
       _$UserProfileImpl(
@@ -173,21 +186,25 @@ class __$$UserProfileImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        username: null == username
+        updatedAt: freezed == updatedAt
+            ? _value.updatedAt
+            : updatedAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
+        username: freezed == username
             ? _value.username
             : username // ignore: cast_nullable_to_non_nullable
-                  as String,
-        fullName: null == fullName
+                  as String?,
+        fullName: freezed == fullName
             ? _value.fullName
             : fullName // ignore: cast_nullable_to_non_nullable
-                  as String,
+                  as String?,
         avatarUrl: freezed == avatarUrl
             ? _value.avatarUrl
             : avatarUrl // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        website: freezed == website
+            ? _value.website
+            : website // ignore: cast_nullable_to_non_nullable
                   as String?,
         totalCheckins: null == totalCheckins
             ? _value.totalCheckins
@@ -197,10 +214,10 @@ class __$$UserProfileImplCopyWithImpl<$Res>
             ? _value.completedStadtteile
             : completedStadtteile // ignore: cast_nullable_to_non_nullable
                   as int,
-        createdAt: null == createdAt
+        createdAt: freezed == createdAt
             ? _value.createdAt
             : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
+                  as DateTime?,
       ),
     );
   }
@@ -211,13 +228,14 @@ class __$$UserProfileImplCopyWithImpl<$Res>
 class _$UserProfileImpl implements _UserProfile {
   const _$UserProfileImpl({
     required this.id,
-    required this.email,
-    required this.username,
-    required this.fullName,
-    this.avatarUrl,
+    @JsonKey(name: 'updated_at') this.updatedAt,
+    this.username,
+    @JsonKey(name: 'full_name') this.fullName,
+    @JsonKey(name: 'avatar_url') this.avatarUrl,
+    this.website,
     this.totalCheckins = 0,
     this.completedStadtteile = 0,
-    required this.createdAt,
+    @JsonKey(name: 'created_at') this.createdAt,
   });
 
   factory _$UserProfileImpl.fromJson(Map<String, dynamic> json) =>
@@ -226,13 +244,18 @@ class _$UserProfileImpl implements _UserProfile {
   @override
   final String id;
   @override
-  final String email;
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
   @override
-  final String username;
+  final String? username;
   @override
-  final String fullName;
+  @JsonKey(name: 'full_name')
+  final String? fullName;
   @override
+  @JsonKey(name: 'avatar_url')
   final String? avatarUrl;
+  @override
+  final String? website;
   @override
   @JsonKey()
   final int totalCheckins;
@@ -240,11 +263,12 @@ class _$UserProfileImpl implements _UserProfile {
   @JsonKey()
   final int completedStadtteile;
   @override
-  final DateTime createdAt;
+  @JsonKey(name: 'created_at')
+  final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'UserProfile(id: $id, email: $email, username: $username, fullName: $fullName, avatarUrl: $avatarUrl, totalCheckins: $totalCheckins, completedStadtteile: $completedStadtteile, createdAt: $createdAt)';
+    return 'UserProfile(id: $id, updatedAt: $updatedAt, username: $username, fullName: $fullName, avatarUrl: $avatarUrl, website: $website, totalCheckins: $totalCheckins, completedStadtteile: $completedStadtteile, createdAt: $createdAt)';
   }
 
   @override
@@ -253,13 +277,15 @@ class _$UserProfileImpl implements _UserProfile {
         (other.runtimeType == runtimeType &&
             other is _$UserProfileImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.email, email) || other.email == email) &&
+            (identical(other.updatedAt, updatedAt) ||
+                other.updatedAt == updatedAt) &&
             (identical(other.username, username) ||
                 other.username == username) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
+            (identical(other.website, website) || other.website == website) &&
             (identical(other.totalCheckins, totalCheckins) ||
                 other.totalCheckins == totalCheckins) &&
             (identical(other.completedStadtteile, completedStadtteile) ||
@@ -273,10 +299,11 @@ class _$UserProfileImpl implements _UserProfile {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    email,
+    updatedAt,
     username,
     fullName,
     avatarUrl,
+    website,
     totalCheckins,
     completedStadtteile,
     createdAt,
@@ -299,13 +326,14 @@ class _$UserProfileImpl implements _UserProfile {
 abstract class _UserProfile implements UserProfile {
   const factory _UserProfile({
     required final String id,
-    required final String email,
-    required final String username,
-    required final String fullName,
-    final String? avatarUrl,
+    @JsonKey(name: 'updated_at') final DateTime? updatedAt,
+    final String? username,
+    @JsonKey(name: 'full_name') final String? fullName,
+    @JsonKey(name: 'avatar_url') final String? avatarUrl,
+    final String? website,
     final int totalCheckins,
     final int completedStadtteile,
-    required final DateTime createdAt,
+    @JsonKey(name: 'created_at') final DateTime? createdAt,
   }) = _$UserProfileImpl;
 
   factory _UserProfile.fromJson(Map<String, dynamic> json) =
@@ -314,19 +342,25 @@ abstract class _UserProfile implements UserProfile {
   @override
   String get id;
   @override
-  String get email;
+  @JsonKey(name: 'updated_at')
+  DateTime? get updatedAt;
   @override
-  String get username;
+  String? get username;
   @override
-  String get fullName;
+  @JsonKey(name: 'full_name')
+  String? get fullName;
   @override
+  @JsonKey(name: 'avatar_url')
   String? get avatarUrl;
+  @override
+  String? get website;
   @override
   int get totalCheckins;
   @override
   int get completedStadtteile;
   @override
-  DateTime get createdAt;
+  @JsonKey(name: 'created_at')
+  DateTime? get createdAt;
 
   /// Create a copy of UserProfile
   /// with the given fields replaced by the non-null parameter values.

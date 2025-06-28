@@ -9,23 +9,29 @@ part of 'user_profile.dart';
 _$UserProfileImpl _$$UserProfileImplFromJson(Map<String, dynamic> json) =>
     _$UserProfileImpl(
       id: json['id'] as String,
-      email: json['email'] as String,
-      username: json['username'] as String,
-      fullName: json['fullName'] as String,
-      avatarUrl: json['avatarUrl'] as String?,
+      updatedAt: json['updated_at'] == null
+          ? null
+          : DateTime.parse(json['updated_at'] as String),
+      username: json['username'] as String?,
+      fullName: json['full_name'] as String?,
+      avatarUrl: json['avatar_url'] as String?,
+      website: json['website'] as String?,
       totalCheckins: (json['totalCheckins'] as num?)?.toInt() ?? 0,
       completedStadtteile: (json['completedStadtteile'] as num?)?.toInt() ?? 0,
-      createdAt: DateTime.parse(json['createdAt'] as String),
+      createdAt: json['created_at'] == null
+          ? null
+          : DateTime.parse(json['created_at'] as String),
     );
 
 Map<String, dynamic> _$$UserProfileImplToJson(_$UserProfileImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'email': instance.email,
+      'updated_at': instance.updatedAt?.toIso8601String(),
       'username': instance.username,
-      'fullName': instance.fullName,
-      'avatarUrl': instance.avatarUrl,
+      'full_name': instance.fullName,
+      'avatar_url': instance.avatarUrl,
+      'website': instance.website,
       'totalCheckins': instance.totalCheckins,
       'completedStadtteile': instance.completedStadtteile,
-      'createdAt': instance.createdAt.toIso8601String(),
+      'created_at': instance.createdAt?.toIso8601String(),
     };

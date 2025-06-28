@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
+import 'package:overpass_map/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:overpass_map/features/auth/domain/repositories/auth_repository.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:overpass_map/features/location/data/repositories/location_repository_impl.dart';
 import 'package:overpass_map/features/location/domain/repositories/location_repository.dart';
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
@@ -12,17 +15,21 @@ import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.da
 import 'package:overpass_map/features/map_explorer/presentation/map_explorer_screen.dart';
 import 'package:overpass_map/services/supabase_api_client.dart';
 import 'package:overpass_map/services/sync_service.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'package:uuid/uuid.dart';
+
+import 'app/view/app_view.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await Supabase.initialize(
     url: 'https://qltlkwnhhomfjdwosbhn.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsdGxrd25oaG9tZmpkd29zYmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjI0NDI3MDMsImV4cCI6MjAzODAxODcwM30.sb_publishable_z51aCYNKlxOqpicZFlnfsg_DRLb4CW2',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsdGxrd25oaG9tZmpkd29zYmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMzc3NTEsImV4cCI6MjA2NjcxMzc1MX0.N0iIz79hGhlOth2jRTsUbrtrzp2M1pWjdi8nGwBfmMk',
   );
+  // It's important to wait for the Supabase client to be fully initialized
+  // and for the session to be restored.
+  await Future.delayed(const Duration(milliseconds: 200));
 
   // --- Data Layer Setup ---
   final database = AppDatabase();
@@ -30,6 +37,9 @@ Future<void> main() async {
   final checkInRepository = CheckInRepositoryImpl(
     database: database,
     uuid: const Uuid(),
+  );
+  final authRepository = AuthRepositoryImpl(
+    supabaseClient: Supabase.instance.client,
   );
   final syncService = SyncService(database: database, apiClient: apiClient);
 
@@ -47,6 +57,7 @@ Future<void> main() async {
         RepositoryProvider<SyncService>.value(value: syncService),
         RepositoryProvider<MapRepository>.value(value: mapRepository),
         RepositoryProvider<LocationRepository>.value(value: locationRepository),
+        RepositoryProvider<AuthRepository>.value(value: authRepository),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -63,15 +74,20 @@ Future<void> main() async {
             create: (context) =>
                 LocationBloc(locationRepository: locationRepository),
           ),
+          BlocProvider(
+            create: (context) => AuthBloc(
+              authRepository: context.read<AuthRepository>(),
+            ),
+          ),
         ],
-        child: const SocialExplorationApp(),
+        child: const AppView(),
       ),
     ),
   );
 }
 
-class SocialExplorationApp extends StatelessWidget {
-  const SocialExplorationApp({super.key});
+class AppView extends StatelessWidget {
+  const AppView({super.key});
 
   @override
   Widget build(BuildContext context) {

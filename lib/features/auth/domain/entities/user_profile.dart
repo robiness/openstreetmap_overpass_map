@@ -7,13 +7,14 @@ part 'user_profile.g.dart';
 class UserProfile with _$UserProfile {
   const factory UserProfile({
     required String id,
-    required String email,
-    required String username,
-    required String fullName,
-    String? avatarUrl,
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
+    String? username,
+    @JsonKey(name: 'full_name') String? fullName,
+    @JsonKey(name: 'avatar_url') String? avatarUrl,
+    String? website,
     @Default(0) int totalCheckins,
     @Default(0) int completedStadtteile,
-    required DateTime createdAt,
+    @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
