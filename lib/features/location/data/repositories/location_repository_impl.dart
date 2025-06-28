@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+
 import '../../domain/entities/location_data.dart';
 import '../../domain/repositories/location_repository.dart';
 
@@ -18,8 +19,7 @@ class LocationRepositoryImpl implements LocationRepository {
     }
 
     final permission = await Geolocator.checkPermission();
-    return permission == LocationPermission.always ||
-        permission == LocationPermission.whileInUse;
+    return permission == LocationPermission.always || permission == LocationPermission.whileInUse;
   }
 
   @override
@@ -33,8 +33,7 @@ class LocationRepositoryImpl implements LocationRepository {
     if (await hasLocationPermission()) return true;
 
     final permission = await Geolocator.requestPermission();
-    return permission == LocationPermission.always ||
-        permission == LocationPermission.whileInUse;
+    return permission == LocationPermission.always || permission == LocationPermission.whileInUse;
   }
 
   @override
@@ -69,10 +68,7 @@ class LocationRepositoryImpl implements LocationRepository {
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
-        timestamp: DateTime.fromMillisecondsSinceEpoch(
-          position.timestamp?.millisecondsSinceEpoch ??
-              DateTime.now().millisecondsSinceEpoch,
-        ),
+        timestamp: DateTime.fromMillisecondsSinceEpoch(position.timestamp.millisecondsSinceEpoch),
         isMocked: position.isMocked,
       );
     } catch (e) {
@@ -89,8 +85,7 @@ class LocationRepositoryImpl implements LocationRepository {
 
       // Emit the debug location periodically
       Timer.periodic(const Duration(seconds: 2), (timer) {
-        if (_debugLocationController?.isClosed == false &&
-            _debugLocation != null) {
+        if (_debugLocationController?.isClosed == false && _debugLocation != null) {
           _debugLocationController?.add(_debugLocation!);
         }
       });
@@ -108,10 +103,7 @@ class LocationRepositoryImpl implements LocationRepository {
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
-        timestamp: DateTime.fromMillisecondsSinceEpoch(
-          position.timestamp?.millisecondsSinceEpoch ??
-              DateTime.now().millisecondsSinceEpoch,
-        ),
+        timestamp: DateTime.fromMillisecondsSinceEpoch(position.timestamp.millisecondsSinceEpoch),
         isMocked: position.isMocked,
       ),
     );

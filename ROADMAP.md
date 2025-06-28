@@ -114,6 +114,14 @@ netlify deploy --prod --dir=build/web             # Live deployment
 - **Performance monitoring**: WebAssembly optimization, native performance
 - **User feedback integration**: Continuous improvement based on usage data
 
+## 🔮 Future Considerations & Advanced Features
+
+This section tracks powerful ideas to be considered after the core mobile and social features are implemented.
+
+- **Background Sync Engine**: Implement a robust background synchronization mechanism using a package like `workmanager`. This would allow the app to sync user data (like check-ins) periodically, even when the app is not running, ensuring ultimate data reliability for leaderboards and social features.
+
+- **Dynamic Server-Side Configuration**: Create a configuration service that fetches game-balancing variables (e.g., check-in radius, event details, feature flags) from a Supabase table on app startup. This would provide the agility to run live events, A/B test features, and tweak the game experience without requiring an app update.
+
 ## Success Metrics
 
 ### 📈 **Phase 1 (Web) - Current**

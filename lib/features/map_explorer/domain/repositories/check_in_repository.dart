@@ -1,0 +1,25 @@
+import 'package:overpass_map/data/database/app_database.dart';
+
+/// An abstract repository to handle data operations for user check-ins.
+///
+/// This class defines the contract that the rest of the application will use
+/// to interact with check-in data, decoupling the UI and business logic
+/// from the specific data source implementation (e.g., Drift, Supabase API).
+abstract class CheckInRepository {
+  /// Watches for all check-ins belonging to a specific user.
+  ///
+  /// The UI can listen to this stream to get live updates from the local
+  /// database, ensuring a reactive and fast user experience.
+  ///
+  /// Returns a [Stream] of a list of [CheckIn] objects.
+  Stream<List<CheckIn>> watchUserCheckIns(String userId);
+
+  /// Creates a new check-in for the currently authenticated user.
+  ///
+  /// This operation will first write to the local database for an immediate
+  /// offline-first experience and then queue a synchronization with the cloud.
+  Future<void> createCheckIn({
+    required String stadtteilId,
+    required String userId,
+  });
+}

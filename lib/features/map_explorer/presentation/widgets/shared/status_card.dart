@@ -5,31 +5,51 @@ class StatusCard extends StatelessWidget {
   final String message;
   final Color color;
   final IconData icon;
+  final Widget? child;
 
   const StatusCard({
     super.key,
     required this.message,
-    this.color = AppTheme.primaryColor,
-    this.icon = Icons.info,
+    required this.color,
+    required this.icon,
+    this.child,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingLg),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor,
+    return Card(
+      color: color.withAlpha((255 * 0.1).round()),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        boxShadow: AppTheme.shadowSm,
-        border: Border.all(color: AppTheme.borderColor),
+        side: BorderSide(color: color, width: 1),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 48, color: color),
-          const SizedBox(height: AppTheme.spacingLg),
-          Text(message),
-        ],
+      margin: const EdgeInsets.all(16.0),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            if (child != null) ...[
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 16),
+              child!,
+            ],
+          ],
+        ),
       ),
     );
   }

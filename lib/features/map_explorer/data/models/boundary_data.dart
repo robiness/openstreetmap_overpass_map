@@ -18,14 +18,9 @@ class BoundaryData {
         final relation = OsmRelation.fromJson(element);
         final tags = relation.tags;
 
-        if (tags['boundary'] == 'administrative' &&
-            tags.containsKey('admin_level')) {
-          final int adminLevel =
-              int.tryParse(tags['admin_level'].toString()) ?? 0;
+        if (tags['boundary'] == 'administrative' && tags.containsKey('admin_level')) {
+          final int adminLevel = int.tryParse(tags['admin_level'].toString()) ?? 0;
           final String name = tags['name']?.toString() ?? 'Unknown';
-          print(
-            'Processing relation ${relation.id}: $name, admin_level: $adminLevel',
-          );
 
           String type;
           if (adminLevel == 6) {
@@ -71,18 +66,13 @@ class BoundaryData {
 
           // Combine outer ways into continuous polygons
           if (outerWays.isNotEmpty) {
-            print('Found ${outerWays.length} outer ways for $name');
             final combinedOuters = _combineWays(outerWays);
-            print(
-              'Combined into ${combinedOuters.length} continuous polygons for $name',
-            );
 
             // Add combined outer ways
             coordinates.addAll(combinedOuters);
 
             // Add inner ways (holes) as separate rings
             if (innerWays.isNotEmpty) {
-              print('Found ${innerWays.length} inner ways (holes) for $name');
               coordinates.addAll(innerWays);
             }
           }
@@ -96,13 +86,8 @@ class BoundaryData {
               coordinates: coordinates,
             );
 
-            print(
-              'Created $type area: $name with ${coordinates.length} coordinate rings',
-            );
-
             if (type == 'city') {
               cities.add(area);
-              print('Added city: $name (${relation.id})');
             } else if (type == 'bezirk') {
               bezirke.add(area);
             } else if (type == 'stadtteil') {
@@ -121,17 +106,12 @@ class BoundaryData {
     if (ways.isEmpty) return [];
     if (ways.length == 1) return ways;
 
-    print('_combineWays: Starting with ${ways.length} ways');
     List<List<List<double>>> result = [];
     List<List<List<double>>> remaining = List.from(ways);
 
     while (remaining.isNotEmpty) {
       List<List<double>> currentPolygon = remaining.removeAt(0);
       bool foundConnection = true;
-
-      print(
-        '_combineWays: Starting new polygon with ${currentPolygon.length} points',
-      );
 
       // Keep trying to connect ways until no more connections are found
       while (foundConnection && remaining.isNotEmpty) {
@@ -146,9 +126,6 @@ class BoundaryData {
             currentPolygon.addAll(way.skip(1));
             remaining.removeAt(i);
             foundConnection = true;
-            print(
-              '_combineWays: Connected way at end, now ${currentPolygon.length} points',
-            );
             break;
           }
           // Check if this way connects to the start of current polygon
@@ -157,9 +134,6 @@ class BoundaryData {
             currentPolygon.insertAll(0, way.take(way.length - 1));
             remaining.removeAt(i);
             foundConnection = true;
-            print(
-              '_combineWays: Connected way at start, now ${currentPolygon.length} points',
-            );
             break;
           }
           // Check if this way connects reversed to the end
@@ -169,9 +143,6 @@ class BoundaryData {
             currentPolygon.addAll(reversedWay.skip(1));
             remaining.removeAt(i);
             foundConnection = true;
-            print(
-              '_combineWays: Connected reversed way at end, now ${currentPolygon.length} points',
-            );
             break;
           }
           // Check if this way connects reversed to the start
@@ -184,29 +155,18 @@ class BoundaryData {
             );
             remaining.removeAt(i);
             foundConnection = true;
-            print(
-              '_combineWays: Connected reversed way at start, now ${currentPolygon.length} points',
-            );
             break;
           }
         }
       }
-
-      print(
-        '_combineWays: Completed polygon with ${currentPolygon.length} points',
-      );
       result.add(currentPolygon);
     }
-
-    print('_combineWays: Finished with ${result.length} polygons');
     return result;
   }
 
   /// Helper method to check if two coordinate points are equal (within a small tolerance)
   bool _pointsEqual(List<double> point1, List<double> point2) {
-    const tolerance =
-        0.0000001; // Very small tolerance for floating point comparison
-    return (point1[0] - point2[0]).abs() < tolerance &&
-        (point1[1] - point2[1]).abs() < tolerance;
+    const tolerance = 0.0000001; // Very small tolerance for floating point comparison
+    return (point1[0] - point2[0]).abs() < tolerance && (point1[1] - point2[1]).abs() < tolerance;
   }
 }
