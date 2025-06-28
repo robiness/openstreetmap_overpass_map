@@ -10,6 +10,7 @@ import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_area_layer.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_spot_layer.dart';
+import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_user_location_layer.dart';
 
 class MapView extends StatefulWidget {
   final BoundaryData boundaryData;
@@ -104,6 +105,7 @@ class _MapViewState extends State<MapView> {
             bloc.add(const MapEvent.areaSelected(area: null));
           },
         ),
+        const CustomUserLocationLayer(),
       ],
     );
   }

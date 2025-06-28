@@ -2,25 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/app/view/app_view.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
+import 'package:overpass_map/features/location/data/repositories/location_repository_impl.dart';
+import 'package:overpass_map/features/location/domain/repositories/location_repository.dart';
+import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/map_explorer/data/repositories/map_repository_impl.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 
 void main() {
   // In a real app, we would use a proper dependency injection setup (like get_it)
-  // For now, we'll create the repository here.
+  // For now, we'll create the repositories here.
   final MapRepository mapRepository = MapRepositoryImpl();
+  final LocationRepository locationRepository = LocationRepositoryImpl();
 
   runApp(
-    RepositoryProvider.value(
-      value: mapRepository,
-      child: BlocProvider(
-        create: (context) => MapBloc(mapRepository: mapRepository)
-          ..add(
-            const MapEvent.fetchDataRequested(
-              cityName: 'Köln',
-              adminLevel: 6,
-            ),
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider.value(value: mapRepository),
+        RepositoryProvider.value(value: locationRepository),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => MapBloc(mapRepository: mapRepository)
+              ..add(
+                const MapEvent.fetchDataRequested(
+                  cityName: 'Köln',
+                  adminLevel: 6,
+                ),
+              ),
           ),
+          BlocProvider(
+            create: (context) =>
+                LocationBloc(locationRepository: locationRepository),
+          ),
+        ],
         child: const SocialExplorationApp(),
       ),
     ),
