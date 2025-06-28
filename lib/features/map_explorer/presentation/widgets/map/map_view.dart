@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart' hide MapEvent;
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
+import 'package:overpass_map/features/location/domain/entities/location_data.dart';
+import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
@@ -60,10 +63,29 @@ class _MapViewState extends State<MapView> {
         minZoom: 8,
         maxZoom: 18,
         onTap: (tapPosition, latLng) {
-          // Deselect both area and spot if tapping on the map background
-          final bloc = context.read<MapBloc>();
-          bloc.add(const MapEvent.areaSelected(area: null));
-          bloc.add(const MapEvent.spotSelected(spot: null));
+          final debugBloc = context.read<DebugBloc>();
+
+          // If in location picking mode, set the debug location
+          if (debugBloc.state.isPickingLocation) {
+            final locationBloc = context.read<LocationBloc>();
+            final newLocation = LocationData(
+              latitude: latLng.latitude,
+              longitude: latLng.longitude,
+              accuracy: 10.0,
+              timestamp: DateTime.now(),
+              isMocked: true,
+            );
+            locationBloc.add(
+              LocationEvent.setDebugLocation(location: newLocation),
+            );
+            // Turn off picking mode
+            debugBloc.add(const DebugEvent.pickLocationToggled());
+          } else {
+            // Default behavior: Deselect both area and spot
+            final mapBloc = context.read<MapBloc>();
+            mapBloc.add(const MapEvent.areaSelected(area: null));
+            mapBloc.add(const MapEvent.spotSelected(spot: null));
+          }
         },
       ),
       children: [
@@ -76,16 +98,35 @@ class _MapViewState extends State<MapView> {
           areas: allAreas,
           selectedArea: widget.selectedArea,
           userVisitData: widget.userAreaVisitData ?? {},
-          onAreaTap: (area) {
-            final bloc = context.read<MapBloc>();
-            if (widget.selectedArea?.id == area.id) {
-              // Deselect if tapped again
-              bloc.add(const MapEvent.areaSelected(area: null));
+          onAreaTap: (area, latLng) {
+            final debugBloc = context.read<DebugBloc>();
+
+            if (debugBloc.state.isPickingLocation) {
+              // We are in picking mode. Set the location and turn off the mode.
+              final locationBloc = context.read<LocationBloc>();
+              final newLocation = LocationData(
+                latitude: latLng.latitude,
+                longitude: latLng.longitude,
+                accuracy: 10.0,
+                timestamp: DateTime.now(),
+                isMocked: true,
+              );
+              locationBloc.add(
+                LocationEvent.setDebugLocation(location: newLocation),
+              );
+              debugBloc.add(const DebugEvent.pickLocationToggled());
             } else {
-              bloc.add(MapEvent.areaSelected(area: area));
+              // We are in normal navigation mode. Handle area selection.
+              final mapBloc = context.read<MapBloc>();
+              if (widget.selectedArea?.id == area.id) {
+                // Deselect if tapped again
+                mapBloc.add(const MapEvent.areaSelected(area: null));
+              } else {
+                mapBloc.add(MapEvent.areaSelected(area: area));
+              }
+              // Also deselect any selected spot when selecting an area
+              mapBloc.add(const MapEvent.spotSelected(spot: null));
             }
-            // Also deselect any selected spot when selecting an area
-            bloc.add(const MapEvent.spotSelected(spot: null));
           },
         ),
         CustomSpotLayer(

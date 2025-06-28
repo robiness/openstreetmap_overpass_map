@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:overpass_map/features/location/domain/entities/location_data.dart';
+import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
+import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 
-import '../../domain/entities/location_data.dart';
-import '../bloc/location_bloc.dart';
-
-class LocationWidget extends StatelessWidget {
-  const LocationWidget({super.key});
+class DebugPanel extends StatelessWidget {
+  const DebugPanel({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class LocationWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Location Service',
+              'Debug Panel',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -107,30 +107,32 @@ class LocationWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Row(
-                children: [
-                  ElevatedButton(
-                    onPressed: () => _setDebugLocation(context, 'Cologne'),
+              BlocBuilder<DebugBloc, DebugState>(
+                builder: (context, state) {
+                  return ElevatedButton.icon(
+                    onPressed: () {
+                      context.read<DebugBloc>().add(
+                        const DebugEvent.pickLocationToggled(),
+                      );
+                    },
+                    icon: Icon(
+                      state.isPickingLocation
+                          ? Icons.cancel
+                          : Icons.location_pin,
+                    ),
+                    label: Text(
+                      state.isPickingLocation
+                          ? 'Cancel Picking'
+                          : 'Pick Location on Map',
+                    ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: state.isPickingLocation
+                          ? Colors.red
+                          : Colors.blue,
+                      foregroundColor: Colors.white,
                     ),
-                    child: const Text(
-                      'Set Cologne',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () => _setDebugLocation(context, 'Berlin'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                    ),
-                    child: const Text(
-                      'Set Berlin',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
+                  );
+                },
               ),
               const SizedBox(height: 8),
               ElevatedButton(

@@ -20,27 +20,33 @@ mixin _$DebugEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
+    required TResult Function() pickLocationToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
+    TResult? Function()? pickLocationToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
+    TResult Function()? pickLocationToggled,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_ToggleDebugMode value) toggleDebugMode,
+    required TResult Function(_PickLocationToggled value) pickLocationToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult? Function(_PickLocationToggled value)? pickLocationToggled,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult Function(_PickLocationToggled value)? pickLocationToggled,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -111,6 +117,7 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
+    required TResult Function() pickLocationToggled,
   }) {
     return toggleDebugMode();
   }
@@ -119,6 +126,7 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
+    TResult? Function()? pickLocationToggled,
   }) {
     return toggleDebugMode?.call();
   }
@@ -127,6 +135,7 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
+    TResult Function()? pickLocationToggled,
     required TResult orElse(),
   }) {
     if (toggleDebugMode != null) {
@@ -139,6 +148,7 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_ToggleDebugMode value) toggleDebugMode,
+    required TResult Function(_PickLocationToggled value) pickLocationToggled,
   }) {
     return toggleDebugMode(this);
   }
@@ -147,6 +157,7 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult? Function(_PickLocationToggled value)? pickLocationToggled,
   }) {
     return toggleDebugMode?.call(this);
   }
@@ -155,6 +166,7 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult Function(_PickLocationToggled value)? pickLocationToggled,
     required TResult orElse(),
   }) {
     if (toggleDebugMode != null) {
@@ -169,8 +181,117 @@ abstract class _ToggleDebugMode implements DebugEvent {
 }
 
 /// @nodoc
+abstract class _$$PickLocationToggledImplCopyWith<$Res> {
+  factory _$$PickLocationToggledImplCopyWith(
+    _$PickLocationToggledImpl value,
+    $Res Function(_$PickLocationToggledImpl) then,
+  ) = __$$PickLocationToggledImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$PickLocationToggledImplCopyWithImpl<$Res>
+    extends _$DebugEventCopyWithImpl<$Res, _$PickLocationToggledImpl>
+    implements _$$PickLocationToggledImplCopyWith<$Res> {
+  __$$PickLocationToggledImplCopyWithImpl(
+    _$PickLocationToggledImpl _value,
+    $Res Function(_$PickLocationToggledImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$PickLocationToggledImpl implements _PickLocationToggled {
+  const _$PickLocationToggledImpl();
+
+  @override
+  String toString() {
+    return 'DebugEvent.pickLocationToggled()';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$PickLocationToggledImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() toggleDebugMode,
+    required TResult Function() pickLocationToggled,
+  }) {
+    return pickLocationToggled();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? toggleDebugMode,
+    TResult? Function()? pickLocationToggled,
+  }) {
+    return pickLocationToggled?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? toggleDebugMode,
+    TResult Function()? pickLocationToggled,
+    required TResult orElse(),
+  }) {
+    if (pickLocationToggled != null) {
+      return pickLocationToggled();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
+    required TResult Function(_PickLocationToggled value) pickLocationToggled,
+  }) {
+    return pickLocationToggled(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult? Function(_PickLocationToggled value)? pickLocationToggled,
+  }) {
+    return pickLocationToggled?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult Function(_PickLocationToggled value)? pickLocationToggled,
+    required TResult orElse(),
+  }) {
+    if (pickLocationToggled != null) {
+      return pickLocationToggled(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _PickLocationToggled implements DebugEvent {
+  const factory _PickLocationToggled() = _$PickLocationToggledImpl;
+}
+
+/// @nodoc
 mixin _$DebugState {
   bool get isDebugModeEnabled => throw _privateConstructorUsedError;
+  bool get isPickingLocation => throw _privateConstructorUsedError;
 
   /// Create a copy of DebugState
   /// with the given fields replaced by the non-null parameter values.
@@ -186,7 +307,7 @@ abstract class $DebugStateCopyWith<$Res> {
     $Res Function(DebugState) then,
   ) = _$DebugStateCopyWithImpl<$Res, DebugState>;
   @useResult
-  $Res call({bool isDebugModeEnabled});
+  $Res call({bool isDebugModeEnabled, bool isPickingLocation});
 }
 
 /// @nodoc
@@ -203,12 +324,19 @@ class _$DebugStateCopyWithImpl<$Res, $Val extends DebugState>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? isDebugModeEnabled = null}) {
+  $Res call({
+    Object? isDebugModeEnabled = null,
+    Object? isPickingLocation = null,
+  }) {
     return _then(
       _value.copyWith(
             isDebugModeEnabled: null == isDebugModeEnabled
                 ? _value.isDebugModeEnabled
                 : isDebugModeEnabled // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isPickingLocation: null == isPickingLocation
+                ? _value.isPickingLocation
+                : isPickingLocation // ignore: cast_nullable_to_non_nullable
                       as bool,
           )
           as $Val,
@@ -225,7 +353,7 @@ abstract class _$$DebugStateImplCopyWith<$Res>
   ) = __$$DebugStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({bool isDebugModeEnabled});
+  $Res call({bool isDebugModeEnabled, bool isPickingLocation});
 }
 
 /// @nodoc
@@ -241,12 +369,19 @@ class __$$DebugStateImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? isDebugModeEnabled = null}) {
+  $Res call({
+    Object? isDebugModeEnabled = null,
+    Object? isPickingLocation = null,
+  }) {
     return _then(
       _$DebugStateImpl(
         isDebugModeEnabled: null == isDebugModeEnabled
             ? _value.isDebugModeEnabled
             : isDebugModeEnabled // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isPickingLocation: null == isPickingLocation
+            ? _value.isPickingLocation
+            : isPickingLocation // ignore: cast_nullable_to_non_nullable
                   as bool,
       ),
     );
@@ -256,15 +391,21 @@ class __$$DebugStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$DebugStateImpl implements _DebugState {
-  const _$DebugStateImpl({this.isDebugModeEnabled = false});
+  const _$DebugStateImpl({
+    this.isDebugModeEnabled = false,
+    this.isPickingLocation = false,
+  });
 
   @override
   @JsonKey()
   final bool isDebugModeEnabled;
+  @override
+  @JsonKey()
+  final bool isPickingLocation;
 
   @override
   String toString() {
-    return 'DebugState(isDebugModeEnabled: $isDebugModeEnabled)';
+    return 'DebugState(isDebugModeEnabled: $isDebugModeEnabled, isPickingLocation: $isPickingLocation)';
   }
 
   @override
@@ -273,11 +414,14 @@ class _$DebugStateImpl implements _DebugState {
         (other.runtimeType == runtimeType &&
             other is _$DebugStateImpl &&
             (identical(other.isDebugModeEnabled, isDebugModeEnabled) ||
-                other.isDebugModeEnabled == isDebugModeEnabled));
+                other.isDebugModeEnabled == isDebugModeEnabled) &&
+            (identical(other.isPickingLocation, isPickingLocation) ||
+                other.isPickingLocation == isPickingLocation));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, isDebugModeEnabled);
+  int get hashCode =>
+      Object.hash(runtimeType, isDebugModeEnabled, isPickingLocation);
 
   /// Create a copy of DebugState
   /// with the given fields replaced by the non-null parameter values.
@@ -289,10 +433,15 @@ class _$DebugStateImpl implements _DebugState {
 }
 
 abstract class _DebugState implements DebugState {
-  const factory _DebugState({final bool isDebugModeEnabled}) = _$DebugStateImpl;
+  const factory _DebugState({
+    final bool isDebugModeEnabled,
+    final bool isPickingLocation,
+  }) = _$DebugStateImpl;
 
   @override
   bool get isDebugModeEnabled;
+  @override
+  bool get isPickingLocation;
 
   /// Create a copy of DebugState
   /// with the given fields replaced by the non-null parameter values.

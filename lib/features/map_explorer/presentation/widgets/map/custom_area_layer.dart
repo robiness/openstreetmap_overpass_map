@@ -7,7 +7,7 @@ import 'package:overpass_map/features/map_explorer/presentation/widgets/map/cust
 
 class CustomAreaLayer extends StatelessWidget {
   final List<GeographicArea> areas;
-  final void Function(GeographicArea)? onAreaTap;
+  final void Function(GeographicArea, LatLng)? onAreaTap;
   final GeographicArea? selectedArea;
   final Map<int, UserAreaData> userVisitData;
 
@@ -38,7 +38,7 @@ class CustomAreaLayer extends StatelessWidget {
                 .map((coords) => LatLng(coords[1], coords[0]))
                 .toList();
             if (_isPointInPolygon(tappedLatLng, polygon)) {
-              onAreaTap!(selectedArea!);
+              onAreaTap!(selectedArea!, tappedLatLng);
               return; // Stop after finding the match
             }
           }
@@ -56,7 +56,7 @@ class CustomAreaLayer extends StatelessWidget {
                 .map((coords) => LatLng(coords[1], coords[0]))
                 .toList();
             if (_isPointInPolygon(tappedLatLng, polygon)) {
-              onAreaTap!(area);
+              onAreaTap!(area, tappedLatLng);
               return; // Stop after finding the first match
             }
           }

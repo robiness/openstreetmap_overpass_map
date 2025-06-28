@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overpass_map/features/location/presentation/widgets/location_widget.dart';
+import 'package:overpass_map/features/debug/presentation/widgets/debug_panel.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
@@ -71,13 +71,13 @@ class _MobileLayoutState extends State<MobileLayout> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Colors.black.withOpacity(0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),
                 ],
               ),
-              child: const LocationWidget(),
+              child: const DebugPanel(),
             )
           : null,
     );

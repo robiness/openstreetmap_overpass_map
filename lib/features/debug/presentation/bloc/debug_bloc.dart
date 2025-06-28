@@ -10,5 +10,9 @@ class DebugBloc extends Bloc<DebugEvent, DebugState> {
     on<_ToggleDebugMode>((event, emit) {
       emit(state.copyWith(isDebugModeEnabled: !state.isDebugModeEnabled));
     });
+
+    on<_PickLocationToggled>((event, emit) {
+      emit(state.copyWith(isPickingLocation: !state.isPickingLocation));
+    });
   }
 }
