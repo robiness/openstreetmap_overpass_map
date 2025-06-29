@@ -14,12 +14,21 @@ abstract class CheckInRepository {
   /// Returns a [Stream] of a list of [CheckIn] objects.
   Stream<List<CheckIn>> watchUserCheckIns(String userId);
 
+  /// Watches for all check-ins for a specific spot and user.
+  Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, int spotId);
+
   /// Creates a new check-in for the currently authenticated user.
   ///
   /// This operation will first write to the local database for an immediate
   /// offline-first experience and then queue a synchronization with the cloud.
   Future<void> createCheckIn({
-    required String stadtteilId,
+    required int spotId,
+    required String userId,
+  });
+
+  /// Deletes all check-ins for a specific spot for a given user.
+  Future<void> deleteCheckInsForSpot({
+    required int spotId,
     required String userId,
   });
 }

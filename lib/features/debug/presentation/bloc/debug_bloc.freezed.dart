@@ -21,32 +21,44 @@ mixin _$DebugEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
+    required TResult Function(int spotId, String userId) checkInRequested,
+    required TResult Function(int spotId, String userId) checkOutRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
+    TResult? Function(int spotId, String userId)? checkInRequested,
+    TResult? Function(int spotId, String userId)? checkOutRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
+    TResult Function(int spotId, String userId)? checkInRequested,
+    TResult Function(int spotId, String userId)? checkOutRequested,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_ToggleDebugMode value) toggleDebugMode,
     required TResult Function(_PickLocationToggled value) pickLocationToggled,
+    required TResult Function(_CheckInRequested value) checkInRequested,
+    required TResult Function(_CheckOutRequested value) checkOutRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
     TResult? Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult? Function(_CheckInRequested value)? checkInRequested,
+    TResult? Function(_CheckOutRequested value)? checkOutRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     TResult Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult Function(_CheckInRequested value)? checkInRequested,
+    TResult Function(_CheckOutRequested value)? checkOutRequested,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -118,6 +130,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
+    required TResult Function(int spotId, String userId) checkInRequested,
+    required TResult Function(int spotId, String userId) checkOutRequested,
   }) {
     return toggleDebugMode();
   }
@@ -127,6 +141,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
+    TResult? Function(int spotId, String userId)? checkInRequested,
+    TResult? Function(int spotId, String userId)? checkOutRequested,
   }) {
     return toggleDebugMode?.call();
   }
@@ -136,6 +152,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
+    TResult Function(int spotId, String userId)? checkInRequested,
+    TResult Function(int spotId, String userId)? checkOutRequested,
     required TResult orElse(),
   }) {
     if (toggleDebugMode != null) {
@@ -149,6 +167,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult map<TResult extends Object?>({
     required TResult Function(_ToggleDebugMode value) toggleDebugMode,
     required TResult Function(_PickLocationToggled value) pickLocationToggled,
+    required TResult Function(_CheckInRequested value) checkInRequested,
+    required TResult Function(_CheckOutRequested value) checkOutRequested,
   }) {
     return toggleDebugMode(this);
   }
@@ -158,6 +178,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
     TResult? Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult? Function(_CheckInRequested value)? checkInRequested,
+    TResult? Function(_CheckOutRequested value)? checkOutRequested,
   }) {
     return toggleDebugMode?.call(this);
   }
@@ -167,6 +189,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     TResult Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult Function(_CheckInRequested value)? checkInRequested,
+    TResult Function(_CheckOutRequested value)? checkOutRequested,
     required TResult orElse(),
   }) {
     if (toggleDebugMode != null) {
@@ -226,6 +250,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
+    required TResult Function(int spotId, String userId) checkInRequested,
+    required TResult Function(int spotId, String userId) checkOutRequested,
   }) {
     return pickLocationToggled();
   }
@@ -235,6 +261,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
+    TResult? Function(int spotId, String userId)? checkInRequested,
+    TResult? Function(int spotId, String userId)? checkOutRequested,
   }) {
     return pickLocationToggled?.call();
   }
@@ -244,6 +272,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
+    TResult Function(int spotId, String userId)? checkInRequested,
+    TResult Function(int spotId, String userId)? checkOutRequested,
     required TResult orElse(),
   }) {
     if (pickLocationToggled != null) {
@@ -257,6 +287,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult map<TResult extends Object?>({
     required TResult Function(_ToggleDebugMode value) toggleDebugMode,
     required TResult Function(_PickLocationToggled value) pickLocationToggled,
+    required TResult Function(_CheckInRequested value) checkInRequested,
+    required TResult Function(_CheckOutRequested value) checkOutRequested,
   }) {
     return pickLocationToggled(this);
   }
@@ -266,6 +298,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
     TResult? Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult? Function(_CheckInRequested value)? checkInRequested,
+    TResult? Function(_CheckOutRequested value)? checkOutRequested,
   }) {
     return pickLocationToggled?.call(this);
   }
@@ -275,6 +309,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_ToggleDebugMode value)? toggleDebugMode,
     TResult Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult Function(_CheckInRequested value)? checkInRequested,
+    TResult Function(_CheckOutRequested value)? checkOutRequested,
     required TResult orElse(),
   }) {
     if (pickLocationToggled != null) {
@@ -286,6 +322,342 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
 
 abstract class _PickLocationToggled implements DebugEvent {
   const factory _PickLocationToggled() = _$PickLocationToggledImpl;
+}
+
+/// @nodoc
+abstract class _$$CheckInRequestedImplCopyWith<$Res> {
+  factory _$$CheckInRequestedImplCopyWith(
+    _$CheckInRequestedImpl value,
+    $Res Function(_$CheckInRequestedImpl) then,
+  ) = __$$CheckInRequestedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int spotId, String userId});
+}
+
+/// @nodoc
+class __$$CheckInRequestedImplCopyWithImpl<$Res>
+    extends _$DebugEventCopyWithImpl<$Res, _$CheckInRequestedImpl>
+    implements _$$CheckInRequestedImplCopyWith<$Res> {
+  __$$CheckInRequestedImplCopyWithImpl(
+    _$CheckInRequestedImpl _value,
+    $Res Function(_$CheckInRequestedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? spotId = null, Object? userId = null}) {
+    return _then(
+      _$CheckInRequestedImpl(
+        spotId: null == spotId
+            ? _value.spotId
+            : spotId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CheckInRequestedImpl implements _CheckInRequested {
+  const _$CheckInRequestedImpl({required this.spotId, required this.userId});
+
+  @override
+  final int spotId;
+  @override
+  final String userId;
+
+  @override
+  String toString() {
+    return 'DebugEvent.checkInRequested(spotId: $spotId, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CheckInRequestedImpl &&
+            (identical(other.spotId, spotId) || other.spotId == spotId) &&
+            (identical(other.userId, userId) || other.userId == userId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, spotId, userId);
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CheckInRequestedImplCopyWith<_$CheckInRequestedImpl> get copyWith =>
+      __$$CheckInRequestedImplCopyWithImpl<_$CheckInRequestedImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() toggleDebugMode,
+    required TResult Function() pickLocationToggled,
+    required TResult Function(int spotId, String userId) checkInRequested,
+    required TResult Function(int spotId, String userId) checkOutRequested,
+  }) {
+    return checkInRequested(spotId, userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? toggleDebugMode,
+    TResult? Function()? pickLocationToggled,
+    TResult? Function(int spotId, String userId)? checkInRequested,
+    TResult? Function(int spotId, String userId)? checkOutRequested,
+  }) {
+    return checkInRequested?.call(spotId, userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? toggleDebugMode,
+    TResult Function()? pickLocationToggled,
+    TResult Function(int spotId, String userId)? checkInRequested,
+    TResult Function(int spotId, String userId)? checkOutRequested,
+    required TResult orElse(),
+  }) {
+    if (checkInRequested != null) {
+      return checkInRequested(spotId, userId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
+    required TResult Function(_PickLocationToggled value) pickLocationToggled,
+    required TResult Function(_CheckInRequested value) checkInRequested,
+    required TResult Function(_CheckOutRequested value) checkOutRequested,
+  }) {
+    return checkInRequested(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult? Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult? Function(_CheckInRequested value)? checkInRequested,
+    TResult? Function(_CheckOutRequested value)? checkOutRequested,
+  }) {
+    return checkInRequested?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult Function(_CheckInRequested value)? checkInRequested,
+    TResult Function(_CheckOutRequested value)? checkOutRequested,
+    required TResult orElse(),
+  }) {
+    if (checkInRequested != null) {
+      return checkInRequested(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _CheckInRequested implements DebugEvent {
+  const factory _CheckInRequested({
+    required final int spotId,
+    required final String userId,
+  }) = _$CheckInRequestedImpl;
+
+  int get spotId;
+  String get userId;
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CheckInRequestedImplCopyWith<_$CheckInRequestedImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$CheckOutRequestedImplCopyWith<$Res> {
+  factory _$$CheckOutRequestedImplCopyWith(
+    _$CheckOutRequestedImpl value,
+    $Res Function(_$CheckOutRequestedImpl) then,
+  ) = __$$CheckOutRequestedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({int spotId, String userId});
+}
+
+/// @nodoc
+class __$$CheckOutRequestedImplCopyWithImpl<$Res>
+    extends _$DebugEventCopyWithImpl<$Res, _$CheckOutRequestedImpl>
+    implements _$$CheckOutRequestedImplCopyWith<$Res> {
+  __$$CheckOutRequestedImplCopyWithImpl(
+    _$CheckOutRequestedImpl _value,
+    $Res Function(_$CheckOutRequestedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? spotId = null, Object? userId = null}) {
+    return _then(
+      _$CheckOutRequestedImpl(
+        spotId: null == spotId
+            ? _value.spotId
+            : spotId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$CheckOutRequestedImpl implements _CheckOutRequested {
+  const _$CheckOutRequestedImpl({required this.spotId, required this.userId});
+
+  @override
+  final int spotId;
+  @override
+  final String userId;
+
+  @override
+  String toString() {
+    return 'DebugEvent.checkOutRequested(spotId: $spotId, userId: $userId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$CheckOutRequestedImpl &&
+            (identical(other.spotId, spotId) || other.spotId == spotId) &&
+            (identical(other.userId, userId) || other.userId == userId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, spotId, userId);
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$CheckOutRequestedImplCopyWith<_$CheckOutRequestedImpl> get copyWith =>
+      __$$CheckOutRequestedImplCopyWithImpl<_$CheckOutRequestedImpl>(
+        this,
+        _$identity,
+      );
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() toggleDebugMode,
+    required TResult Function() pickLocationToggled,
+    required TResult Function(int spotId, String userId) checkInRequested,
+    required TResult Function(int spotId, String userId) checkOutRequested,
+  }) {
+    return checkOutRequested(spotId, userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? toggleDebugMode,
+    TResult? Function()? pickLocationToggled,
+    TResult? Function(int spotId, String userId)? checkInRequested,
+    TResult? Function(int spotId, String userId)? checkOutRequested,
+  }) {
+    return checkOutRequested?.call(spotId, userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? toggleDebugMode,
+    TResult Function()? pickLocationToggled,
+    TResult Function(int spotId, String userId)? checkInRequested,
+    TResult Function(int spotId, String userId)? checkOutRequested,
+    required TResult orElse(),
+  }) {
+    if (checkOutRequested != null) {
+      return checkOutRequested(spotId, userId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_ToggleDebugMode value) toggleDebugMode,
+    required TResult Function(_PickLocationToggled value) pickLocationToggled,
+    required TResult Function(_CheckInRequested value) checkInRequested,
+    required TResult Function(_CheckOutRequested value) checkOutRequested,
+  }) {
+    return checkOutRequested(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult? Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult? Function(_CheckInRequested value)? checkInRequested,
+    TResult? Function(_CheckOutRequested value)? checkOutRequested,
+  }) {
+    return checkOutRequested?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_ToggleDebugMode value)? toggleDebugMode,
+    TResult Function(_PickLocationToggled value)? pickLocationToggled,
+    TResult Function(_CheckInRequested value)? checkInRequested,
+    TResult Function(_CheckOutRequested value)? checkOutRequested,
+    required TResult orElse(),
+  }) {
+    if (checkOutRequested != null) {
+      return checkOutRequested(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _CheckOutRequested implements DebugEvent {
+  const factory _CheckOutRequested({
+    required final int spotId,
+    required final String userId,
+  }) = _$CheckOutRequestedImpl;
+
+  int get spotId;
+  String get userId;
+
+  /// Create a copy of DebugEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$CheckOutRequestedImplCopyWith<_$CheckOutRequestedImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc

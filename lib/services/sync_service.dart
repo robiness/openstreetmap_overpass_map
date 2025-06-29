@@ -78,7 +78,7 @@ class SyncService {
             (c) => CheckInsCompanion.insert(
               id: c.id,
               userId: c.userId,
-              stadtteilId: c.stadtteilId,
+              spotId: c.spotId,
               updatedAt: Value(c.updatedAt),
               syncedAt: Value(now),
             ),

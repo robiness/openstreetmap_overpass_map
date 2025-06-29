@@ -11,6 +11,7 @@ _$UserSpotDataImpl _$$UserSpotDataImplFromJson(Map<String, dynamic> json) =>
       spotId: (json['spotId'] as num).toInt(),
       visitCount: (json['visitCount'] as num?)?.toInt() ?? 0,
       isFavorite: json['isFavorite'] as bool? ?? false,
+      isCheckedIn: json['isCheckedIn'] as bool? ?? false,
       lastVisited: json['lastVisited'] == null
           ? null
           : DateTime.parse(json['lastVisited'] as String),
@@ -23,6 +24,7 @@ Map<String, dynamic> _$$UserSpotDataImplToJson(_$UserSpotDataImpl instance) =>
       'spotId': instance.spotId,
       'visitCount': instance.visitCount,
       'isFavorite': instance.isFavorite,
+      'isCheckedIn': instance.isCheckedIn,
       'lastVisited': instance.lastVisited?.toIso8601String(),
       'userRating': instance.userRating,
       'userNotes': instance.userNotes,

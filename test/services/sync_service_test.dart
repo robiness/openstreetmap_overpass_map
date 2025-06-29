@@ -61,7 +61,7 @@ void main() {
         final unsyncedCheckIn = CheckInsCompanion(
           id: Value(checkInId),
           userId: const Value('test-user'),
-          stadtteilId: const Value('test-stadtteil'),
+          spotId: const Value(1),
         );
         await db.into(db.checkIns).insert(unsyncedCheckIn);
 
@@ -90,7 +90,7 @@ void main() {
       final unsyncedCheckIn = CheckInsCompanion(
         id: Value(checkInId),
         userId: const Value('test-user'),
-        stadtteilId: const Value('test-stadtteil'),
+        spotId: const Value(1),
       );
       await db.into(db.checkIns).insert(unsyncedCheckIn);
 
@@ -114,7 +114,7 @@ void main() {
         final remoteCheckIn = CheckIn(
           id: remoteCheckInId,
           userId: 'remote-user',
-          stadtteilId: 'remote-stadtteil',
+          spotId: 1,
           updatedAt: DateTime.now(),
         );
 

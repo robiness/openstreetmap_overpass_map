@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
-import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 
 class AppHeader extends StatelessWidget {
   const AppHeader({super.key});

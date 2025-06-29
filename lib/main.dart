@@ -19,8 +19,6 @@ import 'package:overpass_map/services/sync_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide AuthState;
 import 'package:uuid/uuid.dart';
 
-import 'app/view/app_view.dart';
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Supabase.initialize(
@@ -35,14 +33,15 @@ Future<void> main() async {
   // --- Data Layer Setup ---
   final database = AppDatabase();
   final apiClient = SupabaseApiClient(Supabase.instance.client);
+  final syncService = SyncService(database: database, apiClient: apiClient);
   final checkInRepository = CheckInRepositoryImpl(
     database: database,
     uuid: const Uuid(),
+    syncService: syncService,
   );
   final authRepository = AuthRepositoryImpl(
     supabaseClient: Supabase.instance.client,
   );
-  final syncService = SyncService(database: database, apiClient: apiClient);
 
   // --- Legacy Repository Setup ---
   final mapRepository = MapRepositoryImpl();
@@ -63,7 +62,9 @@ Future<void> main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => DebugBloc(),
+            create: (context) => DebugBloc(
+              checkInRepository: context.read<CheckInRepository>(),
+            ),
           ),
           BlocProvider(
             create: (context) => MapBloc(mapRepository: mapRepository)

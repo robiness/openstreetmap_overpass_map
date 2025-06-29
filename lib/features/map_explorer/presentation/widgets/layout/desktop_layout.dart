@@ -11,7 +11,9 @@ import 'package:overpass_map/features/map_explorer/presentation/widgets/lists/hi
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/map_view.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/shared/app_header.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/shared/status_card.dart';
-import 'package:overpass_map/services/sync_service.dart';
+import 'package:overpass_map/features/debug/presentation/widgets/debug_panel.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_state.dart';
 
 class DesktopLayout extends StatelessWidget {
   final BoundaryData boundaryData;
@@ -34,7 +36,6 @@ class DesktopLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final checkInRepository = context.read<CheckInRepository>();
-    final syncService = context.read<SyncService>();
 
     return Row(
       children: [
@@ -52,12 +53,6 @@ class DesktopLayout extends StatelessWidget {
                   onAreaTapped: (area) => context.read<MapBloc>().add(
                     MapEvent.areaSelected(area: area),
                   ),
-                  onIncrementVisit: (areaId) => context.read<MapBloc>().add(
-                    MapEvent.incrementAreaVisit(areaId: areaId),
-                  ),
-                  onDecrementVisit: (areaId) => context.read<MapBloc>().add(
-                    MapEvent.decrementAreaVisit(areaId: areaId),
-                  ),
                 ),
               ),
               // --- Proof of Concept Sync UI ---
@@ -65,32 +60,26 @@ class DesktopLayout extends StatelessWidget {
                 color: Colors.amber,
                 icon: Icons.sync,
                 message: 'Data Sync Controls',
-                child: StreamBuilder<List<dynamic>>(
-                  stream: checkInRepository.watchUserCheckIns('test-user'),
-                  builder: (context, snapshot) {
-                    final count = snapshot.data?.length ?? 0;
-                    return Column(
-                      children: [
-                        Text('Local Check-Ins: $count'),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () {
-                            checkInRepository.createCheckIn(
-                              stadtteilId: 'dummy-stadtteil-id',
-                              userId: 'test-user',
-                            );
-                          },
-                          child: const Text('Create Dummy Check-In'),
-                        ),
-                        const SizedBox(height: 8),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await syncService.push();
-                            await syncService.pull();
-                          },
-                          child: const Text('Manual Sync (Push/Pull)'),
-                        ),
-                      ],
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, authState) {
+                    final userId = authState.maybeWhen(
+                      authenticated: (user, profile) => user.id,
+                      orElse: () => 'test-user', // fallback for unauthenticated
+                    );
+
+                    return StreamBuilder<List<dynamic>>(
+                      stream: checkInRepository.watchUserCheckIns(userId),
+                      builder: (context, snapshot) {
+                        final count = snapshot.data?.length ?? 0;
+                        return Column(
+                          children: [
+                            Text('Local Check-Ins: $count'),
+                            Text('User: $userId'),
+                            const SizedBox(height: 8),
+                            const DebugPanel(),
+                          ],
+                        );
+                      },
                     );
                   },
                 ),

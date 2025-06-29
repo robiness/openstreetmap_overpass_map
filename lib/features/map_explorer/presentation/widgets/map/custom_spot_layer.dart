@@ -121,7 +121,8 @@ class CustomSpotLayer extends StatelessWidget {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared &&
+          distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle

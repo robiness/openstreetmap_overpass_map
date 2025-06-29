@@ -22,62 +22,38 @@ mixin _$MapEvent {
     required TResult Function(String cityName, int adminLevel)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
     required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
     TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
     TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
     required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -201,11 +177,7 @@ class _$FetchDataRequestedImpl
     required TResult Function(String cityName, int adminLevel)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
     required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
   }) {
     return fetchDataRequested(cityName, adminLevel);
   }
@@ -215,11 +187,7 @@ class _$FetchDataRequestedImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
     TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
   }) {
     return fetchDataRequested?.call(cityName, adminLevel);
   }
@@ -229,11 +197,7 @@ class _$FetchDataRequestedImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
     TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
     required TResult orElse(),
   }) {
     if (fetchDataRequested != null) {
@@ -247,11 +211,7 @@ class _$FetchDataRequestedImpl
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
     required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
   }) {
     return fetchDataRequested(this);
   }
@@ -261,11 +221,7 @@ class _$FetchDataRequestedImpl
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
   }) {
     return fetchDataRequested?.call(this);
   }
@@ -275,11 +231,7 @@ class _$FetchDataRequestedImpl
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
     required TResult orElse(),
   }) {
     if (fetchDataRequested != null) {
@@ -386,11 +338,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
     required TResult Function(String cityName, int adminLevel)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
     required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
   }) {
     return areaSelected(area);
   }
@@ -400,11 +348,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
     TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
   }) {
     return areaSelected?.call(area);
   }
@@ -414,11 +358,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
     TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
     required TResult orElse(),
   }) {
     if (areaSelected != null) {
@@ -432,11 +372,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
     required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
   }) {
     return areaSelected(this);
   }
@@ -446,11 +382,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
   }) {
     return areaSelected?.call(this);
   }
@@ -460,11 +392,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
     required TResult orElse(),
   }) {
     if (areaSelected != null) {
@@ -484,380 +412,6 @@ abstract class _AreaSelected implements MapEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$AreaSelectedImplCopyWith<_$AreaSelectedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$IncrementAreaVisitImplCopyWith<$Res> {
-  factory _$$IncrementAreaVisitImplCopyWith(
-    _$IncrementAreaVisitImpl value,
-    $Res Function(_$IncrementAreaVisitImpl) then,
-  ) = __$$IncrementAreaVisitImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({int areaId});
-}
-
-/// @nodoc
-class __$$IncrementAreaVisitImplCopyWithImpl<$Res>
-    extends _$MapEventCopyWithImpl<$Res, _$IncrementAreaVisitImpl>
-    implements _$$IncrementAreaVisitImplCopyWith<$Res> {
-  __$$IncrementAreaVisitImplCopyWithImpl(
-    _$IncrementAreaVisitImpl _value,
-    $Res Function(_$IncrementAreaVisitImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? areaId = null}) {
-    return _then(
-      _$IncrementAreaVisitImpl(
-        areaId: null == areaId
-            ? _value.areaId
-            : areaId // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$IncrementAreaVisitImpl
-    with DiagnosticableTreeMixin
-    implements _IncrementAreaVisit {
-  const _$IncrementAreaVisitImpl({required this.areaId});
-
-  @override
-  final int areaId;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MapEvent.incrementAreaVisit(areaId: $areaId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'MapEvent.incrementAreaVisit'))
-      ..add(DiagnosticsProperty('areaId', areaId));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$IncrementAreaVisitImpl &&
-            (identical(other.areaId, areaId) || other.areaId == areaId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, areaId);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$IncrementAreaVisitImplCopyWith<_$IncrementAreaVisitImpl> get copyWith =>
-      __$$IncrementAreaVisitImplCopyWithImpl<_$IncrementAreaVisitImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
-    fetchDataRequested,
-    required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
-    required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
-  }) {
-    return incrementAreaVisit(areaId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
-    TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
-  }) {
-    return incrementAreaVisit?.call(areaId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
-    TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (incrementAreaVisit != null) {
-      return incrementAreaVisit(areaId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
-    required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
-  }) {
-    return incrementAreaVisit(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
-  }) {
-    return incrementAreaVisit?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (incrementAreaVisit != null) {
-      return incrementAreaVisit(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _IncrementAreaVisit implements MapEvent {
-  const factory _IncrementAreaVisit({required final int areaId}) =
-      _$IncrementAreaVisitImpl;
-
-  int get areaId;
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$IncrementAreaVisitImplCopyWith<_$IncrementAreaVisitImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$DecrementAreaVisitImplCopyWith<$Res> {
-  factory _$$DecrementAreaVisitImplCopyWith(
-    _$DecrementAreaVisitImpl value,
-    $Res Function(_$DecrementAreaVisitImpl) then,
-  ) = __$$DecrementAreaVisitImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({int areaId});
-}
-
-/// @nodoc
-class __$$DecrementAreaVisitImplCopyWithImpl<$Res>
-    extends _$MapEventCopyWithImpl<$Res, _$DecrementAreaVisitImpl>
-    implements _$$DecrementAreaVisitImplCopyWith<$Res> {
-  __$$DecrementAreaVisitImplCopyWithImpl(
-    _$DecrementAreaVisitImpl _value,
-    $Res Function(_$DecrementAreaVisitImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? areaId = null}) {
-    return _then(
-      _$DecrementAreaVisitImpl(
-        areaId: null == areaId
-            ? _value.areaId
-            : areaId // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$DecrementAreaVisitImpl
-    with DiagnosticableTreeMixin
-    implements _DecrementAreaVisit {
-  const _$DecrementAreaVisitImpl({required this.areaId});
-
-  @override
-  final int areaId;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MapEvent.decrementAreaVisit(areaId: $areaId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'MapEvent.decrementAreaVisit'))
-      ..add(DiagnosticsProperty('areaId', areaId));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DecrementAreaVisitImpl &&
-            (identical(other.areaId, areaId) || other.areaId == areaId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, areaId);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DecrementAreaVisitImplCopyWith<_$DecrementAreaVisitImpl> get copyWith =>
-      __$$DecrementAreaVisitImplCopyWithImpl<_$DecrementAreaVisitImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
-    fetchDataRequested,
-    required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
-    required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
-  }) {
-    return decrementAreaVisit(areaId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
-    TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
-  }) {
-    return decrementAreaVisit?.call(areaId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
-    TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (decrementAreaVisit != null) {
-      return decrementAreaVisit(areaId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
-    required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
-  }) {
-    return decrementAreaVisit(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
-  }) {
-    return decrementAreaVisit?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (decrementAreaVisit != null) {
-      return decrementAreaVisit(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _DecrementAreaVisit implements MapEvent {
-  const factory _DecrementAreaVisit({required final int areaId}) =
-      _$DecrementAreaVisitImpl;
-
-  int get areaId;
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DecrementAreaVisitImplCopyWith<_$DecrementAreaVisitImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -942,11 +496,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
     required TResult Function(String cityName, int adminLevel)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
     required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
   }) {
     return spotSelected(spot);
   }
@@ -956,11 +506,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
     TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
   }) {
     return spotSelected?.call(spot);
   }
@@ -970,11 +516,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel)? fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
     TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
     required TResult orElse(),
   }) {
     if (spotSelected != null) {
@@ -988,11 +530,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
     required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
   }) {
     return spotSelected(this);
   }
@@ -1002,11 +540,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
   }) {
     return spotSelected?.call(this);
   }
@@ -1016,11 +550,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
     TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
     required TResult orElse(),
   }) {
     if (spotSelected != null) {
@@ -1039,380 +569,6 @@ abstract class _SpotSelected implements MapEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SpotSelectedImplCopyWith<_$SpotSelectedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$IncrementSpotVisitImplCopyWith<$Res> {
-  factory _$$IncrementSpotVisitImplCopyWith(
-    _$IncrementSpotVisitImpl value,
-    $Res Function(_$IncrementSpotVisitImpl) then,
-  ) = __$$IncrementSpotVisitImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({int spotId});
-}
-
-/// @nodoc
-class __$$IncrementSpotVisitImplCopyWithImpl<$Res>
-    extends _$MapEventCopyWithImpl<$Res, _$IncrementSpotVisitImpl>
-    implements _$$IncrementSpotVisitImplCopyWith<$Res> {
-  __$$IncrementSpotVisitImplCopyWithImpl(
-    _$IncrementSpotVisitImpl _value,
-    $Res Function(_$IncrementSpotVisitImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? spotId = null}) {
-    return _then(
-      _$IncrementSpotVisitImpl(
-        spotId: null == spotId
-            ? _value.spotId
-            : spotId // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$IncrementSpotVisitImpl
-    with DiagnosticableTreeMixin
-    implements _IncrementSpotVisit {
-  const _$IncrementSpotVisitImpl({required this.spotId});
-
-  @override
-  final int spotId;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MapEvent.incrementSpotVisit(spotId: $spotId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'MapEvent.incrementSpotVisit'))
-      ..add(DiagnosticsProperty('spotId', spotId));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$IncrementSpotVisitImpl &&
-            (identical(other.spotId, spotId) || other.spotId == spotId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, spotId);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$IncrementSpotVisitImplCopyWith<_$IncrementSpotVisitImpl> get copyWith =>
-      __$$IncrementSpotVisitImplCopyWithImpl<_$IncrementSpotVisitImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
-    fetchDataRequested,
-    required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
-    required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
-  }) {
-    return incrementSpotVisit(spotId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
-    TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
-  }) {
-    return incrementSpotVisit?.call(spotId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
-    TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (incrementSpotVisit != null) {
-      return incrementSpotVisit(spotId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
-    required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
-  }) {
-    return incrementSpotVisit(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
-  }) {
-    return incrementSpotVisit?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (incrementSpotVisit != null) {
-      return incrementSpotVisit(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _IncrementSpotVisit implements MapEvent {
-  const factory _IncrementSpotVisit({required final int spotId}) =
-      _$IncrementSpotVisitImpl;
-
-  int get spotId;
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$IncrementSpotVisitImplCopyWith<_$IncrementSpotVisitImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$DecrementSpotVisitImplCopyWith<$Res> {
-  factory _$$DecrementSpotVisitImplCopyWith(
-    _$DecrementSpotVisitImpl value,
-    $Res Function(_$DecrementSpotVisitImpl) then,
-  ) = __$$DecrementSpotVisitImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({int spotId});
-}
-
-/// @nodoc
-class __$$DecrementSpotVisitImplCopyWithImpl<$Res>
-    extends _$MapEventCopyWithImpl<$Res, _$DecrementSpotVisitImpl>
-    implements _$$DecrementSpotVisitImplCopyWith<$Res> {
-  __$$DecrementSpotVisitImplCopyWithImpl(
-    _$DecrementSpotVisitImpl _value,
-    $Res Function(_$DecrementSpotVisitImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? spotId = null}) {
-    return _then(
-      _$DecrementSpotVisitImpl(
-        spotId: null == spotId
-            ? _value.spotId
-            : spotId // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$DecrementSpotVisitImpl
-    with DiagnosticableTreeMixin
-    implements _DecrementSpotVisit {
-  const _$DecrementSpotVisitImpl({required this.spotId});
-
-  @override
-  final int spotId;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MapEvent.decrementSpotVisit(spotId: $spotId)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'MapEvent.decrementSpotVisit'))
-      ..add(DiagnosticsProperty('spotId', spotId));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$DecrementSpotVisitImpl &&
-            (identical(other.spotId, spotId) || other.spotId == spotId));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, spotId);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$DecrementSpotVisitImplCopyWith<_$DecrementSpotVisitImpl> get copyWith =>
-      __$$DecrementSpotVisitImplCopyWithImpl<_$DecrementSpotVisitImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
-    fetchDataRequested,
-    required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(int areaId) incrementAreaVisit,
-    required TResult Function(int areaId) decrementAreaVisit,
-    required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(int spotId) incrementSpotVisit,
-    required TResult Function(int spotId) decrementSpotVisit,
-  }) {
-    return decrementSpotVisit(spotId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(int areaId)? incrementAreaVisit,
-    TResult? Function(int areaId)? decrementAreaVisit,
-    TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(int spotId)? incrementSpotVisit,
-    TResult? Function(int spotId)? decrementSpotVisit,
-  }) {
-    return decrementSpotVisit?.call(spotId);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
-    TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(int areaId)? incrementAreaVisit,
-    TResult Function(int areaId)? decrementAreaVisit,
-    TResult Function(Spot? spot)? spotSelected,
-    TResult Function(int spotId)? incrementSpotVisit,
-    TResult Function(int spotId)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (decrementSpotVisit != null) {
-      return decrementSpotVisit(spotId);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_IncrementAreaVisit value) incrementAreaVisit,
-    required TResult Function(_DecrementAreaVisit value) decrementAreaVisit,
-    required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_IncrementSpotVisit value) incrementSpotVisit,
-    required TResult Function(_DecrementSpotVisit value) decrementSpotVisit,
-  }) {
-    return decrementSpotVisit(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult? Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult? Function(_DecrementSpotVisit value)? decrementSpotVisit,
-  }) {
-    return decrementSpotVisit?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_IncrementAreaVisit value)? incrementAreaVisit,
-    TResult Function(_DecrementAreaVisit value)? decrementAreaVisit,
-    TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_IncrementSpotVisit value)? incrementSpotVisit,
-    TResult Function(_DecrementSpotVisit value)? decrementSpotVisit,
-    required TResult orElse(),
-  }) {
-    if (decrementSpotVisit != null) {
-      return decrementSpotVisit(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _DecrementSpotVisit implements MapEvent {
-  const factory _DecrementSpotVisit({required final int spotId}) =
-      _$DecrementSpotVisitImpl;
-
-  int get spotId;
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$DecrementSpotVisitImplCopyWith<_$DecrementSpotVisitImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

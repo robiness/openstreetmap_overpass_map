@@ -4,6 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:overpass_map/features/location/domain/entities/location_data.dart';
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
+import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
+import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
+import 'package:overpass_map/data/database/app_database.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_state.dart';
 
 class DebugPanel extends StatelessWidget {
   const DebugPanel({super.key});
@@ -135,15 +140,161 @@ class DebugPanel extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => context.read<LocationBloc>().add(
-                  const LocationEvent.setDebugLocation(location: null),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => context.read<LocationBloc>().add(
+                      const LocationEvent.setDebugLocation(location: null),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                    ),
+                    child: const Text(
+                      'Clear Debug',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, authState) {
+                      return ElevatedButton(
+                        onPressed: () async {
+                          final userId = authState.maybeWhen(
+                            authenticated: (user, profile) => user.id,
+                            orElse: () =>
+                                'test-user', // fallback for unauthenticated
+                          );
+                          final checkIns = await context
+                              .read<CheckInRepository>()
+                              .watchUserCheckIns(userId)
+                              .first;
+                          print('=== DATABASE CONTENTS ===');
+                          print('User ID: $userId');
+                          print('Check-ins count: ${checkIns.length}');
+                          for (final checkIn in checkIns) {
+                            print(
+                              'ID: ${checkIn.id}, SpotID: ${checkIn.spotId}, UserID: ${checkIn.userId}',
+                            );
+                          }
+                          print('========================');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
+                        child: const Text(
+                          'Log DB',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const Text(
+                'Check-In Controls',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.purple,
                 ),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                child: const Text(
-                  'Clear Debug',
-                  style: TextStyle(color: Colors.white),
-                ),
+              ),
+              const SizedBox(height: 8),
+              BlocBuilder<MapBloc, MapState>(
+                builder: (context, mapState) {
+                  final selectedSpot = mapState.maybeWhen(
+                    loadSuccess:
+                        (
+                          _,
+                          __,
+                          ___,
+                          selectedSpot,
+                          ____,
+                          _____,
+                        ) => selectedSpot,
+                    orElse: () => null,
+                  );
+
+                  if (selectedSpot != null) {
+                    // Spot is selected, build the button with a stream
+                    return BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, authState) {
+                        final userId = authState.maybeWhen(
+                          authenticated: (user, profile) => user.id,
+                          orElse: () =>
+                              'test-user', // fallback for unauthenticated
+                        );
+
+                        return StreamBuilder<List<CheckIn>>(
+                          stream: context
+                              .read<CheckInRepository>()
+                              .watchUserCheckInsForSpot(
+                                userId,
+                                selectedSpot.id,
+                              ),
+                          builder: (context, snapshot) {
+                            final count = snapshot.data?.length ?? 0;
+                            final isCheckedIn = count > 0;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Selected Spot: ${selectedSpot.name} (ID: ${selectedSpot.id})',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text('Check-ins for this spot: $count'),
+                                Text('User: $userId'),
+                                const SizedBox(height: 8),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    final event = isCheckedIn
+                                        ? DebugEvent.checkOutRequested(
+                                            spotId: selectedSpot.id,
+                                            userId: userId,
+                                          )
+                                        : DebugEvent.checkInRequested(
+                                            spotId: selectedSpot.id,
+                                            userId: userId,
+                                          );
+                                    context.read<DebugBloc>().add(event);
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isCheckedIn
+                                        ? Colors.red
+                                        : Colors.green,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                  child: Text(
+                                    isCheckedIn ? 'Check Out' : 'Check In',
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    );
+                  } else {
+                    // No spot selected, show a disabled button
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Select a spot to enable check-in.',
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                        const SizedBox(height: 8),
+                        const ElevatedButton(
+                          onPressed: null,
+                          child: Text('Check In'),
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
             ],
           ],

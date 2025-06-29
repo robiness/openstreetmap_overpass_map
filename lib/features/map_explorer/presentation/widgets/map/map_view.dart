@@ -10,10 +10,13 @@ import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dar
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
+import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_area_layer.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_spot_layer.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_user_location_layer.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_state.dart';
 
 class MapView extends StatefulWidget {
   final BoundaryData boundaryData;
@@ -129,21 +132,70 @@ class _MapViewState extends State<MapView> {
             }
           },
         ),
-        CustomSpotLayer(
-          spots: widget.spots,
-          selectedSpot: widget.selectedSpot,
-          userSpotVisitData: widget.userSpotVisitData ?? {},
-          onSpotTap: (spot) {
-            final bloc = context.read<MapBloc>();
-            if (widget.selectedSpot?.id == spot.id) {
-              // Deselect if tapped again
-              bloc.add(const MapEvent.spotSelected(spot: null));
-            } else {
-              // Select spot and automatically mark as visited
-              bloc.add(MapEvent.spotSelected(spot: spot));
-            }
-            // Also deselect any selected area when selecting a spot
-            bloc.add(const MapEvent.areaSelected(area: null));
+        BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            final userId = authState.maybeWhen(
+              authenticated: (user, profile) => user.id,
+              orElse: () => 'test-user', // fallback for unauthenticated
+            );
+
+            return StreamBuilder<List<dynamic>>(
+              stream: context.read<CheckInRepository>().watchUserCheckIns(
+                userId,
+              ),
+              builder: (context, checkInSnapshot) {
+                // Merge check-in data into UserSpotData
+                final mergedUserSpotData = <int, UserSpotData>{};
+                final baseUserSpotData = widget.userSpotVisitData ?? {};
+
+                // Create a set of checked-in spot IDs
+                final checkedInSpotIds = <int>{};
+                if (checkInSnapshot.hasData) {
+                  for (final checkIn in checkInSnapshot.data!) {
+                    if (checkIn.spotId != null) {
+                      checkedInSpotIds.add(checkIn.spotId!);
+                    }
+                  }
+                }
+
+                // Merge the data for all spots that appear in the map
+                for (final spot in widget.spots) {
+                  final baseData = baseUserSpotData[spot.id];
+                  final isCheckedIn = checkedInSpotIds.contains(spot.id);
+
+                  if (baseData != null) {
+                    // Update existing data with check-in status
+                    mergedUserSpotData[spot.id] = baseData.copyWith(
+                      isCheckedIn: isCheckedIn,
+                    );
+                  } else if (isCheckedIn) {
+                    // Create new data for checked-in spots that don't have user data yet
+                    mergedUserSpotData[spot.id] = UserSpotData(
+                      spotId: spot.id,
+                      isCheckedIn: true,
+                    );
+                  }
+                }
+
+                return CustomSpotLayer(
+                  spots: widget.spots,
+                  selectedSpot: widget.selectedSpot,
+                  userSpotVisitData: mergedUserSpotData,
+                  onSpotTap: (spot) {
+                    final bloc = context.read<MapBloc>();
+                    if (widget.selectedSpot?.id == spot.id) {
+                      // Deselect if tapped again
+                      bloc.add(const MapEvent.spotSelected(spot: null));
+                    } else {
+                      // Select spot and automatically mark as visited
+                      bloc.add(MapEvent.spotSelected(spot: spot));
+                    }
+                    // Also deselect any selected area when selecting a spot
+                    bloc.add(const MapEvent.areaSelected(area: null));
+                  },
+                );
+              },
+            );
           },
         ),
         const CustomUserLocationLayer(),

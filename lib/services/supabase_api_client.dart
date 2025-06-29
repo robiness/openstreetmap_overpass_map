@@ -3,35 +3,53 @@ import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/services/api_client.dart';
 
 class SupabaseApiClient implements IApiClient {
-  final SupabaseClient _supabase;
+  final SupabaseClient _client;
 
-  SupabaseApiClient(this._supabase);
+  SupabaseApiClient(this._client);
 
   @override
   Future<void> upsertCheckIns(List<CheckIn> checkIns) async {
-    final dataToUpsert = checkIns
+    final checkInMaps = checkIns
         .map(
-          (checkIn) => {
-            'id': checkIn.id,
-            'user_id': checkIn.userId,
-            'stadtteil_id': checkIn.stadtteilId,
-            'updated_at': checkIn.updatedAt.toIso8601String(),
+          (c) => {
+            'id': c.id,
+            'user_id': c.userId,
+            'spot_id': c.spotId,
+            'updated_at': c.updatedAt.toIso8601String(),
           },
         )
         .toList();
 
-    await _supabase.from('checkins').upsert(dataToUpsert);
+    await _client.from('check_ins').upsert(checkInMaps);
   }
 
   @override
   Future<List<CheckIn>> fetchLatestCheckIns({DateTime? since}) async {
-    final query = _supabase.from('checkins').select();
+    final userId = _client.auth.currentUser?.id;
+    if (userId == null) {
+      throw 'User not authenticated';
+    }
+
+    var query = _client.from('check_ins').select().eq('user_id', userId);
 
     if (since != null) {
-      query.gt('updated_at', since.toIso8601String());
+      query = query.gt('updated_at', since.toIso8601String());
     }
 
     final response = await query;
-    return response.map((map) => CheckIn.fromJson(map)).toList();
+    final data = response as List<dynamic>;
+
+    return data.map((map) {
+      final json = map as Map<String, dynamic>;
+      return CheckIn(
+        id: json['id'],
+        userId: json['user_id'],
+        spotId: json['spot_id'],
+        updatedAt: DateTime.parse(json['updated_at']),
+        syncedAt: json['synced_at'] == null
+            ? null
+            : DateTime.tryParse(json['synced_at']),
+      );
+    }).toList();
   }
 }

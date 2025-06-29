@@ -9,17 +9,5 @@ class MapEvent with _$MapEvent {
 
   const factory MapEvent.areaSelected({GeographicArea? area}) = _AreaSelected;
 
-  const factory MapEvent.incrementAreaVisit({required int areaId}) =
-      _IncrementAreaVisit;
-
-  const factory MapEvent.decrementAreaVisit({required int areaId}) =
-      _DecrementAreaVisit;
-
   const factory MapEvent.spotSelected({Spot? spot}) = _SpotSelected;
-
-  const factory MapEvent.incrementSpotVisit({required int spotId}) =
-      _IncrementSpotVisit;
-
-  const factory MapEvent.decrementSpotVisit({required int spotId}) =
-      _DecrementSpotVisit;
 }

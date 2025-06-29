@@ -127,6 +127,7 @@ class UserSpotData with _$UserSpotData {
     required int spotId,
     @Default(0) int visitCount,
     @Default(false) bool isFavorite,
+    @Default(false) bool isCheckedIn,
     DateTime? lastVisited,
     double? userRating, // 1-5 stars
     String? userNotes,
@@ -151,4 +152,5 @@ class DisplayableSpot {
   int get visitCount => userData.visitCount;
   bool get isFavorite => userData.isFavorite;
   bool get isVisited => userData.visitCount > 0;
+  bool get isCheckedIn => userData.isCheckedIn;
 }

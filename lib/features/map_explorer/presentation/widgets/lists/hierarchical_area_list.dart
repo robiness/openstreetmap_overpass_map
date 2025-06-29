@@ -13,8 +13,6 @@ class HierarchicalAreaList extends StatelessWidget {
   final GeographicArea? selectedArea;
   final Map<int, UserAreaData> userVisitData;
   final Function(GeographicArea) onAreaTapped;
-  final Function(int) onIncrementVisit;
-  final Function(int) onDecrementVisit;
 
   const HierarchicalAreaList({
     super.key,
@@ -22,8 +20,6 @@ class HierarchicalAreaList extends StatelessWidget {
     this.selectedArea,
     required this.userVisitData,
     required this.onAreaTapped,
-    required this.onIncrementVisit,
-    required this.onDecrementVisit,
   });
 
   @override
@@ -321,83 +317,84 @@ class HierarchicalAreaList extends StatelessWidget {
       elevation = 4.0;
     }
 
-    // Debug buttons
-    final debugButtons = !context.watch<DebugBloc>().state.isDebugModeEnabled
-        ? const SizedBox.shrink()
-        : Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.remove_circle_outline, size: 18),
-                color: Colors.redAccent.withOpacity(0.7),
-                onPressed: () => onDecrementVisit(area.id),
-                tooltip: 'Decrement Visit Count',
-              ),
-              IconButton(
-                icon: const Icon(Icons.add_circle_outline, size: 18),
-                color: Colors.greenAccent.withOpacity(0.7),
-                onPressed: () => onIncrementVisit(area.id),
-                tooltip: 'Increment Visit Count',
-              ),
-            ],
-          );
-
-    return Card(
-      elevation: elevation,
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        side: isSelected
-            ? BorderSide(
-                color: AppTheme.getSelectedColor(),
-                width: 2.0,
-              )
-            : BorderSide(color: AppTheme.borderColor),
-      ),
-      color: tileColor,
-      child: InkWell(
-        onTap: () => onAreaTapped(area),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppTheme.spacingMd,
-            vertical: AppTheme.spacingLg - (level * 2),
+    return BlocBuilder<DebugBloc, DebugState>(
+      builder: (context, debugState) {
+        return Card(
+          elevation: elevation,
+          margin: const EdgeInsets.symmetric(vertical: 4.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            side: isSelected
+                ? BorderSide(
+                    color: AppTheme.getSelectedColor(),
+                    width: 2.0,
+                  )
+                : BorderSide(color: AppTheme.borderColor),
           ),
-          child: Row(
-            children: [
-              // Left side: icon and text
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(
-                      isSelected && isVisited
-                          ? Icons.star
-                          : (isVisited ? Icons.check_circle : icon),
-                      size: 20,
-                      color: iconColor,
-                    ),
-                    const SizedBox(width: AppTheme.spacingMd),
-                    Expanded(
-                      child: Text(
-                        '${area.name} ${isVisited ? '($visitCount)' : ''}',
-                        style: TextStyle(
-                          fontWeight: fontWeight,
-                          color: textColor,
-                          fontSize: 13,
+          color: tileColor,
+          child: InkWell(
+            onTap: () => onAreaTapped(area),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingMd,
+                vertical: AppTheme.spacingLg - (level * 2),
+              ),
+              child: Row(
+                children: [
+                  // Left side: icon and text
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          area.name,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontWeight: fontWeight,
+                                color: textColor,
+                              ),
                         ),
-                        overflow: TextOverflow.ellipsis,
+                        if (visitCount > 0)
+                          Text(
+                            '$visitCount Visits',
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
+                                  color: visitCount > 0
+                                      ? AppTheme.getVisitedColor()
+                                      : AppTheme.textTertiary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                      ],
+                    ),
+                  ),
+
+                  // Right side: visit counter
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacingSm,
+                      vertical: AppTheme.spacing2xs,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                      border: Border.all(color: color.withOpacity(0.3)),
+                    ),
+                    child: Text(
+                      visitCount.toString(),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: color,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-
-              // Right side: debug buttons
-              debugButtons,
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:drift/drift.dart';
 
-/// The `CheckIns` table holds records of user visits to specific areas (stadtteile).
+/// The `CheckIns` table holds records of user visits to specific spots.
 class CheckIns extends Table {
   /// A unique identifier for the check-in, typically a UUID.
   TextColumn get id => text()();
@@ -8,8 +8,8 @@ class CheckIns extends Table {
   /// The ID of the user who performed the check-in.
   TextColumn get userId => text()();
 
-  /// The ID of the area (stadtteil) that was visited.
-  TextColumn get stadtteilId => text()();
+  /// The ID of the spot that was visited.
+  IntColumn get spotId => integer()();
 
   /// The timestamp when this record was last modified locally.
   /// This is automatically set on creation.

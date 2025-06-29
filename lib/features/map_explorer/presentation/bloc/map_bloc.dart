@@ -23,11 +23,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         fetchDataRequested: (cityName, adminLevel) =>
             _onFetchDataRequested(emit, cityName, adminLevel),
         areaSelected: (area) => _onAreaSelected(emit, area),
-        incrementAreaVisit: (areaId) => _onIncrementAreaVisit(emit, areaId),
-        decrementAreaVisit: (areaId) => _onDecrementAreaVisit(emit, areaId),
         spotSelected: (spot) => _onSpotSelected(emit, spot),
-        incrementSpotVisit: (spotId) => _onIncrementSpotVisit(emit, spotId),
-        decrementSpotVisit: (spotId) => _onDecrementSpotVisit(emit, spotId),
       );
     });
   }
@@ -159,168 +155,25 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     Emitter<MapState> emit,
     Spot? spot,
   ) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            selectedArea,
-            _,
-            userVisitData,
-            userSpotVisitData,
-          ) {
-            // If spot is tapped, also increment visit count
-            final newSpotVisitData = Map<int, UserSpotData>.from(
-              userSpotVisitData,
-            );
-            if (spot != null) {
-              final currentData =
-                  newSpotVisitData[spot.id] ?? UserSpotData(spotId: spot.id);
-              newSpotVisitData[spot.id] = currentData.copyWith(
-                visitCount: currentData.visitCount + 1,
-                lastVisited: DateTime.now(),
-              );
-            }
+    final currentState = state as _LoadSuccess;
 
-            emit(
-              MapState.loadSuccess(
-                boundaryData: boundaryData,
-                spots: spots,
-                selectedArea: selectedArea,
-                selectedSpot: spot,
-                userVisitData: userVisitData,
-                userSpotVisitData: newSpotVisitData,
-              ),
-            );
-          },
-    );
-  }
+    GeographicArea? parentArea;
+    if (spot != null) {
+      // Find the area that this spot belongs to
+      for (final area in currentState.boundaryData.stadtteile) {
+        for (final polygonRing in area.coordinates) {
+          final polygonLatLng = polygonRing
+              .map((coords) => LatLng(coords[1], coords[0]))
+              .toList();
+          if (_isPointInPolygon(spot.location, polygonLatLng)) {
+            parentArea = area;
+            break;
+          }
+        }
+        if (parentArea != null) break;
+      }
+    }
 
-  Future<void> _onIncrementAreaVisit(Emitter<MapState> emit, int areaId) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            selectedArea,
-            selectedSpot,
-            userVisitData,
-            userSpotVisitData,
-          ) {
-            final newVisitData = Map<int, UserAreaData>.from(userVisitData);
-            final currentData =
-                newVisitData[areaId] ?? UserAreaData(areaId: areaId);
-            newVisitData[areaId] = currentData.copyWith(
-              visitCount: currentData.visitCount + 1,
-            );
-            emit(
-              MapState.loadSuccess(
-                boundaryData: boundaryData,
-                spots: spots,
-                selectedArea: selectedArea,
-                selectedSpot: selectedSpot,
-                userVisitData: newVisitData,
-                userSpotVisitData: userSpotVisitData,
-              ),
-            );
-          },
-    );
-  }
-
-  Future<void> _onDecrementAreaVisit(Emitter<MapState> emit, int areaId) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            selectedArea,
-            selectedSpot,
-            userVisitData,
-            userSpotVisitData,
-          ) {
-            final newVisitData = Map<int, UserAreaData>.from(userVisitData);
-            final currentData =
-                newVisitData[areaId] ?? UserAreaData(areaId: areaId);
-            newVisitData[areaId] = currentData.copyWith(
-              visitCount: currentData.visitCount - 1,
-            );
-            emit(
-              MapState.loadSuccess(
-                boundaryData: boundaryData,
-                spots: spots,
-                selectedArea: selectedArea,
-                selectedSpot: selectedSpot,
-                userVisitData: newVisitData,
-                userSpotVisitData: userSpotVisitData,
-              ),
-            );
-          },
-    );
-  }
-
-  Future<void> _onIncrementSpotVisit(Emitter<MapState> emit, int spotId) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            selectedArea,
-            selectedSpot,
-            userVisitData,
-            userSpotVisitData,
-          ) {
-            final newSpotVisitData = Map<int, UserSpotData>.from(
-              userSpotVisitData,
-            );
-            final currentData =
-                newSpotVisitData[spotId] ?? UserSpotData(spotId: spotId);
-            newSpotVisitData[spotId] = currentData.copyWith(
-              visitCount: currentData.visitCount + 1,
-            );
-            emit(
-              MapState.loadSuccess(
-                boundaryData: boundaryData,
-                spots: spots,
-                selectedArea: selectedArea,
-                selectedSpot: selectedSpot,
-                userVisitData: userVisitData,
-                userSpotVisitData: newSpotVisitData,
-              ),
-            );
-          },
-    );
-  }
-
-  Future<void> _onDecrementSpotVisit(Emitter<MapState> emit, int spotId) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            selectedArea,
-            selectedSpot,
-            userVisitData,
-            userSpotVisitData,
-          ) {
-            final newSpotVisitData = Map<int, UserSpotData>.from(
-              userSpotVisitData,
-            );
-            final currentData =
-                newSpotVisitData[spotId] ?? UserSpotData(spotId: spotId);
-            newSpotVisitData[spotId] = currentData.copyWith(
-              visitCount: currentData.visitCount - 1,
-            );
-            emit(
-              MapState.loadSuccess(
-                boundaryData: boundaryData,
-                spots: spots,
-                selectedArea: selectedArea,
-                selectedSpot: selectedSpot,
-                userVisitData: userVisitData,
-                userSpotVisitData: newSpotVisitData,
-              ),
-            );
-          },
-    );
+    emit(currentState.copyWith(selectedSpot: spot, selectedArea: parentArea));
   }
 }

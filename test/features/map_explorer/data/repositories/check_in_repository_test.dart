@@ -27,14 +27,14 @@ void main() {
       () async {
         // Act
         await repository.createCheckIn(
-          stadtteilId: 'test-stadtteil',
+          spotId: 123,
           userId: testUserId,
         );
 
         // Assert
         final checkIn = await (db.select(db.checkIns)).getSingle();
         expect(checkIn.userId, testUserId);
-        expect(checkIn.stadtteilId, 'test-stadtteil');
+        expect(checkIn.spotId, 123);
         expect(checkIn.syncedAt, isNull);
         expect(checkIn.updatedAt, isNotNull);
       },
@@ -57,12 +57,30 @@ void main() {
         // before we modify the database.
         await Future.delayed(const Duration(milliseconds: 10));
         await repository.createCheckIn(
-          stadtteilId: 'test-stadtteil',
+          spotId: 123,
           userId: testUserId,
         );
 
         // Assert
         await expectation;
+      },
+    );
+
+    test(
+      'deleteCheckInsForSpot should remove all check-ins for a spot',
+      () async {
+        // Arrange
+        await repository.createCheckIn(spotId: 1, userId: testUserId);
+        await repository.createCheckIn(spotId: 1, userId: testUserId);
+        await repository.createCheckIn(spotId: 2, userId: testUserId);
+
+        // Act
+        await repository.deleteCheckInsForSpot(spotId: 1, userId: testUserId);
+
+        // Assert
+        final remainingCheckIns = await (db.select(db.checkIns)).get();
+        expect(remainingCheckIns.length, 1);
+        expect(remainingCheckIns.first.spotId, 2);
       },
     );
   });

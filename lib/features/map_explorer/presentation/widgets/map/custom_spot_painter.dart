@@ -38,11 +38,23 @@ class CustomSpotPainter extends CustomPainter {
     final screenPoint = camera.latLngToScreenOffset(spot.location);
     final spotVisitData = userSpotVisitData[spot.id];
     final isVisited = spotVisitData != null && spotVisitData.visitCount > 0;
+    final isCheckedIn = spotVisitData?.isCheckedIn ?? false;
 
-    // Get colors and size based on category, selection state, and visit status
-    final colors = _getCategoryColors(spot.category, isVisited);
-    final size = isSelected ? 16.0 : 12.0;
-    final borderWidth = isSelected ? 3.0 : 2.0;
+    // Get colors and size based on category, selection state, visit status, and check-in status
+    final colors = _getCategoryColors(spot.category, isVisited, isCheckedIn);
+    final size = isSelected ? 16.0 : (isCheckedIn ? 14.0 : 12.0);
+    final borderWidth = isSelected ? 3.0 : (isCheckedIn ? 3.0 : 2.0);
+
+    // Draw special glow effect for checked-in spots
+    if (isCheckedIn) {
+      canvas.drawCircle(
+        screenPoint,
+        size + borderWidth + 4,
+        Paint()
+          ..color = Colors.orange.withValues(alpha: 0.3)
+          ..style = PaintingStyle.fill,
+      );
+    }
 
     // Draw outer border (white outline)
     canvas.drawCircle(
@@ -65,8 +77,11 @@ class CustomSpotPainter extends CustomPainter {
     // Draw icon or symbol for the category
     _drawCategoryIcon(canvas, screenPoint, spot.category, size, colors.icon);
 
-    // Draw visit indicator for visited spots
-    if (isVisited && !isSelected) {
+    // Draw check-in indicator for checked-in spots
+    if (isCheckedIn) {
+      _drawCheckInIndicator(canvas, screenPoint, size + borderWidth);
+    } else if (isVisited && !isSelected) {
+      // Draw visit indicator for visited spots (only if not checked in)
       _drawVisitIndicator(canvas, screenPoint, size + borderWidth);
     }
 
@@ -81,6 +96,42 @@ class CustomSpotPainter extends CustomPainter {
           ..strokeWidth = 2.0,
       );
     }
+  }
+
+  void _drawCheckInIndicator(Canvas canvas, Offset center, double outerRadius) {
+    // Draw a bright star or diamond to indicate checked-in status
+    final indicatorSize = 6.0;
+    final indicatorCenter = center.translate(
+      outerRadius * 0.7,
+      -outerRadius * 0.7,
+    );
+
+    // Draw bright circle background
+    canvas.drawCircle(
+      indicatorCenter,
+      indicatorSize + 1,
+      Paint()
+        ..color = Colors.orange
+        ..style = PaintingStyle.fill,
+    );
+
+    // Draw a star or diamond shape
+    final starPath = ui.Path();
+    final starSize = indicatorSize * 0.8;
+
+    // Create a diamond/star shape
+    starPath.moveTo(indicatorCenter.dx, indicatorCenter.dy - starSize);
+    starPath.lineTo(indicatorCenter.dx + starSize * 0.5, indicatorCenter.dy);
+    starPath.lineTo(indicatorCenter.dx, indicatorCenter.dy + starSize);
+    starPath.lineTo(indicatorCenter.dx - starSize * 0.5, indicatorCenter.dy);
+    starPath.close();
+
+    canvas.drawPath(
+      starPath,
+      Paint()
+        ..color = Colors.white
+        ..style = PaintingStyle.fill,
+    );
   }
 
   void _drawVisitIndicator(Canvas canvas, Offset center, double outerRadius) {
@@ -318,10 +369,20 @@ class CustomSpotPainter extends CustomPainter {
     );
   }
 
-  SpotColors _getCategoryColors(String category, bool isVisited) {
+  SpotColors _getCategoryColors(
+    String category,
+    bool isVisited,
+    bool isCheckedIn,
+  ) {
     final baseColors = _getBaseCategoryColors(category);
 
-    if (isVisited) {
+    if (isCheckedIn) {
+      // Bright, vibrant colors for checked-in spots
+      return SpotColors(
+        Colors.orange,
+        Colors.white,
+      );
+    } else if (isVisited) {
       // Darken colors for visited spots
       return SpotColors(
         baseColors.main.withValues(alpha: 0.8),
@@ -434,7 +495,8 @@ class CustomSpotPainter extends CustomPainter {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared &&
+          distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle

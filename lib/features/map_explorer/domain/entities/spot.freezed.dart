@@ -24,6 +24,7 @@ mixin _$UserSpotData {
   int get spotId => throw _privateConstructorUsedError;
   int get visitCount => throw _privateConstructorUsedError;
   bool get isFavorite => throw _privateConstructorUsedError;
+  bool get isCheckedIn => throw _privateConstructorUsedError;
   DateTime? get lastVisited => throw _privateConstructorUsedError;
   double? get userRating => throw _privateConstructorUsedError; // 1-5 stars
   String? get userNotes => throw _privateConstructorUsedError;
@@ -49,6 +50,7 @@ abstract class $UserSpotDataCopyWith<$Res> {
     int spotId,
     int visitCount,
     bool isFavorite,
+    bool isCheckedIn,
     DateTime? lastVisited,
     double? userRating,
     String? userNotes,
@@ -73,6 +75,7 @@ class _$UserSpotDataCopyWithImpl<$Res, $Val extends UserSpotData>
     Object? spotId = null,
     Object? visitCount = null,
     Object? isFavorite = null,
+    Object? isCheckedIn = null,
     Object? lastVisited = freezed,
     Object? userRating = freezed,
     Object? userNotes = freezed,
@@ -90,6 +93,10 @@ class _$UserSpotDataCopyWithImpl<$Res, $Val extends UserSpotData>
             isFavorite: null == isFavorite
                 ? _value.isFavorite
                 : isFavorite // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            isCheckedIn: null == isCheckedIn
+                ? _value.isCheckedIn
+                : isCheckedIn // ignore: cast_nullable_to_non_nullable
                       as bool,
             lastVisited: freezed == lastVisited
                 ? _value.lastVisited
@@ -122,6 +129,7 @@ abstract class _$$UserSpotDataImplCopyWith<$Res>
     int spotId,
     int visitCount,
     bool isFavorite,
+    bool isCheckedIn,
     DateTime? lastVisited,
     double? userRating,
     String? userNotes,
@@ -145,6 +153,7 @@ class __$$UserSpotDataImplCopyWithImpl<$Res>
     Object? spotId = null,
     Object? visitCount = null,
     Object? isFavorite = null,
+    Object? isCheckedIn = null,
     Object? lastVisited = freezed,
     Object? userRating = freezed,
     Object? userNotes = freezed,
@@ -162,6 +171,10 @@ class __$$UserSpotDataImplCopyWithImpl<$Res>
         isFavorite: null == isFavorite
             ? _value.isFavorite
             : isFavorite // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        isCheckedIn: null == isCheckedIn
+            ? _value.isCheckedIn
+            : isCheckedIn // ignore: cast_nullable_to_non_nullable
                   as bool,
         lastVisited: freezed == lastVisited
             ? _value.lastVisited
@@ -187,6 +200,7 @@ class _$UserSpotDataImpl implements _UserSpotData {
     required this.spotId,
     this.visitCount = 0,
     this.isFavorite = false,
+    this.isCheckedIn = false,
     this.lastVisited,
     this.userRating,
     this.userNotes,
@@ -204,6 +218,9 @@ class _$UserSpotDataImpl implements _UserSpotData {
   @JsonKey()
   final bool isFavorite;
   @override
+  @JsonKey()
+  final bool isCheckedIn;
+  @override
   final DateTime? lastVisited;
   @override
   final double? userRating;
@@ -213,7 +230,7 @@ class _$UserSpotDataImpl implements _UserSpotData {
 
   @override
   String toString() {
-    return 'UserSpotData(spotId: $spotId, visitCount: $visitCount, isFavorite: $isFavorite, lastVisited: $lastVisited, userRating: $userRating, userNotes: $userNotes)';
+    return 'UserSpotData(spotId: $spotId, visitCount: $visitCount, isFavorite: $isFavorite, isCheckedIn: $isCheckedIn, lastVisited: $lastVisited, userRating: $userRating, userNotes: $userNotes)';
   }
 
   @override
@@ -226,6 +243,8 @@ class _$UserSpotDataImpl implements _UserSpotData {
                 other.visitCount == visitCount) &&
             (identical(other.isFavorite, isFavorite) ||
                 other.isFavorite == isFavorite) &&
+            (identical(other.isCheckedIn, isCheckedIn) ||
+                other.isCheckedIn == isCheckedIn) &&
             (identical(other.lastVisited, lastVisited) ||
                 other.lastVisited == lastVisited) &&
             (identical(other.userRating, userRating) ||
@@ -241,6 +260,7 @@ class _$UserSpotDataImpl implements _UserSpotData {
     spotId,
     visitCount,
     isFavorite,
+    isCheckedIn,
     lastVisited,
     userRating,
     userNotes,
@@ -265,6 +285,7 @@ abstract class _UserSpotData implements UserSpotData {
     required final int spotId,
     final int visitCount,
     final bool isFavorite,
+    final bool isCheckedIn,
     final DateTime? lastVisited,
     final double? userRating,
     final String? userNotes,
@@ -279,6 +300,8 @@ abstract class _UserSpotData implements UserSpotData {
   int get visitCount;
   @override
   bool get isFavorite;
+  @override
+  bool get isCheckedIn;
   @override
   DateTime? get lastVisited;
   @override
