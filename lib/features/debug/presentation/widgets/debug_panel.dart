@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:overpass_map/features/location/domain/entities/location_data.dart';
+
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
@@ -206,11 +206,11 @@ class DebugPanel extends StatelessWidget {
                     loadSuccess:
                         (
                           _,
-                          __,
-                          ___,
+                          _,
+                          _,
                           selectedSpot,
-                          ____,
-                          _____,
+                          _,
+                          _,
                         ) => selectedSpot,
                     orElse: () => null,
                   );
@@ -300,37 +300,6 @@ class DebugPanel extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  void _setDebugLocation(BuildContext context, String city) {
-    LocationData debugLocation;
-
-    switch (city) {
-      case 'Cologne':
-        debugLocation = LocationData(
-          latitude: 50.9375,
-          longitude: 6.9603,
-          accuracy: 5.0,
-          timestamp: DateTime.now(),
-          isMocked: true,
-        );
-        break;
-      case 'Berlin':
-        debugLocation = LocationData(
-          latitude: 52.5200,
-          longitude: 13.4050,
-          accuracy: 5.0,
-          timestamp: DateTime.now(),
-          isMocked: true,
-        );
-        break;
-      default:
-        return;
-    }
-
-    context.read<LocationBloc>().add(
-      LocationEvent.setDebugLocation(location: debugLocation),
     );
   }
 }

@@ -232,21 +232,21 @@ class HierarchicalAreaList extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            color.withOpacity(0.1),
-            color.withOpacity(0.05),
+            color.withValues(alpha: 0.1),
+            color.withValues(alpha: 0.05),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingSm),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
             ),
             child: Icon(
@@ -274,9 +274,9 @@ class HierarchicalAreaList extends StatelessWidget {
               vertical: AppTheme.spacing2xs,
             ),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.15),
+              color: color.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-              border: Border.all(color: color.withOpacity(0.3)),
+              border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
             child: Text(
               count.toString(),
@@ -302,17 +302,14 @@ class HierarchicalAreaList extends StatelessWidget {
 
     // Visual states based on selection and visits
     bool isSelected = selectedArea?.id == area.id;
-    bool isVisited = visitCount > 0;
 
     Color tileColor = AppTheme.cardColor;
     Color textColor = AppTheme.textPrimary;
-    Color iconColor = color;
     FontWeight fontWeight = FontWeight.normal;
     double elevation = 2.0;
 
     if (isSelected) {
-      tileColor = AppTheme.getSelectedColor().withOpacity(0.15);
-      iconColor = AppTheme.getSelectedColor();
+      tileColor = AppTheme.getSelectedColor().withValues(alpha: 0.15);
       fontWeight = FontWeight.w600;
       elevation = 4.0;
     }
@@ -377,9 +374,9 @@ class HierarchicalAreaList extends StatelessWidget {
                       vertical: AppTheme.spacing2xs,
                     ),
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.15),
+                      color: color.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                      border: Border.all(color: color.withOpacity(0.3)),
+                      border: Border.all(color: color.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       visitCount.toString(),
