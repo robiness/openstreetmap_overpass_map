@@ -21,17 +21,20 @@ UserProfile _$UserProfileFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserProfile {
-  String get id => throw _privateConstructorUsedError;
+  String get id =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'updated_at')
   DateTime? get updatedAt => throw _privateConstructorUsedError;
-  String? get username => throw _privateConstructorUsedError;
+  String? get username =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'full_name')
-  String? get fullName => throw _privateConstructorUsedError;
+  String? get fullName => throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'avatar_url')
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get website => throw _privateConstructorUsedError;
   int get totalCheckins => throw _privateConstructorUsedError;
-  int get completedStadtteile => throw _privateConstructorUsedError;
+  int get completedStadtteile =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'created_at')
   DateTime? get createdAt => throw _privateConstructorUsedError;
 
@@ -243,14 +246,17 @@ class _$UserProfileImpl implements _UserProfile {
 
   @override
   final String id;
+  // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'updated_at')
   final DateTime? updatedAt;
   @override
   final String? username;
+  // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'full_name')
   final String? fullName;
+  // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'avatar_url')
   final String? avatarUrl;
@@ -262,6 +268,7 @@ class _$UserProfileImpl implements _UserProfile {
   @override
   @JsonKey()
   final int completedStadtteile;
+  // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'created_at')
   final DateTime? createdAt;
@@ -340,15 +347,15 @@ abstract class _UserProfile implements UserProfile {
       _$UserProfileImpl.fromJson;
 
   @override
-  String get id;
+  String get id; // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'updated_at')
   DateTime? get updatedAt;
   @override
-  String? get username;
+  String? get username; // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'full_name')
-  String? get fullName;
+  String? get fullName; // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'avatar_url')
   String? get avatarUrl;
@@ -357,7 +364,7 @@ abstract class _UserProfile implements UserProfile {
   @override
   int get totalCheckins;
   @override
-  int get completedStadtteile;
+  int get completedStadtteile; // ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'created_at')
   DateTime? get createdAt;

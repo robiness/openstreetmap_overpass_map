@@ -19,27 +19,64 @@ class SyncService {
   /// On a successful upload, the local records are updated with a new
   /// [synced_at] timestamp.
   Future<void> push() async {
+    // 1. Handle upserts (new/modified records)
     final unsyncedCheckIns = await (_db.select(
       _db.checkIns,
-    )..where((tbl) => tbl.syncedAt.isNull())).get();
+    )..where((tbl) => tbl.syncedAt.isNull() & tbl.deletedAt.isNull())).get();
 
-    if (unsyncedCheckIns.isEmpty) {
-      return;
+    if (unsyncedCheckIns.isNotEmpty) {
+      try {
+        await _apiClient.upsertCheckIns(unsyncedCheckIns);
+
+        final syncedIds = unsyncedCheckIns.map((c) => c.id).toList();
+        final updateStatement = _db.update(_db.checkIns)
+          ..where((tbl) => tbl.id.isIn(syncedIds));
+        await updateStatement.write(
+          CheckInsCompanion(
+            syncedAt: Value(DateTime.now()),
+          ),
+        );
+      } catch (e) {
+        print('SyncService push (upserts) error: $e');
+      }
     }
 
-    try {
-      await _apiClient.upsertCheckIns(unsyncedCheckIns);
+    // 2. Handle deletions (deleted records that need to be synced)
+    final deletedCheckIns = await (_db.select(
+      _db.checkIns,
+    )..where((tbl) => tbl.deletedAt.isNotNull() & tbl.syncedAt.isNull())).get();
 
-      final syncedIds = unsyncedCheckIns.map((c) => c.id).toList();
-      final updateStatement = _db.update(_db.checkIns)
-        ..where((tbl) => tbl.id.isIn(syncedIds));
-      await updateStatement.write(
-        CheckInsCompanion(
-          syncedAt: Value(DateTime.now()),
-        ),
-      );
-    } catch (e) {
-      print('SyncService push error: $e');
+    if (deletedCheckIns.isNotEmpty) {
+      try {
+        final deletedIds = deletedCheckIns.map((c) => c.id).toList();
+        await _apiClient.deleteCheckIns(deletedIds);
+
+        // Mark deleted records as synced but keep them in local database (soft delete)
+        final updateStatement = _db.update(_db.checkIns)
+          ..where((tbl) => tbl.id.isIn(deletedIds));
+        await updateStatement.write(
+          CheckInsCompanion(
+            syncedAt: Value(DateTime.now()),
+          ),
+        );
+
+        print(
+          '✅ ${deletedIds.length} deleted check-ins synced to Supabase (kept as soft deletes locally)',
+        );
+      } catch (e) {
+        print('SyncService push (deletions) error: $e');
+
+        // Mark as synced even if deletion failed, to avoid endless retry
+        // (The record might already be deleted on the server)
+        final syncedIds = deletedCheckIns.map((c) => c.id).toList();
+        final updateStatement = _db.update(_db.checkIns)
+          ..where((tbl) => tbl.id.isIn(syncedIds));
+        await updateStatement.write(
+          CheckInsCompanion(
+            syncedAt: Value(DateTime.now()),
+          ),
+        );
+      }
     }
   }
 
@@ -88,6 +125,35 @@ class SyncService {
       });
     } catch (e) {
       print('SyncService pull error: $e');
+    }
+  }
+
+  /// Permanently removes soft-deleted records that are older than the specified duration
+  /// and have been successfully synced to the backend.
+  ///
+  /// This helps prevent the local database from growing too large over time.
+  /// Only call this periodically, not on every sync.
+  Future<void> cleanupOldDeletedRecords({
+    Duration olderThan = const Duration(days: 30),
+  }) async {
+    try {
+      final cutoffDate = DateTime.now().subtract(olderThan);
+
+      final deleteStatement = _db.delete(_db.checkIns)
+        ..where(
+          (tbl) =>
+              tbl.deletedAt.isNotNull() &
+              tbl.syncedAt.isNotNull() &
+              tbl.deletedAt.isSmallerThanValue(cutoffDate),
+        );
+
+      final deletedCount = await deleteStatement.go();
+
+      if (deletedCount > 0) {
+        print('🧹 Cleaned up $deletedCount old soft-deleted records');
+      }
+    } catch (e) {
+      print('SyncService cleanup error: $e');
     }
   }
 }

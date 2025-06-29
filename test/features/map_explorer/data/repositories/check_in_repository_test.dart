@@ -67,7 +67,7 @@ void main() {
     );
 
     test(
-      'deleteCheckInsForSpot should remove all check-ins for a spot',
+      'deleteCheckInsForSpot should soft delete check-ins for a spot',
       () async {
         // Arrange
         await repository.createCheckIn(spotId: 1, userId: testUserId);
@@ -78,9 +78,29 @@ void main() {
         await repository.deleteCheckInsForSpot(spotId: 1, userId: testUserId);
 
         // Assert
-        final remainingCheckIns = await (db.select(db.checkIns)).get();
-        expect(remainingCheckIns.length, 1);
-        expect(remainingCheckIns.first.spotId, 2);
+        // 1. All records should still exist in the database (soft delete)
+        final allCheckIns = await (db.select(db.checkIns)).get();
+        expect(allCheckIns.length, 3);
+
+        // 2. Records for spot 1 should be marked as deleted
+        final spot1CheckIns = allCheckIns.where((c) => c.spotId == 1).toList();
+        expect(spot1CheckIns.length, 2);
+        for (final checkIn in spot1CheckIns) {
+          expect(checkIn.deletedAt, isNotNull);
+          expect(checkIn.syncedAt, isNull); // Should be marked as unsynced
+        }
+
+        // 3. Record for spot 2 should NOT be marked as deleted
+        final spot2CheckIns = allCheckIns.where((c) => c.spotId == 2).toList();
+        expect(spot2CheckIns.length, 1);
+        expect(spot2CheckIns.first.deletedAt, isNull);
+
+        // 4. The repository watch method should only return non-deleted records
+        final activeCheckIns = await repository
+            .watchUserCheckIns(testUserId)
+            .first;
+        expect(activeCheckIns.length, 1);
+        expect(activeCheckIns.first.spotId, 2);
       },
     );
   });

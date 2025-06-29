@@ -21,6 +21,11 @@ class CheckIns extends Table {
   /// have not yet been pushed to the server.
   DateTimeColumn get syncedAt => dateTime().nullable()();
 
+  /// The timestamp when this record was soft-deleted.
+  /// A `NULL` value indicates that this record is not deleted.
+  /// When set, the record should be considered deleted but kept for sync purposes.
+  DateTimeColumn get deletedAt => dateTime().nullable()();
+
   @override
   Set<Column> get primaryKey => {id};
 }

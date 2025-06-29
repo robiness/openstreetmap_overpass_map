@@ -24,15 +24,17 @@ class CheckInRepositoryImpl implements CheckInRepository {
   @override
   Stream<List<CheckIn>> watchUserCheckIns(String userId) {
     return (_db.select(
-      _db.checkIns,
-    )..where((tbl) => tbl.userId.equals(userId))).watch();
+          _db.checkIns,
+        )..where((tbl) => tbl.userId.equals(userId) & tbl.deletedAt.isNull()))
+        .watch();
   }
 
   @override
   Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, int spotId) {
     return (_db.select(_db.checkIns)
           ..where((tbl) => tbl.userId.equals(userId))
-          ..where((tbl) => tbl.spotId.equals(spotId)))
+          ..where((tbl) => tbl.spotId.equals(spotId))
+          ..where((tbl) => tbl.deletedAt.isNull()))
         .watch();
   }
 
@@ -63,17 +65,47 @@ class CheckInRepositoryImpl implements CheckInRepository {
     required int spotId,
     required String userId,
   }) async {
-    await (_db.delete(_db.checkIns)..where(
-          (tbl) => tbl.spotId.equals(spotId) & tbl.userId.equals(userId),
-        ))
-        .go();
+    // Soft delete: mark as deleted instead of hard deleting
+    final updateStatement = _db.update(_db.checkIns)
+      ..where(
+        (tbl) =>
+            tbl.spotId.equals(spotId) &
+            tbl.userId.equals(userId) &
+            tbl.deletedAt.isNull(), // Only update non-deleted records
+      );
 
-    // Trigger sync to Supabase (this will remove deleted items)
+    await updateStatement.write(
+      CheckInsCompanion(
+        deletedAt: Value(DateTime.now()),
+        syncedAt: const Value(null), // Mark as unsynced for push
+        updatedAt: Value(DateTime.now()), // Update the modification time
+      ),
+    );
+
+    // Trigger sync to Supabase (this will sync the deletion)
     try {
       await _syncService?.push();
       print('✅ Check-out synced to Supabase');
     } catch (e) {
       print('❌ Failed to sync check-out to Supabase: $e');
     }
+  }
+
+  /// Utility method to get all records (including soft-deleted ones) for debugging/audit
+  Future<List<CheckIn>> getAllRecordsIncludingDeleted(String userId) async {
+    return await (_db.select(_db.checkIns)
+          ..where((tbl) => tbl.userId.equals(userId))
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.updatedAt)]))
+        .get();
+  }
+
+  /// Utility method to get only soft-deleted records for debugging/audit
+  Future<List<CheckIn>> getSoftDeletedRecords(String userId) async {
+    return await (_db.select(_db.checkIns)
+          ..where(
+            (tbl) => tbl.userId.equals(userId) & tbl.deletedAt.isNotNull(),
+          )
+          ..orderBy([(tbl) => OrderingTerm.desc(tbl.deletedAt)]))
+        .get();
   }
 }

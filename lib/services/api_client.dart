@@ -9,6 +9,9 @@ abstract class IApiClient {
   /// Upserts a list of check-in records to the backend.
   Future<void> upsertCheckIns(List<CheckIn> checkIns);
 
+  /// Deletes a list of check-in records from the backend by their IDs.
+  Future<void> deleteCheckIns(List<String> checkInIds);
+
   /// Fetches check-in records from the backend that have been updated since
   /// the given timestamp.
   ///

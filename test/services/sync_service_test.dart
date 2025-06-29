@@ -11,6 +11,7 @@ import '../helpers/database_helper.dart';
 class FakeApiClient implements IApiClient {
   bool shouldSucceed;
   List<CheckIn> receivedCheckIns = [];
+  List<String> receivedDeletedIds = [];
   List<CheckIn> checkInsToReturn = [];
 
   FakeApiClient({this.shouldSucceed = true});
@@ -18,6 +19,16 @@ class FakeApiClient implements IApiClient {
   @override
   Future<void> upsertCheckIns(List<CheckIn> checkIns) async {
     receivedCheckIns = checkIns;
+    if (shouldSucceed) {
+      return Future.value();
+    } else {
+      throw Exception('Simulated API failure');
+    }
+  }
+
+  @override
+  Future<void> deleteCheckIns(List<String> checkInIds) async {
+    receivedDeletedIds = checkInIds;
     if (shouldSucceed) {
       return Future.value();
     } else {
@@ -103,6 +114,41 @@ void main() {
       )..where((tbl) => tbl.id.equals(checkInId))).getSingle();
       expect(stillUnsyncedCheckIn.syncedAt, isNull);
     });
+
+    test(
+      'should sync deleted records and keep them as soft deletes locally',
+      () async {
+        // Arrange
+        fakeApiClient = FakeApiClient(shouldSucceed: true);
+        syncService = SyncService(database: db, apiClient: fakeApiClient);
+
+        final checkInId = uuid.v4();
+        final deletedCheckIn = CheckInsCompanion(
+          id: Value(checkInId),
+          userId: const Value('test-user'),
+          spotId: const Value(1),
+          deletedAt: Value(DateTime.now()),
+          syncedAt: const Value(null), // Mark as unsynced
+        );
+        await db.into(db.checkIns).insert(deletedCheckIn);
+
+        // Act
+        await syncService.push();
+
+        // Assert
+        // 1. Verify that the API client received the deletion request
+        expect(fakeApiClient.receivedDeletedIds, hasLength(1));
+        expect(fakeApiClient.receivedDeletedIds.first, checkInId);
+
+        // 2. Verify that the local record is kept as a soft delete with syncedAt set
+        final localCheckIn = await (db.select(
+          db.checkIns,
+        )..where((tbl) => tbl.id.equals(checkInId))).getSingleOrNull();
+        expect(localCheckIn, isNotNull);
+        expect(localCheckIn!.deletedAt, isNotNull); // Still marked as deleted
+        expect(localCheckIn.syncedAt, isNotNull); // Now marked as synced
+      },
+    );
   });
 
   group('SyncService pull()', () {

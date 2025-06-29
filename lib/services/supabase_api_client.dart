@@ -24,6 +24,16 @@ class SupabaseApiClient implements IApiClient {
   }
 
   @override
+  Future<void> deleteCheckIns(List<String> checkInIds) async {
+    if (checkInIds.isEmpty) return;
+
+    // Delete each check-in individually
+    for (final id in checkInIds) {
+      await _client.from('check_ins').delete().eq('id', id);
+    }
+  }
+
+  @override
   Future<List<CheckIn>> fetchLatestCheckIns({DateTime? since}) async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) {

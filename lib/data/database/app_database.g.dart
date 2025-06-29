@@ -58,6 +58,17 @@ class $CheckInsTable extends CheckIns with TableInfo<$CheckInsTable, CheckIn> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -65,6 +76,7 @@ class $CheckInsTable extends CheckIns with TableInfo<$CheckInsTable, CheckIn> {
     spotId,
     updatedAt,
     syncedAt,
+    deletedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -111,6 +123,12 @@ class $CheckInsTable extends CheckIns with TableInfo<$CheckInsTable, CheckIn> {
         syncedAt.isAcceptableOrUnknown(data['synced_at']!, _syncedAtMeta),
       );
     }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -140,6 +158,10 @@ class $CheckInsTable extends CheckIns with TableInfo<$CheckInsTable, CheckIn> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}synced_at'],
       ),
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
     );
   }
 
@@ -167,12 +189,18 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
   /// A `NULL` value indicates that this record has local changes that
   /// have not yet been pushed to the server.
   final DateTime? syncedAt;
+
+  /// The timestamp when this record was soft-deleted.
+  /// A `NULL` value indicates that this record is not deleted.
+  /// When set, the record should be considered deleted but kept for sync purposes.
+  final DateTime? deletedAt;
   const CheckIn({
     required this.id,
     required this.userId,
     required this.spotId,
     required this.updatedAt,
     this.syncedAt,
+    this.deletedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -183,6 +211,9 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || syncedAt != null) {
       map['synced_at'] = Variable<DateTime>(syncedAt);
+    }
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
     }
     return map;
   }
@@ -196,6 +227,9 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
       syncedAt: syncedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(syncedAt),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
     );
   }
 
@@ -210,6 +244,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
       spotId: serializer.fromJson<int>(json['spotId']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
   factory CheckIn.fromJsonString(
@@ -228,6 +263,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
       'spotId': serializer.toJson<int>(spotId),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
 
@@ -237,12 +273,14 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
     int? spotId,
     DateTime? updatedAt,
     Value<DateTime?> syncedAt = const Value.absent(),
+    Value<DateTime?> deletedAt = const Value.absent(),
   }) => CheckIn(
     id: id ?? this.id,
     userId: userId ?? this.userId,
     spotId: spotId ?? this.spotId,
     updatedAt: updatedAt ?? this.updatedAt,
     syncedAt: syncedAt.present ? syncedAt.value : this.syncedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   CheckIn copyWithCompanion(CheckInsCompanion data) {
     return CheckIn(
@@ -251,6 +289,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
       spotId: data.spotId.present ? data.spotId.value : this.spotId,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       syncedAt: data.syncedAt.present ? data.syncedAt.value : this.syncedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
 
@@ -261,13 +300,15 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
           ..write('userId: $userId, ')
           ..write('spotId: $spotId, ')
           ..write('updatedAt: $updatedAt, ')
-          ..write('syncedAt: $syncedAt')
+          ..write('syncedAt: $syncedAt, ')
+          ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, userId, spotId, updatedAt, syncedAt);
+  int get hashCode =>
+      Object.hash(id, userId, spotId, updatedAt, syncedAt, deletedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -276,7 +317,8 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
           other.userId == this.userId &&
           other.spotId == this.spotId &&
           other.updatedAt == this.updatedAt &&
-          other.syncedAt == this.syncedAt);
+          other.syncedAt == this.syncedAt &&
+          other.deletedAt == this.deletedAt);
 }
 
 class CheckInsCompanion extends UpdateCompanion<CheckIn> {
@@ -285,6 +327,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
   final Value<int> spotId;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> syncedAt;
+  final Value<DateTime?> deletedAt;
   final Value<int> rowid;
   const CheckInsCompanion({
     this.id = const Value.absent(),
@@ -292,6 +335,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
     this.spotId = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CheckInsCompanion.insert({
@@ -300,6 +344,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
     required int spotId,
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        userId = Value(userId),
@@ -310,6 +355,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
     Expression<int>? spotId,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? syncedAt,
+    Expression<DateTime>? deletedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -318,6 +364,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
       if (spotId != null) 'spot_id': spotId,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (syncedAt != null) 'synced_at': syncedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -328,6 +375,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
     Value<int>? spotId,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? syncedAt,
+    Value<DateTime?>? deletedAt,
     Value<int>? rowid,
   }) {
     return CheckInsCompanion(
@@ -336,6 +384,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
       spotId: spotId ?? this.spotId,
       updatedAt: updatedAt ?? this.updatedAt,
       syncedAt: syncedAt ?? this.syncedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -358,6 +407,9 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
     if (syncedAt.present) {
       map['synced_at'] = Variable<DateTime>(syncedAt.value);
     }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -372,6 +424,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
           ..write('spotId: $spotId, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('syncedAt: $syncedAt, ')
+          ..write('deletedAt: $deletedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -396,6 +449,7 @@ typedef $$CheckInsTableCreateCompanionBuilder =
       required int spotId,
       Value<DateTime> updatedAt,
       Value<DateTime?> syncedAt,
+      Value<DateTime?> deletedAt,
       Value<int> rowid,
     });
 typedef $$CheckInsTableUpdateCompanionBuilder =
@@ -405,6 +459,7 @@ typedef $$CheckInsTableUpdateCompanionBuilder =
       Value<int> spotId,
       Value<DateTime> updatedAt,
       Value<DateTime?> syncedAt,
+      Value<DateTime?> deletedAt,
       Value<int> rowid,
     });
 
@@ -439,6 +494,11 @@ class $$CheckInsTableFilterComposer
 
   ColumnFilters<DateTime> get syncedAt => $composableBuilder(
     column: $table.syncedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -476,6 +536,11 @@ class $$CheckInsTableOrderingComposer
     column: $table.syncedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CheckInsTableAnnotationComposer
@@ -501,6 +566,9 @@ class $$CheckInsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get syncedAt =>
       $composableBuilder(column: $table.syncedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 }
 
 class $$CheckInsTableTableManager
@@ -536,6 +604,7 @@ class $$CheckInsTableTableManager
                 Value<int> spotId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CheckInsCompanion(
                 id: id,
@@ -543,6 +612,7 @@ class $$CheckInsTableTableManager
                 spotId: spotId,
                 updatedAt: updatedAt,
                 syncedAt: syncedAt,
+                deletedAt: deletedAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -552,6 +622,7 @@ class $$CheckInsTableTableManager
                 required int spotId,
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CheckInsCompanion.insert(
                 id: id,
@@ -559,6 +630,7 @@ class $$CheckInsTableTableManager
                 spotId: spotId,
                 updatedAt: updatedAt,
                 syncedAt: syncedAt,
+                deletedAt: deletedAt,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
