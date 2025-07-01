@@ -26,3 +26,41 @@ enum AreaExplorationStatus {
   partial, // Some spots visited but not all
   completed, // All spots in area visited
 }
+
+/// Extension to calculate area exploration status
+extension UserAreaDataExt on UserAreaData {
+  /// Calculates the current exploration status of this area
+  AreaExplorationStatus get status {
+    if (totalSpots == null || totalSpots == 0) {
+      return AreaExplorationStatus.noSpots;
+    }
+    if (visitedSpots == null || visitedSpots == 0) {
+      return AreaExplorationStatus.unvisited;
+    }
+    if (visitedSpots! >= totalSpots!) {
+      return AreaExplorationStatus.completed;
+    }
+    return AreaExplorationStatus.partial;
+  }
+
+  /// Returns completion percentage (0.0 to 1.0)
+  double get completionPercentage {
+    if (totalSpots == null || totalSpots == 0) return 0.0;
+    if (visitedSpots == null) return 0.0;
+    return (visitedSpots! / totalSpots!).clamp(0.0, 1.0);
+  }
+
+  /// Returns a user-friendly status description
+  String get statusDescription {
+    switch (status) {
+      case AreaExplorationStatus.noSpots:
+        return 'No spots available';
+      case AreaExplorationStatus.unvisited:
+        return 'Not yet explored';
+      case AreaExplorationStatus.partial:
+        return '${visitedSpots ?? 0}/${totalSpots ?? 0} spots visited';
+      case AreaExplorationStatus.completed:
+        return 'Fully explored!';
+    }
+  }
+}

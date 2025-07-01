@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:drift/drift.dart';
 import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
@@ -12,6 +13,8 @@ class CheckInRepositoryImpl implements CheckInRepository {
   final AppDatabase _db;
   final Uuid _uuid;
   final SyncService? _syncService;
+  final StreamController<String> _areaStatsController =
+      StreamController<String>.broadcast();
 
   CheckInRepositoryImpl({
     required AppDatabase database,
@@ -20,6 +23,9 @@ class CheckInRepositoryImpl implements CheckInRepository {
   }) : _db = database,
        _uuid = uuid,
        _syncService = syncService;
+
+  @override
+  Stream<String> get areaStatsUpdated => _areaStatsController.stream;
 
   @override
   Stream<List<CheckIn>> watchUserCheckIns(String userId) {
@@ -50,6 +56,9 @@ class CheckInRepositoryImpl implements CheckInRepository {
     );
 
     await _db.into(_db.checkIns).insert(newCheckIn);
+
+    // Update area stats after check-in
+    await _updateAreaStats(spotId, userId);
 
     // Trigger sync to Supabase
     try {
@@ -82,12 +91,91 @@ class CheckInRepositoryImpl implements CheckInRepository {
       ),
     );
 
+    // Update area stats after check-out
+    await _updateAreaStats(spotId, userId);
+
     // Trigger sync to Supabase (this will sync the deletion)
     try {
       await _syncService?.push();
       print('✅ Check-out synced to Supabase');
     } catch (e) {
       print('❌ Failed to sync check-out to Supabase: $e');
+    }
+  }
+
+  /// Updates area completion stats for the area containing the given spot
+  Future<void> _updateAreaStats(int spotId, String userId) async {
+    try {
+      // Get the spot and its parent area
+      final spot = await (_db.select(
+        _db.spots,
+      )..where((s) => s.id.equals(spotId))).getSingleOrNull();
+
+      if (spot == null) {
+        print(
+          '⚠️ Spot $spotId not found in database, skipping area stats update',
+        );
+        return;
+      }
+
+      final areaId = spot.parentAreaId;
+      if (areaId == null) {
+        print('⚠️ Spot $spotId has no parent area, skipping area stats update');
+        return;
+      }
+
+      // Calculate total spots in this area
+      final totalSpots =
+          await (_db.select(_db.spots)
+                ..where((s) => s.parentAreaId.equals(areaId)))
+              .get()
+              .then((spots) => spots.length);
+
+      // Get all spots in this area
+      final spotsInArea = await (_db.select(
+        _db.spots,
+      )..where((s) => s.parentAreaId.equals(areaId))).get();
+      final spotIdsInArea = spotsInArea.map((s) => s.id).toSet();
+
+      // Get all check-ins for this user
+      final allUserCheckIns = await (_db.select(
+        _db.checkIns,
+      )..where((c) => c.userId.equals(userId) & c.deletedAt.isNull())).get();
+
+      // Count unique spots that have been visited in this area
+      final visitedSpotIds = allUserCheckIns
+          .map((checkIn) => checkIn.spotId!)
+          .where((spotId) => spotIdsInArea.contains(spotId))
+          .toSet();
+      final visitedSpots = visitedSpotIds.length;
+
+      // Determine completion timestamp
+      final completedAt = (visitedSpots >= totalSpots && totalSpots > 0)
+          ? DateTime.now()
+          : null;
+
+      // Update or insert UserArea record
+      await _db
+          .into(_db.userAreas)
+          .insertOnConflictUpdate(
+            UserAreasCompanion(
+              areaId: Value(areaId),
+              userId: Value(userId),
+              totalSpots: Value(totalSpots),
+              visitedSpots: Value(visitedSpots),
+              completedAt: Value(completedAt),
+            ),
+          );
+
+      print(
+        '📊 Area stats updated: $areaId -> $visitedSpots/$totalSpots spots',
+      );
+
+      // Notify MapBloc that area stats have been updated
+      _areaStatsController.add(userId);
+      print('🔔 Area stats update notification sent for user $userId');
+    } catch (e) {
+      print('❌ Failed to update area stats: $e');
     }
   }
 

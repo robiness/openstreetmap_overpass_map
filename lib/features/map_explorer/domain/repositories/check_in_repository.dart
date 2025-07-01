@@ -17,6 +17,10 @@ abstract class CheckInRepository {
   /// Watches for all check-ins for a specific spot and user.
   Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, int spotId);
 
+  /// Stream that emits user IDs when area completion stats are updated.
+  /// This allows MapBloc to refresh area data in real-time when check-ins change.
+  Stream<String> get areaStatsUpdated;
+
   /// Creates a new check-in for the currently authenticated user.
   ///
   /// This operation will first write to the local database for an immediate

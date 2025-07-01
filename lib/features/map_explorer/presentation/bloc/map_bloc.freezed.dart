@@ -19,22 +19,27 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$MapEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
+    required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
+    required TResult Function(String userId) refreshAreaDataRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult? Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
+    TResult? Function(String userId)? refreshAreaDataRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
+    TResult Function(String userId)? refreshAreaDataRequested,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -42,18 +47,23 @@ mixin _$MapEvent {
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
+    required TResult Function(_RefreshAreaDataRequested value)
+    refreshAreaDataRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
+    TResult? Function(_RefreshAreaDataRequested value)?
+    refreshAreaDataRequested,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
+    TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -85,7 +95,7 @@ abstract class _$$FetchDataRequestedImplCopyWith<$Res> {
     $Res Function(_$FetchDataRequestedImpl) then,
   ) = __$$FetchDataRequestedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String cityName, int adminLevel});
+  $Res call({String cityName, int adminLevel, String? userId});
 }
 
 /// @nodoc
@@ -101,7 +111,11 @@ class __$$FetchDataRequestedImplCopyWithImpl<$Res>
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
-  $Res call({Object? cityName = null, Object? adminLevel = null}) {
+  $Res call({
+    Object? cityName = null,
+    Object? adminLevel = null,
+    Object? userId = freezed,
+  }) {
     return _then(
       _$FetchDataRequestedImpl(
         cityName: null == cityName
@@ -112,6 +126,10 @@ class __$$FetchDataRequestedImplCopyWithImpl<$Res>
             ? _value.adminLevel
             : adminLevel // ignore: cast_nullable_to_non_nullable
                   as int,
+        userId: freezed == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String?,
       ),
     );
   }
@@ -125,16 +143,19 @@ class _$FetchDataRequestedImpl
   const _$FetchDataRequestedImpl({
     required this.cityName,
     required this.adminLevel,
+    this.userId,
   });
 
   @override
   final String cityName;
   @override
   final int adminLevel;
+  @override
+  final String? userId;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MapEvent.fetchDataRequested(cityName: $cityName, adminLevel: $adminLevel)';
+    return 'MapEvent.fetchDataRequested(cityName: $cityName, adminLevel: $adminLevel, userId: $userId)';
   }
 
   @override
@@ -143,7 +164,8 @@ class _$FetchDataRequestedImpl
     properties
       ..add(DiagnosticsProperty('type', 'MapEvent.fetchDataRequested'))
       ..add(DiagnosticsProperty('cityName', cityName))
-      ..add(DiagnosticsProperty('adminLevel', adminLevel));
+      ..add(DiagnosticsProperty('adminLevel', adminLevel))
+      ..add(DiagnosticsProperty('userId', userId));
   }
 
   @override
@@ -154,11 +176,12 @@ class _$FetchDataRequestedImpl
             (identical(other.cityName, cityName) ||
                 other.cityName == cityName) &&
             (identical(other.adminLevel, adminLevel) ||
-                other.adminLevel == adminLevel));
+                other.adminLevel == adminLevel) &&
+            (identical(other.userId, userId) || other.userId == userId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, cityName, adminLevel);
+  int get hashCode => Object.hash(runtimeType, cityName, adminLevel, userId);
 
   /// Create a copy of MapEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -174,34 +197,39 @@ class _$FetchDataRequestedImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
+    required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
+    required TResult Function(String userId) refreshAreaDataRequested,
   }) {
-    return fetchDataRequested(cityName, adminLevel);
+    return fetchDataRequested(cityName, adminLevel, userId);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult? Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
+    TResult? Function(String userId)? refreshAreaDataRequested,
   }) {
-    return fetchDataRequested?.call(cityName, adminLevel);
+    return fetchDataRequested?.call(cityName, adminLevel, userId);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
+    TResult Function(String userId)? refreshAreaDataRequested,
     required TResult orElse(),
   }) {
     if (fetchDataRequested != null) {
-      return fetchDataRequested(cityName, adminLevel);
+      return fetchDataRequested(cityName, adminLevel, userId);
     }
     return orElse();
   }
@@ -212,6 +240,8 @@ class _$FetchDataRequestedImpl
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
+    required TResult Function(_RefreshAreaDataRequested value)
+    refreshAreaDataRequested,
   }) {
     return fetchDataRequested(this);
   }
@@ -222,6 +252,8 @@ class _$FetchDataRequestedImpl
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
+    TResult? Function(_RefreshAreaDataRequested value)?
+    refreshAreaDataRequested,
   }) {
     return fetchDataRequested?.call(this);
   }
@@ -232,6 +264,7 @@ class _$FetchDataRequestedImpl
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
+    TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
     required TResult orElse(),
   }) {
     if (fetchDataRequested != null) {
@@ -245,10 +278,12 @@ abstract class _FetchDataRequested implements MapEvent {
   const factory _FetchDataRequested({
     required final String cityName,
     required final int adminLevel,
+    final String? userId,
   }) = _$FetchDataRequestedImpl;
 
   String get cityName;
   int get adminLevel;
+  String? get userId;
 
   /// Create a copy of MapEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -335,10 +370,11 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
+    required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
+    required TResult Function(String userId) refreshAreaDataRequested,
   }) {
     return areaSelected(area);
   }
@@ -346,9 +382,11 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult? Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
+    TResult? Function(String userId)? refreshAreaDataRequested,
   }) {
     return areaSelected?.call(area);
   }
@@ -356,9 +394,11 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
+    TResult Function(String userId)? refreshAreaDataRequested,
     required TResult orElse(),
   }) {
     if (areaSelected != null) {
@@ -373,6 +413,8 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
+    required TResult Function(_RefreshAreaDataRequested value)
+    refreshAreaDataRequested,
   }) {
     return areaSelected(this);
   }
@@ -383,6 +425,8 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
+    TResult? Function(_RefreshAreaDataRequested value)?
+    refreshAreaDataRequested,
   }) {
     return areaSelected?.call(this);
   }
@@ -393,6 +437,7 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
+    TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
     required TResult orElse(),
   }) {
     if (areaSelected != null) {
@@ -493,10 +538,11 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel)
+    required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
+    required TResult Function(String userId) refreshAreaDataRequested,
   }) {
     return spotSelected(spot);
   }
@@ -504,9 +550,11 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult? Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
+    TResult? Function(String userId)? refreshAreaDataRequested,
   }) {
     return spotSelected?.call(spot);
   }
@@ -514,9 +562,11 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel)? fetchDataRequested,
+    TResult Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
+    TResult Function(String userId)? refreshAreaDataRequested,
     required TResult orElse(),
   }) {
     if (spotSelected != null) {
@@ -531,6 +581,8 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
+    required TResult Function(_RefreshAreaDataRequested value)
+    refreshAreaDataRequested,
   }) {
     return spotSelected(this);
   }
@@ -541,6 +593,8 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
+    TResult? Function(_RefreshAreaDataRequested value)?
+    refreshAreaDataRequested,
   }) {
     return spotSelected?.call(this);
   }
@@ -551,6 +605,7 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
+    TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
     required TResult orElse(),
   }) {
     if (spotSelected != null) {
@@ -570,6 +625,179 @@ abstract class _SpotSelected implements MapEvent {
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$SpotSelectedImplCopyWith<_$SpotSelectedImpl> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$RefreshAreaDataRequestedImplCopyWith<$Res> {
+  factory _$$RefreshAreaDataRequestedImplCopyWith(
+    _$RefreshAreaDataRequestedImpl value,
+    $Res Function(_$RefreshAreaDataRequestedImpl) then,
+  ) = __$$RefreshAreaDataRequestedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({String userId});
+}
+
+/// @nodoc
+class __$$RefreshAreaDataRequestedImplCopyWithImpl<$Res>
+    extends _$MapEventCopyWithImpl<$Res, _$RefreshAreaDataRequestedImpl>
+    implements _$$RefreshAreaDataRequestedImplCopyWith<$Res> {
+  __$$RefreshAreaDataRequestedImplCopyWithImpl(
+    _$RefreshAreaDataRequestedImpl _value,
+    $Res Function(_$RefreshAreaDataRequestedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of MapEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({Object? userId = null}) {
+    return _then(
+      _$RefreshAreaDataRequestedImpl(
+        userId: null == userId
+            ? _value.userId
+            : userId // ignore: cast_nullable_to_non_nullable
+                  as String,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+
+class _$RefreshAreaDataRequestedImpl
+    with DiagnosticableTreeMixin
+    implements _RefreshAreaDataRequested {
+  const _$RefreshAreaDataRequestedImpl({required this.userId});
+
+  @override
+  final String userId;
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'MapEvent.refreshAreaDataRequested(userId: $userId)';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties
+      ..add(DiagnosticsProperty('type', 'MapEvent.refreshAreaDataRequested'))
+      ..add(DiagnosticsProperty('userId', userId));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$RefreshAreaDataRequestedImpl &&
+            (identical(other.userId, userId) || other.userId == userId));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, userId);
+
+  /// Create a copy of MapEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$RefreshAreaDataRequestedImplCopyWith<_$RefreshAreaDataRequestedImpl>
+  get copyWith =>
+      __$$RefreshAreaDataRequestedImplCopyWithImpl<
+        _$RefreshAreaDataRequestedImpl
+      >(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String cityName, int adminLevel, String? userId)
+    fetchDataRequested,
+    required TResult Function(GeographicArea? area) areaSelected,
+    required TResult Function(Spot? spot) spotSelected,
+    required TResult Function(String userId) refreshAreaDataRequested,
+  }) {
+    return refreshAreaDataRequested(userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
+    TResult? Function(GeographicArea? area)? areaSelected,
+    TResult? Function(Spot? spot)? spotSelected,
+    TResult? Function(String userId)? refreshAreaDataRequested,
+  }) {
+    return refreshAreaDataRequested?.call(userId);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String cityName, int adminLevel, String? userId)?
+    fetchDataRequested,
+    TResult Function(GeographicArea? area)? areaSelected,
+    TResult Function(Spot? spot)? spotSelected,
+    TResult Function(String userId)? refreshAreaDataRequested,
+    required TResult orElse(),
+  }) {
+    if (refreshAreaDataRequested != null) {
+      return refreshAreaDataRequested(userId);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(_FetchDataRequested value) fetchDataRequested,
+    required TResult Function(_AreaSelected value) areaSelected,
+    required TResult Function(_SpotSelected value) spotSelected,
+    required TResult Function(_RefreshAreaDataRequested value)
+    refreshAreaDataRequested,
+  }) {
+    return refreshAreaDataRequested(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
+    TResult? Function(_AreaSelected value)? areaSelected,
+    TResult? Function(_SpotSelected value)? spotSelected,
+    TResult? Function(_RefreshAreaDataRequested value)?
+    refreshAreaDataRequested,
+  }) {
+    return refreshAreaDataRequested?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(_FetchDataRequested value)? fetchDataRequested,
+    TResult Function(_AreaSelected value)? areaSelected,
+    TResult Function(_SpotSelected value)? spotSelected,
+    TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
+    required TResult orElse(),
+  }) {
+    if (refreshAreaDataRequested != null) {
+      return refreshAreaDataRequested(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class _RefreshAreaDataRequested implements MapEvent {
+  const factory _RefreshAreaDataRequested({required final String userId}) =
+      _$RefreshAreaDataRequestedImpl;
+
+  String get userId;
+
+  /// Create a copy of MapEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$RefreshAreaDataRequestedImplCopyWith<_$RefreshAreaDataRequestedImpl>
+  get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc

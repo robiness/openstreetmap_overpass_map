@@ -86,18 +86,22 @@ class DebugPanel extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                ElevatedButton(
-                  onPressed: () => context.read<LocationBloc>().add(
-                    const LocationEvent.requestPermission(),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => context.read<LocationBloc>().add(
+                      const LocationEvent.requestPermission(),
+                    ),
+                    child: const Text('Request Permission'),
                   ),
-                  child: const Text('Request Permission'),
                 ),
                 const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () => context.read<LocationBloc>().add(
-                    const LocationEvent.getCurrentLocation(),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => context.read<LocationBloc>().add(
+                      const LocationEvent.getCurrentLocation(),
+                    ),
+                    child: const Text('Get Location'),
                   ),
-                  child: const Text('Get Location'),
                 ),
               ],
             ),
@@ -142,51 +146,55 @@ class DebugPanel extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  ElevatedButton(
-                    onPressed: () => context.read<LocationBloc>().add(
-                      const LocationEvent.setDebugLocation(location: null),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                    ),
-                    child: const Text(
-                      'Clear Debug',
-                      style: TextStyle(color: Colors.white),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => context.read<LocationBloc>().add(
+                        const LocationEvent.setDebugLocation(location: null),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey,
+                      ),
+                      child: const Text(
+                        'Clear Debug',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 8),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, authState) {
-                      return ElevatedButton(
-                        onPressed: () async {
-                          final userId = authState.maybeWhen(
-                            authenticated: (user, profile) => user.id,
-                            orElse: () =>
-                                'test-user', // fallback for unauthenticated
-                          );
-                          final checkIns = await context
-                              .read<CheckInRepository>()
-                              .watchUserCheckIns(userId)
-                              .first;
-                          print('=== DATABASE CONTENTS ===');
-                          print('User ID: $userId');
-                          print('Check-ins count: ${checkIns.length}');
-                          for (final checkIn in checkIns) {
-                            print(
-                              'ID: ${checkIn.id}, SpotID: ${checkIn.spotId}, UserID: ${checkIn.userId}',
+                  Expanded(
+                    child: BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, authState) {
+                        return ElevatedButton(
+                          onPressed: () async {
+                            final userId = authState.maybeWhen(
+                              authenticated: (user, profile) => user.id,
+                              orElse: () =>
+                                  'test-user', // fallback for unauthenticated
                             );
-                          }
-                          print('========================');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                        ),
-                        child: const Text(
-                          'Log DB',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    },
+                            final checkIns = await context
+                                .read<CheckInRepository>()
+                                .watchUserCheckIns(userId)
+                                .first;
+                            print('=== DATABASE CONTENTS ===');
+                            print('User ID: $userId');
+                            print('Check-ins count: ${checkIns.length}');
+                            for (final checkIn in checkIns) {
+                              print(
+                                'ID: ${checkIn.id}, SpotID: ${checkIn.spotId}, UserID: ${checkIn.userId}',
+                              );
+                            }
+                            print('========================');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                          ),
+                          child: const Text(
+                            'Log DB',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),

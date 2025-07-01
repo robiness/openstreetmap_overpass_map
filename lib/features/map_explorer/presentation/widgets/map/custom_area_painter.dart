@@ -22,6 +22,13 @@ class CustomAreaPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // Debug log only when we have area data
+    if (userVisitData.isNotEmpty) {
+      print(
+        '🎨 Painting ${areas.length} areas with ${userVisitData.length} completed areas',
+      );
+    }
+
     // First pass: draw all non-selected areas
     for (final area in areas) {
       final isSelected = area.id == selectedArea?.id;
@@ -43,52 +50,83 @@ class CustomAreaPainter extends CustomPainter {
     bool isSelected,
   ) {
     final areaVisitData = userVisitData[area.id];
-    final isVisited = areaVisitData != null && areaVisitData.visitCount > 0;
 
     // Convert coordinates to screen points and draw
     for (final coordinateRing in area.coordinates) {
       final path = _createPathFromCoordinates(coordinateRing);
 
       if (path != null) {
-        // Draw the fill
-        Color fillColor;
-        if (isSelected) {
-          fillColor = Colors.blue.withAlpha(77);
-        } else if (isVisited) {
-          fillColor = Colors.purple.withAlpha(77);
-        } else {
-          fillColor = Colors.transparent;
-        }
+        // Determine colors based on exploration status
+        final colors = _getAreaColors(areaVisitData, isSelected);
 
-        if (fillColor != Colors.transparent) {
+        // Draw the fill
+        if (colors.fill != Colors.transparent) {
           canvas.drawPath(
             path,
             Paint()
-              ..color = fillColor
+              ..color = colors.fill
               ..style = PaintingStyle.fill,
           );
         }
 
         // Draw the border
-        Color borderColor;
-        if (isSelected) {
-          borderColor = Colors.blue;
-        } else if (isVisited) {
-          borderColor = Colors.purple;
-        } else {
-          borderColor = Colors.black;
-        }
-
         canvas.drawPath(
           path,
           Paint()
-            ..color = borderColor
+            ..color = colors.border
             ..style = PaintingStyle.stroke
-            ..strokeWidth = isSelected ? 3.0 : (isVisited ? 2.5 : 2.0)
+            ..strokeWidth = colors.strokeWidth
             ..strokeJoin = StrokeJoin.round
             ..strokeCap = StrokeCap.round,
         );
       }
+    }
+  }
+
+  /// Gets appropriate colors based on area exploration status
+  _AreaColors _getAreaColors(UserAreaData? areaData, bool isSelected) {
+    if (isSelected) {
+      return _AreaColors(
+        fill: Colors.blue.withAlpha(120),
+        border: Colors.blue,
+        strokeWidth: 4.0,
+      );
+    }
+
+    if (areaData == null) {
+      // No data available - default appearance (light grey)
+      return _AreaColors(
+        fill: Colors.grey.withAlpha(20),
+        border: Colors.grey.withAlpha(100),
+        strokeWidth: 1.5,
+      );
+    }
+
+    // Use vibrant colors for clear visual distinction
+    switch (areaData.status) {
+      case AreaExplorationStatus.noSpots:
+      case AreaExplorationStatus.unvisited:
+        // Medium grey for areas with no spots OR unvisited areas
+        // Both represent neutral/initial state, not error state
+        return _AreaColors(
+          fill: Colors.grey.withAlpha(20),
+          border: Colors.grey.withAlpha(100),
+          strokeWidth: 1.5,
+        );
+      case AreaExplorationStatus.partial:
+        // Vibrant orange for partially completed areas
+        return _AreaColors(
+          fill: Colors.orange.withAlpha(100),
+          border: Colors.orange.shade600,
+          strokeWidth: 2.5,
+        );
+      case AreaExplorationStatus.completed:
+        // Bright green for fully completed areas
+        return _AreaColors(
+          fill: Colors.green.withAlpha(120),
+          border: Colors.green.shade600,
+          strokeWidth: 3.0,
+        );
     }
   }
 
@@ -129,4 +167,17 @@ class CustomAreaPainter extends CustomPainter {
 
   @override
   bool hitTest(Offset position) => false;
+}
+
+/// Helper class for area colors
+class _AreaColors {
+  final Color fill;
+  final Color border;
+  final double strokeWidth;
+
+  _AreaColors({
+    required this.fill,
+    required this.border,
+    required this.strokeWidth,
+  });
 }

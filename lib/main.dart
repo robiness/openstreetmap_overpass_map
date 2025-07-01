@@ -64,26 +64,30 @@ Future<void> main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => DebugBloc(
-              checkInRepository: context.read<CheckInRepository>(),
+            create: (context) => AuthBloc(
+              authRepository: context.read<AuthRepository>(),
             ),
-          ),
-          BlocProvider(
-            create: (context) => MapBloc(mapRepository: mapRepository)
-              ..add(
-                const MapEvent.fetchDataRequested(
-                  cityName: 'Köln',
-                  adminLevel: 6,
-                ),
-              ),
           ),
           BlocProvider(
             create: (context) =>
                 LocationBloc(locationRepository: locationRepository),
           ),
           BlocProvider(
-            create: (context) => AuthBloc(
-              authRepository: context.read<AuthRepository>(),
+            create: (context) =>
+                MapBloc(
+                  mapRepository: mapRepository,
+                  database: database,
+                  checkInRepository: context.read<CheckInRepository>(),
+                )..add(
+                  const MapEvent.fetchDataRequested(
+                    cityName: 'Köln',
+                    adminLevel: 6,
+                  ),
+                ),
+          ),
+          BlocProvider(
+            create: (context) => DebugBloc(
+              checkInRepository: context.read<CheckInRepository>(),
             ),
           ),
         ],
