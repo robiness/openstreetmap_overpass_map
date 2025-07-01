@@ -10,7 +10,7 @@ import 'package:overpass_map/features/location/data/repositories/location_reposi
 import 'package:overpass_map/features/location/domain/repositories/location_repository.dart';
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/map_explorer/data/repositories/check_in_repository_impl.dart';
-import 'package:overpass_map/features/map_explorer/data/repositories/map_repository_impl.dart';
+import 'package:overpass_map/features/map_explorer/data/repositories/supabase_map_repository_impl.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
 import 'package:overpass_map/features/map_explorer/presentation/map_explorer_screen.dart';
@@ -43,8 +43,10 @@ Future<void> main() async {
     supabaseClient: Supabase.instance.client,
   );
 
-  // --- Legacy Repository Setup ---
-  final mapRepository = MapRepositoryImpl();
+  // --- Repository Setup ---
+  final mapRepository = SupabaseMapRepositoryImpl(
+    supabaseClient: Supabase.instance.client,
+  );
   final locationRepository = LocationRepositoryImpl();
 
   // Perform an initial pull to get the latest data.

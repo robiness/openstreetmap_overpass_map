@@ -41,4 +41,15 @@ class MapRepositoryImpl implements MapRepository {
       categories: categories,
     );
   }
+
+  @override
+  Future<List<AvailableCity>> getAvailableCities({
+    int cityAdminLevel = 6,
+  }) async {
+    // The original Overpass implementation doesn't support listing all cities
+    // This would require a different approach or could be left unimplemented
+    throw UnimplementedError(
+      'getAvailableCities is not supported with Overpass API. Use SupabaseMapRepositoryImpl instead.',
+    );
+  }
 }
