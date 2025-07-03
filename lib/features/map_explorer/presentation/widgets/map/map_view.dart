@@ -18,8 +18,6 @@ import 'package:overpass_map/features/map_explorer/presentation/widgets/map/cust
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_spot_layer.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_user_location_layer.dart';
 
-enum MapTheme { light, dark, satellite }
-
 class MapView extends StatefulWidget {
   final BoundaryData boundaryData;
   final List<Spot> spots;
@@ -27,7 +25,6 @@ class MapView extends StatefulWidget {
   final Spot? selectedSpot;
   final Map<int, UserSpotData>? userSpotVisitData;
   final Map<int, UserAreaData>? userAreaVisitData;
-  final MapTheme theme;
 
   const MapView({
     super.key,
@@ -37,7 +34,6 @@ class MapView extends StatefulWidget {
     this.selectedSpot,
     this.userSpotVisitData,
     this.userAreaVisitData,
-    this.theme = MapTheme.light,
   });
 
   @override
@@ -73,34 +69,66 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       ...widget.boundaryData.stadtteile,
     ];
 
-    final urlTemplate = _getTileUrlTemplate(widget.theme);
+    return FlutterMap(
+      mapController: _mapController,
+      options: MapOptions(
+        initialCenter: const LatLng(50.9375, 6.9603), // Cologne
+        initialZoom: 11,
+        minZoom: 8,
+        maxZoom: 18,
+        onTap: (tapPosition, latLng) {
+          final debugBloc = context.read<DebugBloc>();
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: widget.theme == MapTheme.dark
-            ? const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
-              )
-            : const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFF8FAFC), Color(0xFFE2E8F0)],
-              ),
+          // If in location picking mode, set the debug location
+          if (debugBloc.state.isPickingLocation) {
+            final locationBloc = context.read<LocationBloc>();
+            final newLocation = LocationData(
+              latitude: latLng.latitude,
+              longitude: latLng.longitude,
+              accuracy: 10.0,
+              timestamp: DateTime.now(),
+              isMocked: true,
+            );
+            locationBloc.add(
+              LocationEvent.setDebugLocation(location: newLocation),
+            );
+            // Turn off picking mode
+            debugBloc.add(const DebugEvent.pickLocationToggled());
+          } else {
+            // Default behavior: Deselect both area and spot
+            final mapBloc = context.read<MapBloc>();
+            mapBloc.add(const MapEvent.areaSelected(area: null));
+            mapBloc.add(const MapEvent.spotSelected(spot: null));
+          }
+        },
       ),
-      child: FlutterMap(
-        mapController: _mapController,
-        options: MapOptions(
-          initialCenter: const LatLng(50.9375, 6.9603), // Cologne
-          initialZoom: 11,
-          minZoom: 8,
-          maxZoom: 18,
-          onTap: (tapPosition, latLng) {
+      children: [
+        // Base tile layer with grayscale filter
+        ColorFiltered(
+          colorFilter: const ColorFilter.matrix([
+            // Grayscale matrix
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0.2126, 0.7152, 0.0722, 0, 0,
+            0, 0, 0, 1, 0,
+          ]),
+          child: TileLayer(
+            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            userAgentPackageName: 'com.example.overpass_map',
+            tileProvider: CancellableNetworkTileProvider(),
+          ),
+        ),
+
+        // Enhanced area layer
+        CustomAreaLayer(
+          areas: allAreas,
+          selectedArea: widget.selectedArea,
+          userVisitData: widget.userAreaVisitData ?? {},
+          onAreaTap: (area, latLng) {
             final debugBloc = context.read<DebugBloc>();
 
-            // If in location picking mode, set the debug location
             if (debugBloc.state.isPickingLocation) {
+              // We are in picking mode. Set the location and turn off the mode.
               final locationBloc = context.read<LocationBloc>();
               final newLocation = LocationData(
                 latitude: latLng.latitude,
@@ -112,148 +140,93 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
               locationBloc.add(
                 LocationEvent.setDebugLocation(location: newLocation),
               );
-              // Turn off picking mode
               debugBloc.add(const DebugEvent.pickLocationToggled());
             } else {
-              // Default behavior: Deselect both area and spot
+              // We are in normal navigation mode. Handle area selection.
               final mapBloc = context.read<MapBloc>();
-              mapBloc.add(const MapEvent.areaSelected(area: null));
+              if (widget.selectedArea?.id == area.id) {
+                // Deselect if tapped again
+                mapBloc.add(const MapEvent.areaSelected(area: null));
+              } else {
+                mapBloc.add(MapEvent.areaSelected(area: area));
+              }
+              // Also deselect any selected spot when selecting an area
               mapBloc.add(const MapEvent.spotSelected(spot: null));
             }
           },
         ),
-        children: [
-          // Base tile layer with improved styling
-          TileLayer(
-            urlTemplate: urlTemplate,
-            userAgentPackageName: 'com.example.overpass_map',
-            tileProvider: CancellableNetworkTileProvider(),
-          ),
 
-          // Enhanced area layer
-          CustomAreaLayer(
-            areas: allAreas,
-            selectedArea: widget.selectedArea,
-            userVisitData: widget.userAreaVisitData ?? {},
-            onAreaTap: (area, latLng) {
-              final debugBloc = context.read<DebugBloc>();
+        // Enhanced spot layer with animation
+        BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, authState) {
+            final userId = authState.maybeWhen(
+              authenticated: (user, profile) => user.id,
+              orElse: () => 'test-user', // fallback for unauthenticated
+            );
 
-              if (debugBloc.state.isPickingLocation) {
-                // We are in picking mode. Set the location and turn off the mode.
-                final locationBloc = context.read<LocationBloc>();
-                final newLocation = LocationData(
-                  latitude: latLng.latitude,
-                  longitude: latLng.longitude,
-                  accuracy: 10.0,
-                  timestamp: DateTime.now(),
-                  isMocked: true,
-                );
-                locationBloc.add(
-                  LocationEvent.setDebugLocation(location: newLocation),
-                );
-                debugBloc.add(const DebugEvent.pickLocationToggled());
-              } else {
-                // We are in normal navigation mode. Handle area selection.
-                final mapBloc = context.read<MapBloc>();
-                if (widget.selectedArea?.id == area.id) {
-                  // Deselect if tapped again
-                  mapBloc.add(const MapEvent.areaSelected(area: null));
-                } else {
-                  mapBloc.add(MapEvent.areaSelected(area: area));
+            return StreamBuilder<List<dynamic>>(
+              stream: context.read<CheckInRepository>().watchUserCheckIns(
+                userId,
+              ),
+              builder: (context, checkInSnapshot) {
+                // Merge check-in data into UserSpotData
+                final mergedUserSpotData = <int, UserSpotData>{};
+                final baseUserSpotData = widget.userSpotVisitData ?? {};
+
+                // Create a set of checked-in spot IDs
+                final checkedInSpotIds = <int>{};
+                if (checkInSnapshot.hasData) {
+                  for (final checkIn in checkInSnapshot.data!) {
+                    if (checkIn.spotId != null) {
+                      checkedInSpotIds.add(checkIn.spotId!);
+                    }
+                  }
                 }
-                // Also deselect any selected spot when selecting an area
-                mapBloc.add(const MapEvent.spotSelected(spot: null));
-              }
-            },
-          ),
 
-          // Enhanced spot layer with animation
-          BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, authState) {
-              final userId = authState.maybeWhen(
-                authenticated: (user, profile) => user.id,
-                orElse: () => 'test-user', // fallback for unauthenticated
-              );
+                // Merge the data for all spots that appear in the map
+                for (final spot in widget.spots) {
+                  final baseData = baseUserSpotData[spot.id];
+                  final isCheckedIn = checkedInSpotIds.contains(spot.id);
 
-              return StreamBuilder<List<dynamic>>(
-                stream: context.read<CheckInRepository>().watchUserCheckIns(
-                  userId,
-                ),
-                builder: (context, checkInSnapshot) {
-                  // Merge check-in data into UserSpotData
-                  final mergedUserSpotData = <int, UserSpotData>{};
-                  final baseUserSpotData = widget.userSpotVisitData ?? {};
-
-                  // Create a set of checked-in spot IDs
-                  final checkedInSpotIds = <int>{};
-                  if (checkInSnapshot.hasData) {
-                    for (final checkIn in checkInSnapshot.data!) {
-                      if (checkIn.spotId != null) {
-                        checkedInSpotIds.add(checkIn.spotId!);
-                      }
-                    }
+                  if (baseData != null) {
+                    // Update existing data with check-in status
+                    mergedUserSpotData[spot.id] = baseData.copyWith(
+                      isCheckedIn: isCheckedIn,
+                    );
+                  } else if (isCheckedIn) {
+                    // Create new data for checked-in spots that don't have user data yet
+                    mergedUserSpotData[spot.id] = UserSpotData(
+                      spotId: spot.id,
+                      isCheckedIn: true,
+                    );
                   }
+                }
 
-                  // Merge the data for all spots that appear in the map
-                  for (final spot in widget.spots) {
-                    final baseData = baseUserSpotData[spot.id];
-                    final isCheckedIn = checkedInSpotIds.contains(spot.id);
-
-                    if (baseData != null) {
-                      // Update existing data with check-in status
-                      mergedUserSpotData[spot.id] = baseData.copyWith(
-                        isCheckedIn: isCheckedIn,
-                      );
-                    } else if (isCheckedIn) {
-                      // Create new data for checked-in spots that don't have user data yet
-                      mergedUserSpotData[spot.id] = UserSpotData(
-                        spotId: spot.id,
-                        isCheckedIn: true,
-                      );
+                return CustomSpotLayer(
+                  spots: widget.spots,
+                  selectedSpot: widget.selectedSpot,
+                  userSpotVisitData: mergedUserSpotData,
+                  onSpotTap: (spot) {
+                    final bloc = context.read<MapBloc>();
+                    if (widget.selectedSpot?.id == spot.id) {
+                      // Deselect if tapped again
+                      bloc.add(const MapEvent.spotSelected(spot: null));
+                    } else {
+                      // Select spot and automatically mark as visited
+                      bloc.add(MapEvent.spotSelected(spot: spot));
                     }
-                  }
+                    // Also deselect any selected area when selecting a spot
+                    bloc.add(const MapEvent.areaSelected(area: null));
+                  },
+                );
+              },
+            );
+          },
+        ),
 
-                  return CustomSpotLayer(
-                    spots: widget.spots,
-                    selectedSpot: widget.selectedSpot,
-                    userSpotVisitData: mergedUserSpotData,
-                    onSpotTap: (spot) {
-                      final bloc = context.read<MapBloc>();
-                      if (widget.selectedSpot?.id == spot.id) {
-                        // Deselect if tapped again
-                        bloc.add(const MapEvent.spotSelected(spot: null));
-                      } else {
-                        // Select spot and automatically mark as visited
-                        bloc.add(MapEvent.spotSelected(spot: spot));
-                      }
-                      // Also deselect any selected area when selecting a spot
-                      bloc.add(const MapEvent.areaSelected(area: null));
-                    },
-                  );
-                },
-              );
-            },
-          ),
-
-          // Enhanced user location layer
-          CustomUserLocationLayer(),
-        ],
-      ),
+        // Enhanced user location layer
+        CustomUserLocationLayer(),
+      ],
     );
-  }
-
-  String _getTileUrlTemplate(MapTheme theme) {
-    switch (theme) {
-      case MapTheme.light:
-        return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-
-      case MapTheme.dark:
-        // Using CartoDB Dark Matter for dark theme
-        return 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
-      case MapTheme.satellite:
-        // Using satellite imagery
-        return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-    }
   }
 }

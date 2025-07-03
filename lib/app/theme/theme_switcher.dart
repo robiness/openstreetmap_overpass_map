@@ -25,21 +25,23 @@ class ThemeSwitcher extends StatelessWidget {
       return _CompactThemeSwitcher(themeProvider: themeProvider);
     }
 
-    return Row(
-      mainAxisAlignment: alignment,
-      children: themeProvider.availableThemes.map((theme) {
-        final isSelected = theme.name == currentTheme.name;
+    return SingleChildScrollView(
+      child: Row(
+        mainAxisAlignment: alignment,
+        children: themeProvider.availableThemes.map((theme) {
+          final isSelected = theme.name == currentTheme.name;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: _ThemeOption(
-            theme: theme,
-            isSelected: isSelected,
-            showLabel: showLabels,
-            onTap: () => themeProvider.setTheme(theme),
-          ),
-        );
-      }).toList(),
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: _ThemeOption(
+              theme: theme,
+              isSelected: isSelected,
+              showLabel: showLabels,
+              onTap: () => themeProvider.setTheme(theme),
+            ),
+          );
+        }).toList(),
+      ),
     );
   }
 }

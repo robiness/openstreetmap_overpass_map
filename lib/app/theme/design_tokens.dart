@@ -9,7 +9,7 @@ class DesignTokens {
   static const Color electricOrange = Color(0xFFFF6B35);
   static const Color brightYellow = Color(0xFFFFD23F);
   static const Color brightBlue = Color(0xFF118AB2);
-  static const Color electricGreen = Color(0xFF06D6A0);
+  static const Color electricGreen = Color(0xFFC80616);
   static const Color vibrantPurple = Color(0xFF7209B7);
 
   // Neutral Colors
@@ -143,16 +143,12 @@ class DesignTokens {
   /// Creates a darker shade of the given color
   static Color darken(Color color, double amount) {
     final hsl = HSLColor.fromColor(color);
-    return hsl
-        .withLightness((hsl.lightness - amount).clamp(0.0, 1.0))
-        .toColor();
+    return hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0)).toColor();
   }
 
   /// Creates a lighter shade of the given color
   static Color lighten(Color color, double amount) {
     final hsl = HSLColor.fromColor(color);
-    return hsl
-        .withLightness((hsl.lightness + amount).clamp(0.0, 1.0))
-        .toColor();
+    return hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0)).toColor();
   }
 }

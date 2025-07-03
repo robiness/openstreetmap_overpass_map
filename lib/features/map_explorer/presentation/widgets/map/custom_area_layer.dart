@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:overpass_map/app/theme/theme_provider.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_area_painter.dart';
@@ -22,6 +23,8 @@ class CustomAreaLayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final camera = MapCamera.of(context);
+    final theme = context.appTheme;
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapUp: (details) {
@@ -34,9 +37,7 @@ class CustomAreaLayer extends StatelessWidget {
         // First check if tap is on the selected area (since it's drawn on top)
         if (selectedArea != null) {
           for (final polygonRings in selectedArea!.coordinates) {
-            final polygon = polygonRings
-                .map((coords) => LatLng(coords[1], coords[0]))
-                .toList();
+            final polygon = polygonRings.map((coords) => LatLng(coords[1], coords[0])).toList();
             if (_isPointInPolygon(tappedLatLng, polygon)) {
               onAreaTap!(selectedArea!, tappedLatLng);
               return; // Stop after finding the match
@@ -52,9 +53,7 @@ class CustomAreaLayer extends StatelessWidget {
           }
 
           for (final polygonRings in area.coordinates) {
-            final polygon = polygonRings
-                .map((coords) => LatLng(coords[1], coords[0]))
-                .toList();
+            final polygon = polygonRings.map((coords) => LatLng(coords[1], coords[0])).toList();
             if (_isPointInPolygon(tappedLatLng, polygon)) {
               onAreaTap!(area, tappedLatLng);
               return; // Stop after finding the first match
@@ -66,6 +65,7 @@ class CustomAreaLayer extends StatelessWidget {
         painter: CustomAreaPainter(
           areas: areas,
           camera: camera,
+          theme: theme,
           selectedArea: selectedArea,
           userVisitData: userVisitData,
         ),
@@ -86,14 +86,10 @@ class CustomAreaLayer extends StatelessWidget {
       final p1 = polygon[i];
       final p2 = polygon[j];
 
-      final isYBetween =
-          (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
+      final isYBetween = (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
       final isXBefore =
           point.longitude <
-          (p2.longitude - p1.longitude) *
-                  (point.latitude - p1.latitude) /
-                  (p2.latitude - p1.latitude) +
-              p1.longitude;
+          (p2.longitude - p1.longitude) * (point.latitude - p1.latitude) / (p2.latitude - p1.latitude) + p1.longitude;
 
       if (isYBetween && isXBefore) {
         isInside = !isInside;

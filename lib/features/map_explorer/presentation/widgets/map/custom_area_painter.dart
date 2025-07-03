@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:overpass_map/app/theme/app_theme_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 
@@ -10,25 +11,20 @@ import 'package:overpass_map/features/map_explorer/data/models/user_area_data.da
 class CustomAreaPainter extends CustomPainter {
   final List<GeographicArea> areas;
   final MapCamera camera;
+  final AppThemeData theme;
   final GeographicArea? selectedArea;
   final Map<int, UserAreaData> userVisitData;
 
   CustomAreaPainter({
     required this.areas,
     required this.camera,
+    required this.theme,
     this.selectedArea,
     this.userVisitData = const {},
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Debug log only when we have area data
-    if (userVisitData.isNotEmpty) {
-      print(
-        '🎨 Painting ${areas.length} areas with ${userVisitData.length} completed areas',
-      );
-    }
-
     // First pass: draw shadows for areas with data
     for (final area in areas) {
       final areaVisitData = userVisitData[area.id];
@@ -59,12 +55,36 @@ class CustomAreaPainter extends CustomPainter {
       if (path != null) {
         // Subtle shadow effect
         final shadowPaint = Paint()
-          ..color = Colors.black.withValues(alpha: 0.1)
+          ..color = theme.shadow.withAlpha((255 * 0.1).round())
           ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 3.0);
 
         canvas.drawPath(path, shadowPaint);
       }
     }
+  }
+
+  ui.Path? _createPathFromCoordinates(List<List<double>> coordinateRing) {
+    if (coordinateRing.length < 3) return null;
+
+    final List<Offset> offsets = [];
+    final mapOrigin = camera.pixelOrigin;
+
+    for (final point in coordinateRing) {
+      final latLng = LatLng(point[1], point[0]);
+      final projectedPoint = camera.crs.latLngToOffset(latLng, camera.zoom);
+      final screenPoint = projectedPoint - mapOrigin;
+      offsets.add(Offset(screenPoint.dx, screenPoint.dy));
+    }
+
+    if (offsets.isEmpty) return null;
+
+    final path = ui.Path();
+    path.moveTo(offsets.first.dx, offsets.first.dy);
+    for (int i = 1; i < offsets.length; i++) {
+      path.lineTo(offsets[i].dx, offsets[i].dy);
+    }
+    path.close();
+    return path;
   }
 
   void _paintArea(
@@ -132,7 +152,7 @@ class CustomAreaPainter extends CustomPainter {
     // Animated glow effect for selected area
     for (int i = 3; i >= 1; i--) {
       final glowPaint = Paint()
-        ..color = Colors.blue.withValues(alpha: 0.05 * i)
+        ..color = theme.navigation.withAlpha((255 * 0.05 * i).round())
         ..style = PaintingStyle.stroke
         ..strokeWidth = colors.strokeWidth + (i * 2.0)
         ..strokeJoin = StrokeJoin.round
@@ -143,7 +163,7 @@ class CustomAreaPainter extends CustomPainter {
 
     // Outer selection ring
     final selectionPaint = Paint()
-      ..color = Colors.blue.shade400.withValues(alpha: 0.8)
+      ..color = theme.navigation.withAlpha((255 * 0.8).round())
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0
       ..strokeJoin = StrokeJoin.round;
@@ -155,15 +175,15 @@ class CustomAreaPainter extends CustomPainter {
   _AreaColors _getAreaColors(UserAreaData? areaData, bool isSelected) {
     if (isSelected) {
       return _AreaColors(
-        fill: Colors.blue.withValues(alpha: 0.15),
-        border: Colors.blue.shade600,
+        fill: theme.navigation.withAlpha((255 * 0.15).round()),
+        border: theme.navigation,
         strokeWidth: 4.0,
         fillGradient: ui.Gradient.linear(
           const Offset(0, 0),
           const Offset(100, 100),
           [
-            Colors.blue.withValues(alpha: 0.2),
-            Colors.blue.withValues(alpha: 0.1),
+            theme.navigation.withAlpha((255 * 0.2).round()),
+            theme.navigation.withAlpha((255 * 0.1).round()),
           ],
           [0.0, 1.0],
         ),
@@ -171,8 +191,8 @@ class CustomAreaPainter extends CustomPainter {
           const Offset(0, 0),
           const Offset(100, 100),
           [
-            Colors.blue.shade500,
-            Colors.blue.shade700,
+            theme.navigation,
+            theme.navigation,
           ],
           [0.0, 1.0],
         ),
@@ -180,20 +200,11 @@ class CustomAreaPainter extends CustomPainter {
     }
 
     if (areaData == null) {
-      // No data available - subtle neutral appearance
+      // Default state: subtle "blueprint"
       return _AreaColors(
-        fill: Colors.grey.withValues(alpha: 0.03),
-        border: Colors.grey.withValues(alpha: 0.3),
-        strokeWidth: 1.0,
-        fillGradient: ui.Gradient.linear(
-          const Offset(0, 0),
-          const Offset(50, 50),
-          [
-            Colors.grey.withValues(alpha: 0.05),
-            Colors.grey.withValues(alpha: 0.02),
-          ],
-          [0.0, 1.0],
-        ),
+        fill: theme.outline.withAlpha((255 * 0.05).round()),
+        border: theme.outline,
+        strokeWidth: 1.5,
       );
     }
 
@@ -202,15 +213,15 @@ class CustomAreaPainter extends CustomPainter {
       case AreaExplorationStatus.noSpots:
       case AreaExplorationStatus.unvisited:
         return _AreaColors(
-          fill: Colors.grey.withValues(alpha: 0.08),
-          border: Colors.grey.shade400,
+          fill: theme.outline.withAlpha((255 * 0.08).round()),
+          border: theme.outline,
           strokeWidth: 1.5,
           fillGradient: ui.Gradient.radial(
             const Offset(50, 50),
             50,
             [
-              Colors.grey.withValues(alpha: 0.1),
-              Colors.grey.withValues(alpha: 0.05),
+              theme.outline.withAlpha((255 * 0.1).round()),
+              theme.outline.withAlpha((255 * 0.05).round()),
             ],
             [0.0, 1.0],
           ),
@@ -218,7 +229,7 @@ class CustomAreaPainter extends CustomPainter {
             const Offset(0, 0),
             const Offset(30, 30),
             [
-              Colors.white.withValues(alpha: 0.1),
+              theme.onSurface.withAlpha((255 * 0.1).round()),
               Colors.transparent,
             ],
             [0.0, 1.0],
@@ -227,16 +238,16 @@ class CustomAreaPainter extends CustomPainter {
 
       case AreaExplorationStatus.partial:
         return _AreaColors(
-          fill: Colors.orange.withValues(alpha: 0.15),
-          border: Colors.orange.shade600,
+          fill: theme.opportunities.withAlpha((255 * 0.15).round()),
+          border: theme.opportunities,
           strokeWidth: 2.5,
           fillGradient: ui.Gradient.radial(
             const Offset(50, 50),
             60,
             [
-              Colors.orange.withValues(alpha: 0.2),
-              Colors.orange.withValues(alpha: 0.1),
-              Colors.orange.withValues(alpha: 0.05),
+              theme.opportunities.withAlpha((255 * 0.2).round()),
+              theme.opportunities.withAlpha((255 * 0.1).round()),
+              theme.opportunities.withAlpha((255 * 0.05).round()),
             ],
             [0.0, 0.5, 1.0],
           ),
@@ -244,17 +255,8 @@ class CustomAreaPainter extends CustomPainter {
             const Offset(0, 0),
             const Offset(100, 100),
             [
-              Colors.orange.shade500,
-              Colors.orange.shade700,
-            ],
-            [0.0, 1.0],
-          ),
-          highlightGradient: ui.Gradient.linear(
-            const Offset(0, 0),
-            const Offset(40, 40),
-            [
-              Colors.yellow.withValues(alpha: 0.15),
-              Colors.transparent,
+              theme.opportunities,
+              theme.opportunities,
             ],
             [0.0, 1.0],
           ),
@@ -262,25 +264,24 @@ class CustomAreaPainter extends CustomPainter {
 
       case AreaExplorationStatus.completed:
         return _AreaColors(
-          fill: Colors.green.withValues(alpha: 0.18),
-          border: Colors.green.shade600,
-          strokeWidth: 3.0,
+          fill: theme.progress.withValues(alpha: 0.2),
+          border: theme.progress,
+          strokeWidth: 8.0,
           fillGradient: ui.Gradient.radial(
             const Offset(50, 50),
             70,
             [
-              Colors.green.withValues(alpha: 0.25),
-              Colors.green.withValues(alpha: 0.15),
-              Colors.green.withValues(alpha: 0.08),
+              theme.progress.withAlpha((255 * 0.25).round()),
+              theme.progress.withAlpha((255 * 0.15).round()),
             ],
-            [0.0, 0.6, 1.0],
+            [0.0, 1.0],
           ),
           borderGradient: ui.Gradient.linear(
             const Offset(0, 0),
             const Offset(100, 100),
             [
-              Colors.green.shade500,
-              Colors.green.shade700,
+              theme.progress,
+              theme.progress,
             ],
             [0.0, 1.0],
           ),
@@ -288,7 +289,7 @@ class CustomAreaPainter extends CustomPainter {
             const Offset(0, 0),
             const Offset(50, 50),
             [
-              Colors.lightGreen.withValues(alpha: 0.2),
+              Colors.white.withAlpha((255 * 0.1).round()),
               Colors.transparent,
             ],
             [0.0, 1.0],
@@ -297,39 +298,15 @@ class CustomAreaPainter extends CustomPainter {
     }
   }
 
-  ui.Path? _createPathFromCoordinates(
-    List<List<double>> coordinates,
-  ) {
-    if (coordinates.isEmpty) return null;
-
-    final path = ui.Path();
-    bool isFirstPoint = true;
-
-    for (final coord in coordinates) {
-      final lng = coord[0];
-      final lat = coord[1];
-
-      // Convert lat/lng to screen coordinates
-      final screenPoint = camera.latLngToScreenOffset(LatLng(lat, lng));
-
-      if (isFirstPoint) {
-        path.moveTo(screenPoint.dx, screenPoint.dy);
-        isFirstPoint = false;
-      } else {
-        path.lineTo(screenPoint.dx, screenPoint.dy);
-      }
-    }
-
-    path.close();
-    return path;
-  }
-
   @override
   bool shouldRepaint(CustomAreaPainter oldDelegate) {
     return oldDelegate.areas != areas ||
-        oldDelegate.camera != camera ||
+        oldDelegate.camera.zoom != camera.zoom ||
+        oldDelegate.camera.rotationRad != camera.rotationRad ||
+        oldDelegate.camera.center != camera.center ||
         oldDelegate.selectedArea != selectedArea ||
-        oldDelegate.userVisitData != userVisitData;
+        oldDelegate.userVisitData != userVisitData ||
+        oldDelegate.theme != theme;
   }
 
   @override
@@ -341,9 +318,9 @@ class _AreaColors {
   final Color fill;
   final Color border;
   final double strokeWidth;
-  final ui.Shader? fillGradient;
-  final ui.Shader? borderGradient;
-  final ui.Shader? highlightGradient;
+  final ui.Gradient? fillGradient;
+  final ui.Gradient? borderGradient;
+  final ui.Gradient? highlightGradient;
 
   _AreaColors({
     required this.fill,

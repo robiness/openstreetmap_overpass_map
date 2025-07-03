@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'design_tokens.dart';
 
 /// App Theme Data - Contains all semantic color mappings and design system values
@@ -12,12 +13,9 @@ class AppThemeData {
   // === SEMANTIC COLORS ===
 
   // Status-Based Colors (our priority hierarchy)
-  final Color
-  currentState; // 🔴 Electric Orange - highest priority (current check-ins, selected)
-  final Color
-  opportunities; // 🟡 Bright Yellow - medium priority (nearby unchecked spots)
-  final Color
-  navigation; // 🔵 Bright Blue - functional clarity (buttons, links, actions)
+  final Color currentState; // 🔴 Electric Orange - highest priority (current check-ins, selected)
+  final Color opportunities; // 🟡 Bright Yellow - medium priority (nearby unchecked spots)
+  final Color navigation; // 🔵 Bright Blue - functional clarity (buttons, links, actions)
   final Color progress; // 🟢 Electric Green - progress/completion feedback
   final Color accent; // 🟣 Purple - special highlights, badges
 
@@ -105,7 +103,7 @@ class AppThemeData {
     background: DesignTokens.gray900,
     surface: DesignTokens.gray800,
     surfaceVariant: DesignTokens.gray700,
-    outline: DesignTokens.gray600,
+    outline: DesignTokens.gray900,
     shadow: DesignTokens.withOpacity(
       DesignTokens.black,
       DesignTokens.opacityMedium,
