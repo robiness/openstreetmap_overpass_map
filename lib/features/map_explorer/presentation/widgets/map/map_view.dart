@@ -76,6 +76,12 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
         initialZoom: 11,
         minZoom: 8,
         maxZoom: 18,
+        interactionOptions: const InteractionOptions(
+          flags:
+              InteractiveFlag.drag |
+              InteractiveFlag.pinchZoom |
+              InteractiveFlag.doubleTapZoom,
+        ),
         onTap: (tapPosition, latLng) {
           final debugBloc = context.read<DebugBloc>();
 
