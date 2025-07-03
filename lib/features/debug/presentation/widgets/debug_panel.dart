@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:overpass_map/app/theme/app_theme.dart';
 
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
@@ -15,70 +16,115 @@ class DebugPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.appTheme;
+
     return Card(
       margin: const EdgeInsets.all(16),
+      color: appTheme.surface.withAlpha((255 * 0.95).round()),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          appTheme.components.cards.borderRadius,
+        ),
+        side: BorderSide(
+          color: appTheme.outline.withAlpha((255 * 0.5).round()),
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: appTheme.components.cards.padding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
+            Text(
               'Debug Panel',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: appTheme.typography.titleLarge,
             ),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+            Text(
+              'Theme',
+              style: appTheme.typography.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            const ThemeSwitcher(),
+            const SizedBox(height: 16),
+            const Divider(),
             const SizedBox(height: 16),
             BlocBuilder<LocationBloc, LocationState>(
               builder: (context, state) {
                 return state.when(
-                  initial: () => const Text('Location not requested yet'),
-                  loading: () => const Row(
+                  initial: () => Text(
+                    'Location not requested yet',
+                    style: appTheme.typography.bodyMedium,
+                  ),
+                  loading: () => Row(
                     children: [
                       SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: appTheme.navigation,
+                        ),
                       ),
-                      SizedBox(width: 8),
-                      Text('Getting location...'),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Getting location...',
+                        style: appTheme.typography.bodyMedium,
+                      ),
                     ],
                   ),
-                  permissionGranted: () => const Text(
+                  permissionGranted: () => Text(
                     'Permission granted! You can now get location.',
-                    style: TextStyle(color: Colors.green),
+                    style: appTheme.typography.bodyMedium.copyWith(
+                      color: appTheme.success,
+                    ),
                   ),
-                  permissionDenied: () => const Text(
+                  permissionDenied: () => Text(
                     'Location permission denied. Please enable it in settings.',
-                    style: TextStyle(color: Colors.red),
+                    style: appTheme.typography.bodyMedium.copyWith(
+                      color: appTheme.error,
+                    ),
                   ),
                   locationReceived: (location) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Current Location:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: appTheme.typography.titleSmall,
                       ),
                       const SizedBox(height: 8),
-                      Text('Latitude: ${location.latitude.toStringAsFixed(6)}'),
+                      Text(
+                        'Latitude: ${location.latitude.toStringAsFixed(6)}',
+                        style: appTheme.typography.bodySmall,
+                      ),
                       Text(
                         'Longitude: ${location.longitude.toStringAsFixed(6)}',
+                        style: appTheme.typography.bodySmall,
                       ),
                       Text(
                         'Accuracy: ${location.accuracy.toStringAsFixed(1)}m',
+                        style: appTheme.typography.bodySmall,
                       ),
                       Text(
                         'Time: ${location.timestamp.toString().substring(0, 19)}',
+                        style: appTheme.typography.bodySmall,
                       ),
                       if (location.isMocked)
-                        const Text(
+                        Text(
                           'Mock location detected',
-                          style: TextStyle(color: Colors.orange),
+                          style: appTheme.typography.bodySmall.copyWith(
+                            color: appTheme.warning,
+                          ),
                         ),
                     ],
                   ),
                   error: (message) => Text(
                     'Error: $message',
-                    style: const TextStyle(color: Colors.red),
+                    style: appTheme.typography.bodyMedium.copyWith(
+                      color: appTheme.error,
+                    ),
                   ),
                 );
               },

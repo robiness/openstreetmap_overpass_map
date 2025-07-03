@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/auth/data/repositories/auth_repository_impl.dart';
@@ -21,6 +22,11 @@ import 'package:uuid/uuid.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize ThemeProvider
+  final themeProvider = ThemeProvider();
+  await themeProvider.initialize();
+
   await Supabase.initialize(
     url: 'https://qltlkwnhhomfjdwosbhn.supabase.co',
     anonKey:
@@ -61,37 +67,40 @@ Future<void> main() async {
         RepositoryProvider<LocationRepository>.value(value: locationRepository),
         RepositoryProvider<AuthRepository>.value(value: authRepository),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => AuthBloc(
-              authRepository: context.read<AuthRepository>(),
+      child: AppThemeProvider(
+        provider: themeProvider,
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AuthBloc(
+                authRepository: context.read<AuthRepository>(),
+              ),
             ),
-          ),
-          BlocProvider(
-            create: (context) =>
-                LocationBloc(locationRepository: locationRepository),
-          ),
-          BlocProvider(
-            create: (context) =>
-                MapBloc(
-                  mapRepository: mapRepository,
-                  database: database,
-                  checkInRepository: context.read<CheckInRepository>(),
-                )..add(
-                  const MapEvent.fetchDataRequested(
-                    cityName: 'Köln',
-                    adminLevel: 6,
+            BlocProvider(
+              create: (context) =>
+                  LocationBloc(locationRepository: locationRepository),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  MapBloc(
+                    mapRepository: mapRepository,
+                    database: database,
+                    checkInRepository: context.read<CheckInRepository>(),
+                  )..add(
+                    const MapEvent.fetchDataRequested(
+                      cityName: 'Köln',
+                      adminLevel: 6,
+                    ),
                   ),
-                ),
-          ),
-          BlocProvider(
-            create: (context) => DebugBloc(
-              checkInRepository: context.read<CheckInRepository>(),
             ),
-          ),
-        ],
-        child: const AppView(),
+            BlocProvider(
+              create: (context) => DebugBloc(
+                checkInRepository: context.read<CheckInRepository>(),
+              ),
+            ),
+          ],
+          child: const AppView(),
+        ),
       ),
     ),
   );
@@ -102,8 +111,10 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MapExplorerScreen(),
+    return MaterialApp(
+      theme: context.themeProvider.toMaterialTheme(),
+      home: const MapExplorerScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

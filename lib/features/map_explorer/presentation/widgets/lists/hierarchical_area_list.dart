@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:overpass_map/app/theme/app_theme.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overpass_map/app/theme/theme_provider.dart';
+import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
 
 /// A hierarchical, scrollable list widget that displays cities, bezirke, and stadtteile
 /// with visual differentiation and visit count information
@@ -24,30 +24,32 @@ class HierarchicalAreaList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.appTheme;
+
     if (boundaryData == null) {
       return Center(
         child: Container(
-          padding: const EdgeInsets.all(AppTheme.spacingXl),
+          padding: EdgeInsets.all(appTheme.spacing.large),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
                 Icons.location_off,
                 size: 48,
-                color: AppTheme.textTertiary,
+                color: appTheme.onSurfaceSubtle,
               ),
-              const SizedBox(height: AppTheme.spacingLg),
+              SizedBox(height: appTheme.spacing.medium),
               Text(
                 'No data available',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: AppTheme.textSecondary,
+                style: appTheme.typography.titleMedium.copyWith(
+                  color: appTheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacingSm),
+              SizedBox(height: appTheme.spacing.small),
               Text(
                 'Load geographic data to explore areas',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.textTertiary,
+                style: appTheme.typography.bodySmall.copyWith(
+                  color: appTheme.onSurfaceSubtle,
                 ),
               ),
             ],
@@ -57,17 +59,17 @@ class HierarchicalAreaList extends StatelessWidget {
     }
 
     return Container(
-      color: AppTheme.surfaceColor,
+      color: appTheme.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Enhanced legend in sidebar header
           Container(
-            padding: const EdgeInsets.all(AppTheme.spacingLg),
+            padding: EdgeInsets.all(appTheme.spacing.medium),
             decoration: BoxDecoration(
-              color: AppTheme.cardColor,
+              color: appTheme.surface,
               border: Border(
-                bottom: BorderSide(color: AppTheme.borderColor),
+                bottom: BorderSide(color: appTheme.outline),
               ),
             ),
             child: Column(
@@ -75,41 +77,43 @@ class HierarchicalAreaList extends StatelessWidget {
               children: [
                 Text(
                   'Visual States',
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: AppTheme.textPrimary,
+                  style: appTheme.typography.labelLarge.copyWith(
+                    color: appTheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: AppTheme.spacingMd),
+                SizedBox(height: appTheme.spacing.medium),
 
                 // State legend
                 Container(
-                  padding: const EdgeInsets.all(AppTheme.spacingMd),
+                  padding: EdgeInsets.all(appTheme.spacing.medium),
                   decoration: BoxDecoration(
-                    color: AppTheme.surfaceColor,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                    border: Border.all(color: AppTheme.borderColor),
+                    color: appTheme.background,
+                    borderRadius: BorderRadius.circular(
+                      appTheme.components.cards.borderRadius,
+                    ),
+                    border: Border.all(color: appTheme.outline),
                   ),
                   child: Column(
                     children: [
                       _buildLegendItem(
                         context,
                         icon: Icons.radio_button_checked,
-                        color: AppTheme.getSelectedColor(),
+                        color: appTheme.opportunities,
                         label: 'Selected',
                       ),
-                      const SizedBox(height: AppTheme.spacingSm),
+                      SizedBox(height: appTheme.spacing.small),
                       _buildLegendItem(
                         context,
                         icon: Icons.check_circle,
-                        color: AppTheme.getVisitedColor(),
+                        color: appTheme.accent,
                         label: 'Visited',
                       ),
-                      const SizedBox(height: AppTheme.spacingSm),
+                      SizedBox(height: appTheme.spacing.small),
                       _buildLegendItem(
                         context,
                         icon: Icons.star,
-                        color: AppTheme.getSelectedColor(),
+                        color: appTheme.opportunities,
                         label: 'Selected + Visited',
                       ),
                     ],
@@ -122,7 +126,7 @@ class HierarchicalAreaList extends StatelessWidget {
           // Scrollable list
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.all(AppTheme.spacingLg),
+              padding: EdgeInsets.all(appTheme.spacing.medium),
               children: [
                 // Cities section
                 if (boundaryData!.cities.isNotEmpty) ...[
@@ -130,20 +134,20 @@ class HierarchicalAreaList extends StatelessWidget {
                     context,
                     'Cities',
                     Icons.location_city,
-                    AppTheme.getCityColor(),
+                    appTheme.error,
                     boundaryData!.cities.length,
                   ),
-                  const SizedBox(height: AppTheme.spacingMd),
+                  SizedBox(height: appTheme.spacing.medium),
                   ...boundaryData!.cities.map(
                     (city) => _buildAreaListItem(
                       context: context,
                       area: city,
                       level: 0,
                       icon: Icons.location_city,
-                      color: AppTheme.getCityColor(),
+                      color: appTheme.error,
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingXl),
+                  SizedBox(height: appTheme.spacing.large),
                 ],
 
                 // Bezirke section
@@ -152,20 +156,20 @@ class HierarchicalAreaList extends StatelessWidget {
                     context,
                     'Bezirke',
                     Icons.domain,
-                    AppTheme.getBezirkColor(),
+                    appTheme.navigation,
                     boundaryData!.bezirke.length,
                   ),
-                  const SizedBox(height: AppTheme.spacingMd),
+                  SizedBox(height: appTheme.spacing.medium),
                   ...boundaryData!.bezirke.map(
                     (bezirk) => _buildAreaListItem(
                       context: context,
                       area: bezirk,
                       level: 1,
                       icon: Icons.domain,
-                      color: AppTheme.getBezirkColor(),
+                      color: appTheme.navigation,
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacingXl),
+                  SizedBox(height: appTheme.spacing.large),
                 ],
 
                 // Stadtteile section
@@ -174,17 +178,17 @@ class HierarchicalAreaList extends StatelessWidget {
                     context,
                     'Stadtteile',
                     Icons.home_work,
-                    AppTheme.getStadtteilColor(),
+                    appTheme.progress,
                     boundaryData!.stadtteile.length,
                   ),
-                  const SizedBox(height: AppTheme.spacingMd),
+                  SizedBox(height: appTheme.spacing.medium),
                   ...boundaryData!.stadtteile.map(
                     (stadtteil) => _buildAreaListItem(
                       context: context,
                       area: stadtteil,
                       level: 2,
                       icon: Icons.home_work,
-                      color: AppTheme.getStadtteilColor(),
+                      color: appTheme.progress,
                     ),
                   ),
                 ],
@@ -202,6 +206,7 @@ class HierarchicalAreaList extends StatelessWidget {
     required Color color,
     required String label,
   }) {
+    final appTheme = context.appTheme;
     return Row(
       children: [
         Icon(
@@ -209,11 +214,11 @@ class HierarchicalAreaList extends StatelessWidget {
           size: 14,
           color: color,
         ),
-        const SizedBox(width: AppTheme.spacingSm),
+        SizedBox(width: appTheme.spacing.small),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: AppTheme.textSecondary,
+          style: appTheme.typography.bodySmall.copyWith(
+            color: appTheme.onSurfaceVariant,
           ),
         ),
       ],
@@ -227,63 +232,46 @@ class HierarchicalAreaList extends StatelessWidget {
     Color color,
     int count,
   ) {
+    final appTheme = context.appTheme;
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingMd),
+      padding: EdgeInsets.all(appTheme.spacing.medium),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            color.withValues(alpha: 0.1),
-            color.withValues(alpha: 0.05),
+            color.withAlpha((255 * 0.1).round()),
+            color.withAlpha((255 * 0.05).round()),
           ],
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
         ),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: color.withValues(alpha: 0.3)),
+        borderRadius: BorderRadius.circular(
+          appTheme.components.buttons.borderRadius,
+        ),
+        border: Border.all(color: color.withAlpha((255 * 0.3).round())),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(AppTheme.spacingSm),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-            ),
-            child: Icon(
-              icon,
-              color: color,
-              size: 20,
-            ),
+          Icon(icon, color: color, size: 18),
+          SizedBox(width: appTheme.spacing.small),
+          Text(
+            title,
+            style: appTheme.typography.titleSmall.copyWith(color: color),
           ),
-
-          const SizedBox(width: AppTheme.spacingMd),
-
-          Expanded(
-            child: Text(
-              title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w600,
+          const Spacer(),
+          Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: appTheme.spacing.small,
+              vertical: appTheme.spacing.tiny,
+            ),
+            decoration: BoxDecoration(
+              color: color.withAlpha((255 * 0.15).round()),
+              borderRadius: BorderRadius.circular(
+                appTheme.components.cards.borderRadius,
               ),
-            ),
-          ),
-
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingSm,
-              vertical: AppTheme.spacing2xs,
-            ),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-              border: Border.all(color: color.withValues(alpha: 0.3)),
             ),
             child: Text(
               count.toString(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
+              style: appTheme.typography.labelSmall.copyWith(color: color),
             ),
           ),
         ],
@@ -298,100 +286,112 @@ class HierarchicalAreaList extends StatelessWidget {
     required IconData icon,
     required Color color,
   }) {
-    int visitCount = userVisitData[area.id]?.visitCount ?? 0;
+    final isSelected = selectedArea?.id == area.id;
+    final visitData = userVisitData[area.id];
+    final hasBeenVisited = visitData != null && visitData.visitCount > 0;
+    final appTheme = context.appTheme;
 
-    // Visual states based on selection and visits
-    bool isSelected = selectedArea?.id == area.id;
+    Color tileColor = appTheme.surface;
+    Color contentColor = appTheme.onSurface;
 
-    Color tileColor = AppTheme.cardColor;
-    Color textColor = AppTheme.textPrimary;
-    FontWeight fontWeight = FontWeight.normal;
-    double elevation = 2.0;
-
-    if (isSelected) {
-      tileColor = AppTheme.getSelectedColor().withValues(alpha: 0.15);
-      fontWeight = FontWeight.w600;
-      elevation = 4.0;
+    // Apply visual states
+    if (isSelected && hasBeenVisited) {
+      tileColor = appTheme.opportunities.withAlpha((255 * 0.2).round());
+      contentColor = appTheme.opportunities;
+    } else if (isSelected) {
+      tileColor = appTheme.navigation.withAlpha((255 * 0.15).round());
+      contentColor = appTheme.navigation;
+    } else if (hasBeenVisited) {
+      tileColor = appTheme.accent.withAlpha((255 * 0.1).round());
+      contentColor = appTheme.accent;
     }
 
-    return BlocBuilder<DebugBloc, DebugState>(
-      builder: (context, debugState) {
-        return Card(
-          elevation: elevation,
-          margin: const EdgeInsets.symmetric(vertical: 4.0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-            side: isSelected
-                ? BorderSide(
-                    color: AppTheme.getSelectedColor(),
-                    width: 2.0,
-                  )
-                : BorderSide(color: AppTheme.borderColor),
-          ),
-          color: tileColor,
-          child: InkWell(
-            onTap: () => onAreaTapped(area),
-            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: AppTheme.spacingMd,
-                vertical: AppTheme.spacingLg - (level * 2),
+    return Padding(
+      padding: EdgeInsets.only(
+        left: level * appTheme.spacing.large,
+        bottom: appTheme.spacing.small,
+      ),
+      child: Material(
+        color: tileColor,
+        borderRadius: BorderRadius.circular(
+          appTheme.components.cards.borderRadius,
+        ),
+        child: InkWell(
+          onTap: () {
+            onAreaTapped(area);
+            context.read<DebugBloc>().add(
+              DebugEvent.logMessage(
+                'Tapped on area: ${area.name} (OSM ID: ${area.id})',
               ),
-              child: Row(
-                children: [
-                  // Left side: icon and text
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          area.name,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(
-                                fontWeight: fontWeight,
-                                color: textColor,
-                              ),
-                        ),
-                        if (visitCount > 0)
-                          Text(
-                            '$visitCount Visits',
-                            style: Theme.of(context).textTheme.bodySmall
-                                ?.copyWith(
-                                  color: visitCount > 0
-                                      ? AppTheme.getVisitedColor()
-                                      : AppTheme.textTertiary,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                      ],
-                    ),
-                  ),
-
-                  // Right side: visit counter
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacingSm,
-                      vertical: AppTheme.spacing2xs,
-                    ),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                      border: Border.all(color: color.withValues(alpha: 0.3)),
-                    ),
-                    child: Text(
-                      visitCount.toString(),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: color,
-                      ),
-                    ),
-                  ),
-                ],
+            );
+          },
+          borderRadius: BorderRadius.circular(
+            appTheme.components.cards.borderRadius,
+          ),
+          splashColor: appTheme.navigation.withValues(alpha: 0.1),
+          highlightColor: appTheme.navigation.withValues(alpha: 0.05),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: appTheme.spacing.medium,
+              vertical: appTheme.spacing.large - (level * 2),
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: isSelected ? appTheme.navigation : appTheme.outline,
+                width: isSelected ? 1.5 : 1.0,
+              ),
+              borderRadius: BorderRadius.circular(
+                appTheme.components.cards.borderRadius,
               ),
             ),
+            child: Row(
+              children: [
+                Icon(
+                  isSelected && hasBeenVisited
+                      ? Icons.star
+                      : (isSelected ? Icons.radio_button_checked : (hasBeenVisited ? Icons.check_circle : icon)),
+                  size: 18,
+                  color: contentColor,
+                ),
+                SizedBox(width: appTheme.spacing.medium),
+                Expanded(
+                  child: Text(
+                    area.name,
+                    style: appTheme.typography.bodyLarge.copyWith(
+                      color: contentColor,
+                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (visitData != null) _buildVisitCountChip(context, visitData.visitCount),
+              ],
+            ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVisitCountChip(BuildContext context, int count) {
+    final appTheme = context.appTheme;
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: appTheme.spacing.small,
+        vertical: appTheme.spacing.tiny,
+      ),
+      decoration: BoxDecoration(
+        color: appTheme.accent.withAlpha((255 * 0.15).round()),
+        borderRadius: BorderRadius.circular(
+          appTheme.components.cards.borderRadius,
+        ),
+      ),
+      child: Text(
+        '${count}x Visited',
+        style: appTheme.typography.labelSmall.copyWith(
+          color: appTheme.accent,
+        ),
+      ),
     );
   }
 }

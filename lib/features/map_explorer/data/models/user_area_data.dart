@@ -43,6 +43,9 @@ extension UserAreaDataExt on UserAreaData {
     return AreaExplorationStatus.partial;
   }
 
+  /// Returns true if the user has visited at least one spot in the area
+  bool get isVisited => visitedSpots != null && visitedSpots! > 0;
+
   /// Returns completion percentage (0.0 to 1.0)
   double get completionPercentage {
     if (totalSpots == null || totalSpots == 0) return 0.0;

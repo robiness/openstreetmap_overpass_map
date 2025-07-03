@@ -17,16 +17,19 @@ class StatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.appTheme;
     return Card(
       color: color.withAlpha((255 * 0.1).round()),
       elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        borderRadius: BorderRadius.circular(
+          appTheme.components.cards.borderRadius,
+        ),
         side: BorderSide(color: color, width: 1),
       ),
-      margin: const EdgeInsets.all(16.0),
+      margin: EdgeInsets.all(appTheme.spacing.medium),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(appTheme.spacing.medium),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

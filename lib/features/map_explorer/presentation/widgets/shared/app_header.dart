@@ -9,19 +9,18 @@ class AppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.appTheme;
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacingMd),
-      color: AppTheme.primaryColor,
+      padding: EdgeInsets.all(appTheme.spacing.medium),
+      color: appTheme.navigation,
       child: Row(
         children: [
           const Icon(Icons.map, color: Colors.white, size: 32),
-          const SizedBox(width: AppTheme.spacingMd),
-          const Expanded(
+          SizedBox(width: appTheme.spacing.medium),
+          Expanded(
             child: Text(
               'Social Exploration Game',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+              style: appTheme.typography.titleLarge.copyWith(
                 color: Colors.white,
               ),
             ),
@@ -42,18 +41,23 @@ class AppHeader extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(4),
+                          color: appTheme.warning.withAlpha(
+                            (255 * 0.2).round(),
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            DesignTokens.radiusSmall,
+                          ),
                           border: Border.all(
-                            color: Colors.orange.withValues(alpha: 0.5),
+                            color: appTheme.warning.withAlpha(
+                              (255 * 0.5).round(),
+                            ),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'DEBUG',
-                          style: TextStyle(
-                            fontSize: 12,
+                          style: appTheme.typography.labelSmall.copyWith(
+                            color: appTheme.warning,
                             fontWeight: FontWeight.bold,
-                            color: Colors.orange,
                           ),
                         ),
                       ),
@@ -68,7 +72,7 @@ class AppHeader extends StatelessWidget {
                         isDebugMode
                             ? Icons.bug_report
                             : Icons.bug_report_outlined,
-                        color: isDebugMode ? Colors.orange : Colors.white,
+                        color: isDebugMode ? appTheme.warning : Colors.white,
                       ),
                       tooltip: isDebugMode
                           ? 'Disable Debug Mode'

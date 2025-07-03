@@ -16,9 +16,10 @@ class MapExplorerScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.appTheme;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: appTheme.background,
         elevation: 0,
         actions: const [
           Padding(
@@ -27,7 +28,7 @@ class MapExplorerScreen extends StatelessWidget {
           ),
         ],
       ),
-      backgroundColor: AppTheme.surfaceColor,
+      backgroundColor: appTheme.background,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, authState) {
           // When user authenticates, reload map data with user ID
@@ -98,7 +99,7 @@ class MapExplorerScreen extends StatelessWidget {
               loadFailure: (error) => Center(
                 child: StatusCard(
                   message: 'Failed to load map data:\n$error',
-                  color: Colors.red,
+                  color: appTheme.error,
                   icon: Icons.error_outline,
                 ),
               ),

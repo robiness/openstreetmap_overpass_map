@@ -12,4 +12,5 @@ class DebugEvent with _$DebugEvent {
     required int spotId,
     required String userId,
   }) = _CheckOutRequested;
+  const factory DebugEvent.logMessage(String message) = _LogMessage;
 }

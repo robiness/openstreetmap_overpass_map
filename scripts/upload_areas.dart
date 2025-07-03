@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:supabase/supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 // IMPORTANT: Use environment variables for production.
 const supabaseUrl = 'https://qltlkwnhhomfjdwosbhn.supabase.co';
@@ -39,8 +39,7 @@ Future<void> processLocalData(
   final adminLevels = <int>{};
 
   for (final element in elements) {
-    if (element['type'] == 'relation' &&
-        element['tags']?['admin_level'] != null) {
+    if (element['type'] == 'relation' && element['tags']?['admin_level'] != null) {
       final int adminLevel = int.parse(element['tags']['admin_level']);
       adminLevels.add(adminLevel);
       areasByLevel.putIfAbsent(adminLevel, () => []).add(element);
@@ -178,10 +177,7 @@ int? _findParentByBoundingBox(
 
     // Check if point is within bounding box (with small margin)
     const margin = 0.001; // Small margin for floating point precision
-    if (px >= minLon - margin &&
-        px <= maxLon + margin &&
-        py >= minLat - margin &&
-        py <= maxLat + margin) {
+    if (px >= minLon - margin && px <= maxLon + margin && py >= minLat - margin && py <= maxLat + margin) {
       return parentGeom['id'] as int;
     }
   }
@@ -260,8 +256,7 @@ bool _isPointInPolygon(List<double> point, List<List<List<double>>> ways) {
       final double vjx = way[j][0];
       final double vjy = way[j][1];
 
-      if (((viy > py) != (vjy > py)) &&
-          (px < (vjx - vix) * (py - viy) / (vjy - viy) + vix)) {
+      if (((viy > py) != (vjy > py)) && (px < (vjx - vix) * (py - viy) / (vjy - viy) + vix)) {
         isInside = !isInside;
       }
     }

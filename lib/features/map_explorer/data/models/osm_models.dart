@@ -20,7 +20,9 @@ class OsmWay {
   OsmWay({required this.id, required this.geometry});
 
   factory OsmWay.fromJson(Map<String, dynamic> json) {
-    var geometryList = (json['geometry'] as List).map((point) => OsmPoint.fromJson(point)).toList();
+    var geometryList = (json['geometry'] as List)
+        .map((point) => OsmPoint.fromJson(point))
+        .toList();
     return OsmWay(
       id: json['id'] as int,
       geometry: geometryList,
@@ -33,7 +35,11 @@ class OsmRelationMember {
   final int ref;
   final String role;
 
-  OsmRelationMember({required this.type, required this.ref, required this.role});
+  OsmRelationMember({
+    required this.type,
+    required this.ref,
+    required this.role,
+  });
 
   factory OsmRelationMember.fromJson(Map<String, dynamic> json) {
     return OsmRelationMember(
@@ -52,7 +58,9 @@ class OsmRelation {
   OsmRelation({required this.id, required this.tags, required this.members});
 
   factory OsmRelation.fromJson(Map<String, dynamic> json) {
-    var membersList = (json['members'] as List).map((member) => OsmRelationMember.fromJson(member)).toList();
+    var membersList = (json['members'] as List)
+        .map((member) => OsmRelationMember.fromJson(member))
+        .toList();
     return OsmRelation(
       id: json['id'] as int,
       tags: Map<String, dynamic>.from(json['tags'] ?? {}),
@@ -67,6 +75,7 @@ class GeographicArea {
   final String type;
   final int adminLevel;
   final List<List<List<double>>> coordinates;
+  int? totalSpots;
 
   GeographicArea({
     required this.id,
@@ -74,5 +83,6 @@ class GeographicArea {
     required this.type,
     required this.adminLevel,
     required this.coordinates,
+    this.totalSpots,
   });
 }

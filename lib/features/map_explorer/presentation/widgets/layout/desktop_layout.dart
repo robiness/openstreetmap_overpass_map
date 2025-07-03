@@ -35,13 +35,14 @@ class DesktopLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appTheme = context.appTheme;
     final checkInRepository = context.read<CheckInRepository>();
 
     return Row(
       children: [
         Container(
           width: 400,
-          color: AppTheme.cardColor,
+          color: appTheme.surface,
           child: Column(
             children: [
               const AppHeader(),
@@ -57,7 +58,7 @@ class DesktopLayout extends StatelessWidget {
               ),
               // --- Proof of Concept Sync UI ---
               StatusCard(
-                color: Colors.amber,
+                color: appTheme.warning,
                 icon: Icons.sync,
                 message: 'Data Sync Controls',
                 child: BlocBuilder<AuthBloc, AuthState>(
