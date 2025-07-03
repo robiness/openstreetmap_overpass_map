@@ -25,6 +25,14 @@ class CustomAreaLayer extends StatelessWidget {
     final camera = MapCamera.of(context);
     final theme = context.appTheme;
 
+    // Sort areas by exploration status for correct draw order
+    final sortedAreas = List<GeographicArea>.from(areas);
+    sortedAreas.sort((a, b) {
+      final statusA = userVisitData[a.id]?.status ?? AreaExplorationStatus.unvisited;
+      final statusB = userVisitData[b.id]?.status ?? AreaExplorationStatus.unvisited;
+      return statusA.index.compareTo(statusB.index);
+    });
+
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapUp: (details) {
@@ -46,7 +54,7 @@ class CustomAreaLayer extends StatelessWidget {
         }
 
         // Then check other areas (iterate backwards to check top-most layers first)
-        for (final area in areas.reversed) {
+        for (final area in sortedAreas.reversed) {
           // Skip the selected area since we already checked it
           if (selectedArea != null && area.id == selectedArea!.id) {
             continue;
@@ -63,7 +71,7 @@ class CustomAreaLayer extends StatelessWidget {
       },
       child: CustomPaint(
         painter: CustomAreaPainter(
-          areas: areas,
+          areas: sortedAreas,
           camera: camera,
           theme: theme,
           selectedArea: selectedArea,
