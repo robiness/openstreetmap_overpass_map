@@ -63,6 +63,8 @@ class _MobileLayoutState extends State<MobileLayout> {
       bottomSheet: _showLocationPanel
           ? Container(
               width: double.infinity,
+              height:
+                  MediaQuery.of(context).size.height * 0.7, // Set max height
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.only(
@@ -77,7 +79,10 @@ class _MobileLayoutState extends State<MobileLayout> {
                   ),
                 ],
               ),
-              child: const DebugPanel(),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: const DebugPanelView(), // Use the unified view directly
+              ),
             )
           : null,
     );

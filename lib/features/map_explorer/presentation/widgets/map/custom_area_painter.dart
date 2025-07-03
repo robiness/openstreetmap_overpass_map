@@ -103,9 +103,21 @@ class CustomAreaPainter extends CustomPainter {
         // Determine colors based on exploration status
         final colors = _getAreaColors(areaVisitData, isSelected);
 
-        // Draw the gradient fill
-        if (colors.fillGradient != null) {
-          canvas.drawPath(path, Paint()..shader = colors.fillGradient);
+        // Draw the fill
+        if (areaVisitData?.status == AreaExplorationStatus.partial) {
+          final gradient = ui.Gradient.linear(
+            path.getBounds().centerLeft,
+            path.getBounds().centerRight,
+            [
+              theme.mapStyles.completedFill,
+              theme.mapStyles.inProgressFill,
+            ],
+            [
+              areaVisitData!.completionPercentage,
+              areaVisitData.completionPercentage,
+            ],
+          );
+          canvas.drawPath(path, Paint()..shader = gradient);
         } else if (colors.fill != Colors.transparent) {
           canvas.drawPath(
             path,
@@ -116,14 +128,14 @@ class CustomAreaPainter extends CustomPainter {
         }
 
         // Draw inner highlight for depth
-        if (colors.highlightGradient != null && !isSelected) {
-          canvas.drawPath(
-            path,
-            Paint()
-              ..shader = colors.highlightGradient
-              ..style = PaintingStyle.fill,
-          );
-        }
+        // if (colors.highlightGradient != null && !isSelected) {
+        //   canvas.drawPath(
+        //     path,
+        //     Paint()
+        //       ..shader = colors.highlightGradient
+        //       ..style = PaintingStyle.fill,
+        //   );
+        // }
 
         // Draw the border with modern styling
         final borderPaint = Paint()
@@ -134,9 +146,9 @@ class CustomAreaPainter extends CustomPainter {
           ..strokeCap = StrokeCap.round;
 
         // Add gradient to border if available
-        if (colors.borderGradient != null) {
-          borderPaint.shader = colors.borderGradient;
-        }
+        // if (colors.borderGradient != null) {
+        //   borderPaint.shader = colors.borderGradient;
+        // }
 
         canvas.drawPath(path, borderPaint);
 
@@ -154,7 +166,7 @@ class CustomAreaPainter extends CustomPainter {
       final glowPaint = Paint()
         ..color = theme.navigation.withAlpha((255 * 0.05 * i).round())
         ..style = PaintingStyle.stroke
-        ..strokeWidth = colors.strokeWidth + (i * 2.0)
+        ..strokeWidth = theme.mapStyles.selectedBorderWidth + (i * 2.0)
         ..strokeJoin = StrokeJoin.round
         ..maskFilter = ui.MaskFilter.blur(ui.BlurStyle.normal, i * 1.5);
 
@@ -171,129 +183,48 @@ class CustomAreaPainter extends CustomPainter {
     canvas.drawPath(path, selectionPaint);
   }
 
-  /// Gets appropriate colors based on area exploration status with modern gradients
+  /// Gets appropriate colors based on area exploration status using semantic theme data
   _AreaColors _getAreaColors(UserAreaData? areaData, bool isSelected) {
+    final styles = theme.mapStyles;
+
     if (isSelected) {
       return _AreaColors(
-        fill: theme.navigation.withAlpha((255 * 0.15).round()),
-        border: theme.navigation,
-        strokeWidth: 4.0,
-        fillGradient: ui.Gradient.linear(
-          const Offset(0, 0),
-          const Offset(100, 100),
-          [
-            theme.navigation.withAlpha((255 * 0.2).round()),
-            theme.navigation.withAlpha((255 * 0.1).round()),
-          ],
-          [0.0, 1.0],
-        ),
-        borderGradient: ui.Gradient.linear(
-          const Offset(0, 0),
-          const Offset(100, 100),
-          [
-            theme.navigation,
-            theme.navigation,
-          ],
-          [0.0, 1.0],
-        ),
+        fill: styles.selectedFill,
+        border: styles.selectedBorder,
+        strokeWidth: styles.selectedBorderWidth,
       );
     }
 
     if (areaData == null) {
-      // Default state: subtle "blueprint"
+      // Default state: unvisited
       return _AreaColors(
-        fill: theme.outline.withAlpha((255 * 0.05).round()),
-        border: theme.outline,
-        strokeWidth: 1.5,
+        fill: styles.unvisitedFill,
+        border: styles.unvisitedBorder,
+        strokeWidth: styles.unvisitedBorderWidth,
       );
     }
 
-    // Enhanced colors with gradients for different states
     switch (areaData.status) {
       case AreaExplorationStatus.noSpots:
       case AreaExplorationStatus.unvisited:
         return _AreaColors(
-          fill: theme.outline.withAlpha((255 * 0.08).round()),
-          border: theme.outline,
-          strokeWidth: 1.5,
-          fillGradient: ui.Gradient.radial(
-            const Offset(50, 50),
-            50,
-            [
-              theme.outline.withAlpha((255 * 0.1).round()),
-              theme.outline.withAlpha((255 * 0.05).round()),
-            ],
-            [0.0, 1.0],
-          ),
-          highlightGradient: ui.Gradient.linear(
-            const Offset(0, 0),
-            const Offset(30, 30),
-            [
-              theme.onSurface.withAlpha((255 * 0.1).round()),
-              Colors.transparent,
-            ],
-            [0.0, 1.0],
-          ),
+          fill: styles.unvisitedFill,
+          border: styles.unvisitedBorder,
+          strokeWidth: styles.unvisitedBorderWidth,
         );
 
       case AreaExplorationStatus.partial:
         return _AreaColors(
-          fill: theme.opportunities.withAlpha((255 * 0.15).round()),
-          border: theme.opportunities,
-          strokeWidth: 2.5,
-          fillGradient: ui.Gradient.radial(
-            const Offset(50, 50),
-            60,
-            [
-              theme.opportunities.withAlpha((255 * 0.2).round()),
-              theme.opportunities.withAlpha((255 * 0.1).round()),
-              theme.opportunities.withAlpha((255 * 0.05).round()),
-            ],
-            [0.0, 0.5, 1.0],
-          ),
-          borderGradient: ui.Gradient.linear(
-            const Offset(0, 0),
-            const Offset(100, 100),
-            [
-              theme.opportunities,
-              theme.opportunities,
-            ],
-            [0.0, 1.0],
-          ),
+          fill: Colors.transparent, // Handled specially in _paintArea
+          border: styles.inProgressBorder,
+          strokeWidth: styles.inProgressBorderWidth,
         );
 
       case AreaExplorationStatus.completed:
         return _AreaColors(
-          fill: theme.progress.withValues(alpha: 0.2),
-          border: theme.progress,
-          strokeWidth: 8.0,
-          fillGradient: ui.Gradient.radial(
-            const Offset(50, 50),
-            70,
-            [
-              theme.progress.withAlpha((255 * 0.25).round()),
-              theme.progress.withAlpha((255 * 0.15).round()),
-            ],
-            [0.0, 1.0],
-          ),
-          borderGradient: ui.Gradient.linear(
-            const Offset(0, 0),
-            const Offset(100, 100),
-            [
-              theme.progress,
-              theme.progress,
-            ],
-            [0.0, 1.0],
-          ),
-          highlightGradient: ui.Gradient.linear(
-            const Offset(0, 0),
-            const Offset(50, 50),
-            [
-              Colors.white.withAlpha((255 * 0.1).round()),
-              Colors.transparent,
-            ],
-            [0.0, 1.0],
-          ),
+          fill: styles.completedFill,
+          border: styles.completedBorder,
+          strokeWidth: styles.completedBorderWidth,
         );
     }
   }
@@ -313,21 +244,22 @@ class CustomAreaPainter extends CustomPainter {
   bool hitTest(Offset position) => false;
 }
 
-/// Enhanced helper class for area colors with gradient support
+/// Helper class to bundle paint properties for an area
 class _AreaColors {
   final Color fill;
   final Color border;
   final double strokeWidth;
-  final ui.Gradient? fillGradient;
-  final ui.Gradient? borderGradient;
-  final ui.Gradient? highlightGradient;
+  // Gradients are now handled directly in the painter for simplicity
+  // final ui.Gradient? fillGradient;
+  // final ui.Gradient? borderGradient;
+  // final ui.Gradient? highlightGradient;
 
   _AreaColors({
     required this.fill,
     required this.border,
     required this.strokeWidth,
-    this.fillGradient,
-    this.borderGradient,
-    this.highlightGradient,
+    // this.fillGradient,
+    // this.borderGradient,
+    // this.highlightGradient,
   });
 }

@@ -63,66 +63,6 @@ class HierarchicalAreaList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Enhanced legend in sidebar header
-          Container(
-            padding: EdgeInsets.all(appTheme.spacing.medium),
-            decoration: BoxDecoration(
-              color: appTheme.surface,
-              border: Border(
-                bottom: BorderSide(color: appTheme.outline),
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Visual States',
-                  style: appTheme.typography.labelLarge.copyWith(
-                    color: appTheme.onSurface,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: appTheme.spacing.medium),
-
-                // State legend
-                Container(
-                  padding: EdgeInsets.all(appTheme.spacing.medium),
-                  decoration: BoxDecoration(
-                    color: appTheme.background,
-                    borderRadius: BorderRadius.circular(
-                      appTheme.components.cards.borderRadius,
-                    ),
-                    border: Border.all(color: appTheme.outline),
-                  ),
-                  child: Column(
-                    children: [
-                      _buildLegendItem(
-                        context,
-                        icon: Icons.radio_button_checked,
-                        color: appTheme.opportunities,
-                        label: 'Selected',
-                      ),
-                      SizedBox(height: appTheme.spacing.small),
-                      _buildLegendItem(
-                        context,
-                        icon: Icons.check_circle,
-                        color: appTheme.accent,
-                        label: 'Visited',
-                      ),
-                      SizedBox(height: appTheme.spacing.small),
-                      _buildLegendItem(
-                        context,
-                        icon: Icons.star,
-                        color: appTheme.opportunities,
-                        label: 'Selected + Visited',
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
           // Scrollable list
           Expanded(
             child: ListView(
@@ -197,31 +137,6 @@ class HierarchicalAreaList extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildLegendItem(
-    BuildContext context, {
-    required IconData icon,
-    required Color color,
-    required String label,
-  }) {
-    final appTheme = context.appTheme;
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 14,
-          color: color,
-        ),
-        SizedBox(width: appTheme.spacing.small),
-        Text(
-          label,
-          style: appTheme.typography.bodySmall.copyWith(
-            color: appTheme.onSurfaceVariant,
-          ),
-        ),
-      ],
     );
   }
 
@@ -349,7 +264,9 @@ class HierarchicalAreaList extends StatelessWidget {
                 Icon(
                   isSelected && hasBeenVisited
                       ? Icons.star
-                      : (isSelected ? Icons.radio_button_checked : (hasBeenVisited ? Icons.check_circle : icon)),
+                      : (isSelected
+                            ? Icons.radio_button_checked
+                            : (hasBeenVisited ? Icons.check_circle : icon)),
                   size: 18,
                   color: contentColor,
                 ),
@@ -359,12 +276,15 @@ class HierarchicalAreaList extends StatelessWidget {
                     area.name,
                     style: appTheme.typography.bodyLarge.copyWith(
                       color: contentColor,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.normal,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                if (visitData != null) _buildVisitCountChip(context, visitData.visitCount),
+                if (visitData != null)
+                  _buildVisitCountChip(context, visitData.visitCount),
               ],
             ),
           ),

@@ -91,8 +91,13 @@ class MapExplorerScreen extends StatelessWidget {
                         spots: spots,
                         selectedArea: selectedArea,
                         selectedSpot: selectedSpot,
-                        userVisitData: userVisitData,
-                        userSpotVisitData: userSpotVisitData,
+                        userAreaData: userVisitData,
+                        onAreaTapped: (area) => context.read<MapBloc>().add(
+                          MapEvent.areaSelected(area: area),
+                        ),
+                        onSpotTapped: (spot) => context.read<MapBloc>().add(
+                          MapEvent.spotSelected(spot: spot),
+                        ),
                       ),
                     );
                   },

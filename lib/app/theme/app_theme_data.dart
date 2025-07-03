@@ -13,9 +13,12 @@ class AppThemeData {
   // === SEMANTIC COLORS ===
 
   // Status-Based Colors (our priority hierarchy)
-  final Color currentState; // 🔴 Electric Orange - highest priority (current check-ins, selected)
-  final Color opportunities; // 🟡 Bright Yellow - medium priority (nearby unchecked spots)
-  final Color navigation; // 🔵 Bright Blue - functional clarity (buttons, links, actions)
+  final Color
+  currentState; // 🔴 Electric Orange - highest priority (current check-ins, selected)
+  final Color
+  opportunities; // 🟡 Bright Yellow - medium priority (nearby unchecked spots)
+  final Color
+  navigation; // 🔵 Bright Blue - functional clarity (buttons, links, actions)
   final Color progress; // 🟢 Electric Green - progress/completion feedback
   final Color accent; // 🟣 Purple - special highlights, badges
 
@@ -54,6 +57,9 @@ class AppThemeData {
   // === COMPONENT STYLES ===
   final AppComponentStyles components;
 
+  // === MAP STYLES ===
+  final MapAreaStyles mapStyles;
+
   const AppThemeData({
     required this.name,
     required this.description,
@@ -84,6 +90,7 @@ class AppThemeData {
     required this.typography,
     required this.spacing,
     required this.components,
+    required this.mapStyles,
   });
 
   /// Dark Comfort Theme - Primary theme for evening/indoor use
@@ -140,6 +147,7 @@ class AppThemeData {
     typography: AppTypography.standard,
     spacing: AppSpacing.standard,
     components: AppComponentStyles.darkComfort,
+    mapStyles: MapAreaStyles.darkComfort,
   );
 
   /// High Contrast Theme - For outdoor use and bright sunlight
@@ -196,6 +204,7 @@ class AppThemeData {
     typography: AppTypography.standard,
     spacing: AppSpacing.standard,
     components: AppComponentStyles.highContrast,
+    mapStyles: MapAreaStyles.highContrast,
   );
 
   /// Light Mode Theme - For daytime indoor use
@@ -252,6 +261,7 @@ class AppThemeData {
     typography: AppTypography.standard,
     spacing: AppSpacing.standard,
     components: AppComponentStyles.lightMode,
+    mapStyles: MapAreaStyles.lightMode,
   );
 }
 
@@ -595,4 +605,105 @@ class InputStyles {
     borderWidth: 1.0,
     height: 44.0,
   );
+}
+
+/// Defines the visual style for areas on the map
+class MapAreaStyles {
+  // Unvisited
+  final Color unvisitedFill;
+  final Color unvisitedBorder;
+  final double unvisitedBorderWidth;
+
+  // In Progress
+  final Color inProgressFill;
+  final Color inProgressBorder;
+  final double inProgressBorderWidth;
+
+  // Completed
+  final Color completedFill;
+  final Color completedBorder;
+  final double completedBorderWidth;
+
+  // Selected
+  final Color selectedFill;
+  final Color selectedBorder;
+  final double selectedBorderWidth;
+
+  const MapAreaStyles({
+    required this.unvisitedFill,
+    required this.unvisitedBorder,
+    required this.unvisitedBorderWidth,
+    required this.inProgressFill,
+    required this.inProgressBorder,
+    required this.inProgressBorderWidth,
+    required this.completedFill,
+    required this.completedBorder,
+    required this.completedBorderWidth,
+    required this.selectedFill,
+    required this.selectedBorder,
+    required this.selectedBorderWidth,
+  });
+
+  static MapAreaStyles get darkComfort {
+    return MapAreaStyles(
+      unvisitedFill: DesignTokens.gray900.withOpacity(0.1),
+      unvisitedBorder: DesignTokens.gray900,
+      unvisitedBorderWidth: 1.0,
+      inProgressFill: DesignTokens.electricGreen.withOpacity(0.25),
+      inProgressBorder: DesignTokens.electricGreen.withOpacity(0.8),
+      inProgressBorderWidth: 1.5,
+      completedFill: DesignTokens.electricGreen.withOpacity(0.4),
+      completedBorder: DesignTokens.electricGreen,
+      completedBorderWidth: 1.5,
+      selectedFill: DesignTokens.electricOrange.withOpacity(0.3),
+      selectedBorder: DesignTokens.electricOrange,
+      selectedBorderWidth: 2.5,
+    );
+  }
+
+  static MapAreaStyles get highContrast {
+    return MapAreaStyles(
+      unvisitedFill: DesignTokens.gray400.withOpacity(0.15),
+      unvisitedBorder: DesignTokens.gray400,
+      unvisitedBorderWidth: 1.5,
+      inProgressFill: DesignTokens.neonGreen.withOpacity(0.3),
+      inProgressBorder: DesignTokens.neonGreen,
+      inProgressBorderWidth: 2.0,
+      completedFill: DesignTokens.neonGreen.withOpacity(0.5),
+      completedBorder: DesignTokens.neonGreen,
+      completedBorderWidth: 2.0,
+      selectedFill: DesignTokens.neonOrange.withOpacity(0.4),
+      selectedBorder: DesignTokens.neonOrange,
+      selectedBorderWidth: 3.0,
+    );
+  }
+
+  static MapAreaStyles get lightMode {
+    return MapAreaStyles(
+      unvisitedFill: DesignTokens.gray300.withOpacity(0.1),
+      unvisitedBorder: DesignTokens.gray300,
+      unvisitedBorderWidth: 1.0,
+      inProgressFill: DesignTokens.darken(
+        DesignTokens.electricGreen,
+        0.1,
+      ).withOpacity(0.2),
+      inProgressBorder: DesignTokens.darken(
+        DesignTokens.electricGreen,
+        0.1,
+      ).withOpacity(0.8),
+      inProgressBorderWidth: 1.5,
+      completedFill: DesignTokens.darken(
+        DesignTokens.electricGreen,
+        0.1,
+      ).withOpacity(0.3),
+      completedBorder: DesignTokens.darken(DesignTokens.electricGreen, 0.1),
+      completedBorderWidth: 1.5,
+      selectedFill: DesignTokens.darken(
+        DesignTokens.electricOrange,
+        0.1,
+      ).withOpacity(0.25),
+      selectedBorder: DesignTokens.darken(DesignTokens.electricOrange, 0.1),
+      selectedBorderWidth: 2.5,
+    );
+  }
 }
