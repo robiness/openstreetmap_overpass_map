@@ -1,11 +1,11 @@
 {
-    "name": "overpass_map",
-    "short_name": "overpass_map",
+    "name": "The Green Map Project",
+    "short_name": "The Green Map Project",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#1fc600",
+    "theme_color": "#1fc600",
+    "description": "A social exploration game for exploring cities.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
