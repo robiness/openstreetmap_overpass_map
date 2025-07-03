@@ -35,4 +35,7 @@ abstract class CheckInRepository {
     required int spotId,
     required String userId,
   });
+
+  /// Recalculates completion stats for all areas a user has checked into.
+  Future<void> recalculateAllAreaStats(String userId);
 }

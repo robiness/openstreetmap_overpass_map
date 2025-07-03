@@ -39,14 +39,18 @@ Future<void> main() async {
   // --- Data Layer Setup ---
   final database = AppDatabase();
   final apiClient = SupabaseApiClient(Supabase.instance.client);
-  final syncService = SyncService(database: database, apiClient: apiClient);
+  final authRepository = AuthRepositoryImpl(
+    supabaseClient: Supabase.instance.client,
+  );
   final checkInRepository = CheckInRepositoryImpl(
     database: database,
     uuid: const Uuid(),
-    syncService: syncService,
   );
-  final authRepository = AuthRepositoryImpl(
-    supabaseClient: Supabase.instance.client,
+  final syncService = SyncService(
+    database: database,
+    apiClient: apiClient,
+    checkInRepository: checkInRepository,
+    authRepository: authRepository,
   );
 
   // --- Repository Setup ---
@@ -96,6 +100,7 @@ Future<void> main() async {
             BlocProvider(
               create: (context) => DebugBloc(
                 checkInRepository: context.read<CheckInRepository>(),
+                syncService: context.read<SyncService>(),
               ),
             ),
           ],

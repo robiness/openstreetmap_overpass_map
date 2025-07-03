@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:drift/drift.dart';
 import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
-import 'package:overpass_map/services/sync_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// The concrete implementation of the [CheckInRepository].
@@ -13,16 +12,14 @@ import 'package:uuid/uuid.dart';
 class CheckInRepositoryImpl implements CheckInRepository {
   final AppDatabase _db;
   final Uuid _uuid;
-  final SyncService? _syncService;
-  final StreamController<String> _areaStatsController = StreamController<String>.broadcast();
+  final StreamController<String> _areaStatsController =
+      StreamController<String>.broadcast();
 
   CheckInRepositoryImpl({
     required AppDatabase database,
     required Uuid uuid,
-    SyncService? syncService,
   }) : _db = database,
-       _uuid = uuid,
-       _syncService = syncService;
+       _uuid = uuid;
 
   @override
   Stream<String> get areaStatsUpdated => _areaStatsController.stream;
@@ -30,8 +27,9 @@ class CheckInRepositoryImpl implements CheckInRepository {
   @override
   Stream<List<CheckIn>> watchUserCheckIns(String userId) {
     return (_db.select(
-      _db.checkIns,
-    )..where((tbl) => tbl.userId.equals(userId) & tbl.deletedAt.isNull())).watch();
+          _db.checkIns,
+        )..where((tbl) => tbl.userId.equals(userId) & tbl.deletedAt.isNull()))
+        .watch();
   }
 
   @override
@@ -58,14 +56,6 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
     // Update area stats after check-in
     await _updateAreaStats(spotId, userId);
-
-    // Trigger sync to Supabase
-    try {
-      await _syncService?.push();
-      print('✅ Check-in synced to Supabase');
-    } catch (e) {
-      print('❌ Failed to sync check-in to Supabase: $e');
-    }
   }
 
   @override
@@ -92,13 +82,31 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
     // Update area stats after check-out
     await _updateAreaStats(spotId, userId);
+  }
 
-    // Trigger sync to Supabase (this will sync the deletion)
-    try {
-      await _syncService?.push();
-      print('✅ Check-out synced to Supabase');
-    } catch (e) {
-      print('❌ Failed to sync check-out to Supabase: $e');
+  @override
+  Future<void> recalculateAllAreaStats(String userId) async {
+    final allUserCheckIns = await (_db.select(
+      _db.checkIns,
+    )..where((c) => c.userId.equals(userId) & c.deletedAt.isNull())).get();
+
+    final checkedInSpotIds = allUserCheckIns.map((c) => c.spotId).toSet();
+
+    if (checkedInSpotIds.isEmpty) {
+      return; // No spots to process
+    }
+
+    final spots = await (_db.select(
+      _db.spots,
+    )..where((s) => s.id.isIn(checkedInSpotIds))).get();
+
+    final areaIdsToUpdate = spots.map((s) => s.parentAreaId).toSet();
+
+    for (final areaId in areaIdsToUpdate) {
+      // This is a bit inefficient, but it's the simplest way to reuse the
+      // existing logic. We find one spot in the area and trigger the update.
+      final spotInArea = spots.firstWhere((s) => s.parentAreaId == areaId);
+      await _updateAreaStats(spotInArea.id, userId);
     }
   }
 
@@ -120,9 +128,12 @@ class CheckInRepositoryImpl implements CheckInRepository {
       final areaId = spot.parentAreaId;
 
       // Calculate total spots in this area
-      final totalSpots = await (_db.select(
-        _db.spots,
-      )..where((s) => s.parentAreaId.equals(areaId))).get().then((spots) => spots.length);
+      final totalSpots =
+          await (_db.select(
+            _db.spots,
+          )..where((s) => s.parentAreaId.equals(areaId))).get().then(
+            (spots) => spots.length,
+          );
 
       // Get all spots in this area
       final spotsInArea = await (_db.select(
@@ -143,7 +154,9 @@ class CheckInRepositoryImpl implements CheckInRepository {
       final visitedSpots = visitedSpotIds.length;
 
       // Determine completion timestamp
-      final completedAt = (visitedSpots >= totalSpots && totalSpots > 0) ? DateTime.now() : null;
+      final completedAt = (visitedSpots >= totalSpots && totalSpots > 0)
+          ? DateTime.now()
+          : null;
 
       // Update or insert UserArea record
       await _db

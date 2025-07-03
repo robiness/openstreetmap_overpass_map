@@ -1,17 +1,25 @@
 import 'package:drift/drift.dart';
 import 'package:overpass_map/data/database/app_database.dart';
+import 'package:overpass_map/features/auth/domain/repositories/auth_repository.dart';
+import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 import 'package:overpass_map/services/api_client.dart';
 
 /// A service responsible for synchronizing local data with the backend.
 class SyncService {
   final AppDatabase _db;
   final IApiClient _apiClient;
+  final CheckInRepository _checkInRepository;
+  final AuthRepository _authRepository;
 
   SyncService({
     required AppDatabase database,
     required IApiClient apiClient,
+    required CheckInRepository checkInRepository,
+    required AuthRepository authRepository,
   }) : _db = database,
-       _apiClient = apiClient;
+       _apiClient = apiClient,
+       _checkInRepository = checkInRepository,
+       _authRepository = authRepository;
 
   /// Finds all local records that have not yet been synced and uploads them
   /// to the backend.
@@ -123,6 +131,12 @@ class SyncService {
           mode: InsertMode.insertOrReplace,
         );
       });
+
+      // 4. Recalculate all area stats to ensure consistency
+      final currentUser = _authRepository.currentUser;
+      if (currentUser != null) {
+        await _checkInRepository.recalculateAllAreaStats(currentUser.id);
+      }
     } catch (e) {
       print('SyncService pull error: $e');
     }
