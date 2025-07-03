@@ -20,21 +20,21 @@ class DebugBloc extends Bloc<DebugEvent, DebugState> {
     });
 
     on<_CheckInRequested>((event, emit) async {
-      print('🎯 DebugBloc: Check-in requested for spot ${event.spotId}');
       await _checkInRepository.createCheckIn(
         spotId: event.spotId,
         userId: event.userId,
       );
-      print('✅ Check-in completed for spot ${event.spotId}');
     });
 
     on<_CheckOutRequested>((event, emit) async {
-      print('🎯 DebugBloc: Check-out requested for spot ${event.spotId}');
       await _checkInRepository.deleteCheckInsForSpot(
         spotId: event.spotId,
         userId: event.userId,
       );
-      print('✅ Check-out completed for spot ${event.spotId}');
+    });
+
+    on<_LogMessage>((event, emit) {
+      print('📝 ${event.message}');
     });
   }
 

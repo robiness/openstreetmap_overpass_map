@@ -95,10 +95,10 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
             // Turn off picking mode
             debugBloc.add(const DebugEvent.pickLocationToggled());
           } else {
-            // Default behavior: Deselect both area and spot
-            final mapBloc = context.read<MapBloc>();
-            mapBloc.add(const MapEvent.areaSelected(area: null));
-            mapBloc.add(const MapEvent.spotSelected(spot: null));
+            // Default behavior: Deselect any selected area/spot
+            context.read<MapBloc>().add(
+              const MapEvent.areaSelected(area: null),
+            );
           }
         },
       ),
@@ -150,8 +150,6 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
               } else {
                 mapBloc.add(MapEvent.areaSelected(area: area));
               }
-              // Also deselect any selected spot when selecting an area
-              mapBloc.add(const MapEvent.spotSelected(spot: null));
             }
           },
         ),
@@ -215,8 +213,6 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
                       // Select spot and automatically mark as visited
                       bloc.add(MapEvent.spotSelected(spot: spot));
                     }
-                    // Also deselect any selected area when selecting a spot
-                    bloc.add(const MapEvent.areaSelected(area: null));
                   },
                 );
               },

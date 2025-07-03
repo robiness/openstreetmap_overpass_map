@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:drift/drift.dart' hide JsonKey;
 import 'package:flutter/foundation.dart';
@@ -146,7 +147,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           lat: spot.location.latitude,
           lon: spot.location.longitude,
           parentAreaId: parentAreaId,
-          spotType: spot.category, // Use category as spot type
+          spotType: spot.category,
+          // Use category as spot type
           status: 'active',
           createdBy: Value(spot.createdBy),
           properties: Value(
@@ -261,54 +263,27 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     Emitter<MapState> emit,
     GeographicArea? area,
   ) async {
-    state.whenOrNull(
-      loadSuccess:
-          (
-            boundaryData,
-            spots,
-            _,
-            selectedSpot,
-            userVisitData,
-            userSpotVisitData,
-          ) {
-            emit(
-              MapState.loadSuccess(
-                boundaryData: boundaryData,
-                spots: spots,
-                selectedArea: area,
-                selectedSpot: selectedSpot,
-                userVisitData: userVisitData,
-                userSpotVisitData: userSpotVisitData,
-              ),
-            );
-          },
-    );
+    final currentState = state;
+    if (currentState is _LoadSuccess) {
+      emit(
+        currentState.copyWith(
+          selectedArea: area,
+          selectedSpot: null, // Deselect spot when area is selected
+        ),
+      );
+    }
   }
 
-  Future<void> _onSpotSelected(
-    Emitter<MapState> emit,
-    Spot? spot,
-  ) async {
-    final currentState = state as _LoadSuccess;
-
-    GeographicArea? parentArea;
-    if (spot != null) {
-      // Find the area that this spot belongs to
-      for (final area in currentState.boundaryData.stadtteile) {
-        for (final polygonRing in area.coordinates) {
-          final polygonLatLng = polygonRing
-              .map((coords) => LatLng(coords[1], coords[0]))
-              .toList();
-          if (_isPointInPolygon(spot.location, polygonLatLng)) {
-            parentArea = area;
-            break;
-          }
-        }
-        if (parentArea != null) break;
-      }
+  Future<void> _onSpotSelected(Emitter<MapState> emit, Spot? spot) async {
+    final currentState = state;
+    if (currentState is _LoadSuccess) {
+      emit(
+        currentState.copyWith(
+          selectedSpot: spot,
+          selectedArea: null, // Deselect area when spot is selected
+        ),
+      );
     }
-
-    emit(currentState.copyWith(selectedSpot: spot, selectedArea: parentArea));
   }
 
   Future<void> _onRefreshAreaDataRequested(

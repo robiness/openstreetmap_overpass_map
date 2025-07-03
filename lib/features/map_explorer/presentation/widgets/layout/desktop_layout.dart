@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
+import 'package:overpass_map/features/debug/presentation/widgets/debug_panel.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
@@ -7,7 +8,6 @@ import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/lists/hierarchical_area_list.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/map_view.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/panel/spot_detail_panel.dart';
-import 'package:overpass_map/features/debug/presentation/widgets/debug_panel.dart';
 
 class DesktopLayout extends StatefulWidget {
   final BoundaryData boundaryData;
@@ -15,6 +15,7 @@ class DesktopLayout extends StatefulWidget {
   final GeographicArea? selectedArea;
   final Spot? selectedSpot;
   final Map<int, UserAreaData> userAreaData;
+  final Map<int, UserSpotData> userSpotVisitData;
   final Function(GeographicArea) onAreaTapped;
   final Function(Spot) onSpotTapped;
 
@@ -25,6 +26,7 @@ class DesktopLayout extends StatefulWidget {
     required this.selectedArea,
     required this.selectedSpot,
     required this.userAreaData,
+    required this.userSpotVisitData,
     required this.onAreaTapped,
     required this.onSpotTapped,
   });
@@ -52,7 +54,7 @@ class _DesktopLayoutState extends State<DesktopLayout>
   @override
   Widget build(BuildContext context) {
     final appTheme = context.appTheme;
-
+    print(widget.selectedArea?.name);
     return Row(
       children: [
         // Sidebar with tabs
@@ -146,6 +148,7 @@ class _DesktopLayoutState extends State<DesktopLayout>
                 selectedArea: widget.selectedArea,
                 selectedSpot: widget.selectedSpot,
                 userAreaVisitData: widget.userAreaData,
+                userSpotVisitData: widget.userSpotVisitData,
               ),
 
               // Spot Detail Panel (overlay)

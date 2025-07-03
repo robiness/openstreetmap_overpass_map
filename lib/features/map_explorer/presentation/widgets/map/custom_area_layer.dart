@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -28,46 +30,40 @@ class CustomAreaLayer extends StatelessWidget {
     // Sort areas by exploration status for correct draw order
     final sortedAreas = List<GeographicArea>.from(areas);
     sortedAreas.sort((a, b) {
-      final statusA = userVisitData[a.id]?.status ?? AreaExplorationStatus.unvisited;
-      final statusB = userVisitData[b.id]?.status ?? AreaExplorationStatus.unvisited;
+      final statusA =
+          userVisitData[a.id]?.status ?? AreaExplorationStatus.unvisited;
+      final statusB =
+          userVisitData[b.id]?.status ?? AreaExplorationStatus.unvisited;
       return statusA.index.compareTo(statusB.index);
     });
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTapUp: (details) {
-        // We use onTapUp to be less "greedy" in the gesture arena, allowing
-        // pan and zoom gestures to be handled by the map below.
         if (onAreaTap == null) return;
 
-        final tappedLatLng = camera.offsetToCrs(details.localPosition);
+        final tapPosition = details.localPosition;
+        final matchingAreas = <GeographicArea>[];
 
-        // First check if tap is on the selected area (since it's drawn on top)
-        if (selectedArea != null) {
-          for (final polygonRings in selectedArea!.coordinates) {
-            final polygon = polygonRings.map((coords) => LatLng(coords[1], coords[0])).toList();
-            if (_isPointInPolygon(tappedLatLng, polygon)) {
-              onAreaTap!(selectedArea!, tappedLatLng);
-              return; // Stop after finding the match
-            }
+        // Find all areas that contain the tap position
+        for (final area in sortedAreas) {
+          final path = _getScreenPathForArea(area, camera);
+          if (path != null && path.contains(tapPosition)) {
+            matchingAreas.add(area);
           }
         }
 
-        // Then check other areas (iterate backwards to check top-most layers first)
-        for (final area in sortedAreas.reversed) {
-          // Skip the selected area since we already checked it
-          if (selectedArea != null && area.id == selectedArea!.id) {
-            continue;
-          }
-
-          for (final polygonRings in area.coordinates) {
-            final polygon = polygonRings.map((coords) => LatLng(coords[1], coords[0])).toList();
-            if (_isPointInPolygon(tappedLatLng, polygon)) {
-              onAreaTap!(area, tappedLatLng);
-              return; // Stop after finding the first match
-            }
-          }
+        if (matchingAreas.isEmpty) {
+          return; // No area was tapped
         }
+
+        // Of the areas that were tapped, find the one with the highest admin level
+        // (e.g., Stadtteil level 9 > Bezirk level 8 > City level 6)
+        matchingAreas.sort((a, b) => b.adminLevel.compareTo(a.adminLevel));
+        final tappedArea = matchingAreas.first;
+
+        final tappedLatLng = camera.offsetToCrs(tapPosition);
+        onAreaTap!(tappedArea, tappedLatLng);
       },
       child: CustomPaint(
         painter: CustomAreaPainter(
@@ -82,29 +78,32 @@ class CustomAreaLayer extends StatelessWidget {
     );
   }
 
-  /// Checks if a point is inside a polygon using the Ray-Casting algorithm.
-  bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
-    if (polygon.length < 3) {
-      return false;
-    }
+  ui.Path? _getScreenPathForArea(GeographicArea area, MapCamera camera) {
+    final allPaths = ui.Path();
 
-    bool isInside = false;
-    int j = polygon.length - 1;
-    for (int i = 0; i < polygon.length; i++) {
-      final p1 = polygon[i];
-      final p2 = polygon[j];
+    for (final coordinateRing in area.coordinates) {
+      if (coordinateRing.length < 3) continue;
 
-      final isYBetween = (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
-      final isXBefore =
-          point.longitude <
-          (p2.longitude - p1.longitude) * (point.latitude - p1.latitude) / (p2.latitude - p1.latitude) + p1.longitude;
+      final offsets = <Offset>[];
+      final mapOrigin = camera.pixelOrigin;
 
-      if (isYBetween && isXBefore) {
-        isInside = !isInside;
+      for (final point in coordinateRing) {
+        final latLng = LatLng(point[1], point[0]);
+        final projectedPoint = camera.crs.latLngToOffset(latLng, camera.zoom);
+        final screenPoint = projectedPoint - mapOrigin;
+        offsets.add(Offset(screenPoint.dx, screenPoint.dy));
       }
-      j = i;
-    }
 
-    return isInside;
+      if (offsets.isNotEmpty) {
+        final path = ui.Path();
+        path.moveTo(offsets.first.dx, offsets.first.dy);
+        for (int i = 1; i < offsets.length; i++) {
+          path.lineTo(offsets[i].dx, offsets[i].dy);
+        }
+        path.close();
+        allPaths.addPath(path, Offset.zero);
+      }
+    }
+    return allPaths.getBounds().isEmpty ? null : allPaths;
   }
 }
