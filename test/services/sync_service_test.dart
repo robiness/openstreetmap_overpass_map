@@ -66,7 +66,12 @@ void main() {
       () async {
         // Arrange
         fakeApiClient = FakeApiClient(shouldSucceed: true);
-        syncService = SyncService(database: db, apiClient: fakeApiClient);
+        syncService = SyncService(
+          database: db,
+          apiClient: fakeApiClient,
+          checkInRepositorientull,
+          authRepository: null,
+        );
 
         final checkInId = uuid.v4();
         final unsyncedCheckIn = CheckInsCompanion(
@@ -164,8 +169,7 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
-        fakeApiClient = FakeApiClient(shouldSucceed: true)
-          ..checkInsToReturn = [remoteCheckIn];
+        fakeApiClient = FakeApiClient(shouldSucceed: true)..checkInsToReturn = [remoteCheckIn];
         syncService = SyncService(database: db, apiClient: fakeApiClient);
 
         // Act
