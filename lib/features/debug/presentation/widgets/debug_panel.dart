@@ -1,8 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
-import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:overpass_map/features/auth/presentation/bloc/auth_state.dart';
 import 'package:overpass_map/features/debug/presentation/bloc/debug_bloc.dart';
@@ -140,199 +138,185 @@ class DebugPanelView extends StatelessWidget {
               ),
             ],
           ),
-          if (kDebugMode) ...[
-            const SizedBox(height: 16),
-            const Divider(),
-            const Text(
-              'Debug Mode',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.blue,
-              ),
+          const SizedBox(height: 16),
+          const Divider(),
+          const Text(
+            'Debug Mode',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.blue,
             ),
-            const SizedBox(height: 8),
-            BlocBuilder<DebugBloc, DebugState>(
-              builder: (context, state) {
-                return ElevatedButton.icon(
-                  onPressed: () {
-                    context.read<DebugBloc>().add(
-                      const DebugEvent.pickLocationToggled(),
-                    );
-                  },
-                  icon: Icon(
-                    state.isPickingLocation ? Icons.cancel : Icons.location_pin,
-                  ),
-                  label: Text(
-                    state.isPickingLocation
-                        ? 'Cancel Picking'
-                        : 'Pick Location on Map',
+          ),
+          const SizedBox(height: 8),
+          BlocBuilder<DebugBloc, DebugState>(
+            builder: (context, state) {
+              return ElevatedButton.icon(
+                onPressed: () {
+                  context.read<DebugBloc>().add(
+                    const DebugEvent.pickLocationToggled(),
+                  );
+                },
+                icon: Icon(
+                  state.isPickingLocation ? Icons.cancel : Icons.location_pin,
+                ),
+                label: Text(
+                  state.isPickingLocation ? 'Cancel Picking' : 'Pick Location on Map',
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: state.isPickingLocation ? Colors.red : Colors.blue,
+                  foregroundColor: Colors.white,
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => context.read<LocationBloc>().add(
+                    const LocationEvent.setDebugLocation(location: null),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: state.isPickingLocation
-                        ? Colors.red
-                        : Colors.blue,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.grey,
                   ),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () => context.read<LocationBloc>().add(
-                      const LocationEvent.setDebugLocation(location: null),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                    ),
-                    child: const Text(
-                      'Clear Debug',
-                      style: TextStyle(color: Colors.white),
-                    ),
+                  child: const Text(
+                    'Clear Debug',
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, authState) {
-                      return ElevatedButton(
-                        onPressed: () async {
-                          final userId = authState.maybeWhen(
-                            authenticated: (user, profile) => user.id,
-                            orElse: () =>
-                                'test-user', // fallback for unauthenticated
-                          );
-                          final checkIns = await context
-                              .read<CheckInRepository>()
-                              .watchUserCheckIns(userId)
-                              .first;
-                          print('=== DATABASE CONTENTS ===');
-                          print('User ID: $userId');
-                          print('Check-ins count: ${checkIns.length}');
-                          for (final checkIn in checkIns) {
-                            print(
-                              'ID: ${checkIn.id}, SpotID: ${checkIn.spotId}, UserID: ${checkIn.userId}',
-                            );
-                          }
-                          print('========================');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                        ),
-                        child: const Text(
-                          'Log DB',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const Text(
-              'Check-In Controls',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.purple,
               ),
-            ),
-            const SizedBox(height: 8),
-            BlocBuilder<MapBloc, MapState>(
-              builder: (context, mapState) {
-                final selectedSpot = mapState.maybeWhen(
-                  loadSuccess:
-                      (
-                        _,
-                        _,
-                        _,
-                        selectedSpot,
-                        _,
-                        _,
-                      ) => selectedSpot,
-                  orElse: () => null,
-                );
-
-                if (selectedSpot != null) {
-                  return BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, authState) {
-                      final userId = authState.maybeWhen(
-                        authenticated: (user, profile) => user.id,
-                        orElse: () => 'test-user',
-                      );
-
-                      return StreamBuilder<List<dynamic>>(
-                        stream: context
-                            .read<CheckInRepository>()
-                            .watchUserCheckInsForSpot(userId, selectedSpot.id),
-                        builder: (context, snapshot) {
-                          final count = snapshot.data?.length ?? 0;
-                          final isCheckedIn = count > 0;
-
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Selected Spot: ${selectedSpot.name} (ID: ${selectedSpot.id})',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text('Check-ins for this spot: $count'),
-                              Text('User: $userId'),
-                              const SizedBox(height: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  final event = isCheckedIn
-                                      ? DebugEvent.checkOutRequested(
-                                          spotId: selectedSpot.id,
-                                          userId: userId,
-                                        )
-                                      : DebugEvent.checkInRequested(
-                                          spotId: selectedSpot.id,
-                                          userId: userId,
-                                        );
-                                  context.read<DebugBloc>().add(event);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: isCheckedIn
-                                      ? Colors.red
-                                      : Colors.green,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: Text(
-                                  isCheckedIn ? 'Check Out' : 'Check In',
-                                ),
-                              ),
-                            ],
+              const SizedBox(width: 8),
+              Expanded(
+                child: BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, authState) {
+                    return ElevatedButton(
+                      onPressed: () async {
+                        final userId = authState.maybeWhen(
+                          authenticated: (user, profile) => user.id,
+                          orElse: () => 'test-user', // fallback for unauthenticated
+                        );
+                        final checkIns = await context.read<CheckInRepository>().watchUserCheckIns(userId).first;
+                        print('=== DATABASE CONTENTS ===');
+                        print('User ID: $userId');
+                        print('Check-ins count: ${checkIns.length}');
+                        for (final checkIn in checkIns) {
+                          print(
+                            'ID: ${checkIn.id}, SpotID: ${checkIn.spotId}, UserID: ${checkIn.userId}',
                           );
-                        },
-                      );
-                    },
-                  );
-                } else {
-                  // No spot selected, show a disabled button
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Select a spot to enable check-in.',
-                        style: TextStyle(fontStyle: FontStyle.italic),
+                        }
+                        print('========================');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
                       ),
-                      const SizedBox(height: 8),
-                      const ElevatedButton(
-                        onPressed: null,
-                        child: Text('Check In'),
+                      child: const Text(
+                        'Log DB',
+                        style: TextStyle(color: Colors.white),
                       ),
-                    ],
-                  );
-                }
-              },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          const Divider(),
+          const Text(
+            'Check-In Controls',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.purple,
             ),
-          ],
+          ),
+          const SizedBox(height: 8),
+          BlocBuilder<MapBloc, MapState>(
+            builder: (context, mapState) {
+              final selectedSpot = mapState.maybeWhen(
+                loadSuccess:
+                    (
+                      _,
+                      _,
+                      _,
+                      selectedSpot,
+                      _,
+                      _,
+                    ) => selectedSpot,
+                orElse: () => null,
+              );
+
+              if (selectedSpot != null) {
+                return BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, authState) {
+                    final userId = authState.maybeWhen(
+                      authenticated: (user, profile) => user.id,
+                      orElse: () => 'test-user',
+                    );
+
+                    return StreamBuilder<List<dynamic>>(
+                      stream: context.read<CheckInRepository>().watchUserCheckInsForSpot(userId, selectedSpot.id),
+                      builder: (context, snapshot) {
+                        final count = snapshot.data?.length ?? 0;
+                        final isCheckedIn = count > 0;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Selected Spot: ${selectedSpot.name} (ID: ${selectedSpot.id})',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text('Check-ins for this spot: $count'),
+                            Text('User: $userId'),
+                            const SizedBox(height: 8),
+                            ElevatedButton(
+                              onPressed: () {
+                                final event = isCheckedIn
+                                    ? DebugEvent.checkOutRequested(
+                                        spotId: selectedSpot.id,
+                                        userId: userId,
+                                      )
+                                    : DebugEvent.checkInRequested(
+                                        spotId: selectedSpot.id,
+                                        userId: userId,
+                                      );
+                                context.read<DebugBloc>().add(event);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: isCheckedIn ? Colors.red : Colors.green,
+                                foregroundColor: Colors.white,
+                              ),
+                              child: Text(
+                                isCheckedIn ? 'Check Out' : 'Check In',
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                );
+              } else {
+                // No spot selected, show a disabled button
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Select a spot to enable check-in.',
+                      style: TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                    const SizedBox(height: 8),
+                    const ElevatedButton(
+                      onPressed: null,
+                      child: Text('Check In'),
+                    ),
+                  ],
+                );
+              }
+            },
+          ),
         ],
       ),
     );
