@@ -17,65 +17,68 @@ class MapExplorerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appTheme = context.appTheme;
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: appTheme.background,
-        elevation: 0,
-        actions: const [
-          Padding(
-            padding: EdgeInsets.only(right: 8.0),
-            child: UserProfileButton(),
-          ),
-        ],
-      ),
-      backgroundColor: appTheme.background,
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, authState) {
-          // When user authenticates, reload map data with user ID
-          authState.whenOrNull(
-            authenticated: (user, profile) {
-              context.read<MapBloc>().add(
-                MapEvent.fetchDataRequested(
-                  cityName: 'Köln',
-                  adminLevel: 6,
-                  userId: user.id,
-                ),
-              );
-            },
-            unauthenticated: () {
-              // When user logs out, reload map data without user ID
-              context.read<MapBloc>().add(
-                const MapEvent.fetchDataRequested(
-                  cityName: 'Köln',
-                  adminLevel: 6,
-                ),
-              );
-            },
-          );
-        },
-        child: BlocBuilder<MapBloc, MapState>(
-          builder: (context, state) {
-            return state.when(
-              initial: () => const Center(child: Text('Initializing BLoC...')),
-              loadInProgress: () => const Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    CircularProgressIndicator(),
-                    Text('WE LOADING? WHY!'),
-                  ],
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, authState) {
+        // When user authenticates, reload map data with user ID
+        authState.whenOrNull(
+          authenticated: (user, profile) {
+            context.read<MapBloc>().add(
+              MapEvent.fetchDataRequested(
+                cityName: 'Köln',
+                adminLevel: 6,
+                userId: user.id,
+              ),
+            );
+          },
+          unauthenticated: () {
+            // When user logs out, reload map data without user ID
+            context.read<MapBloc>().add(
+              const MapEvent.fetchDataRequested(
+                cityName: 'Köln',
+                adminLevel: 6,
+              ),
+            );
+          },
+        );
+      },
+      child: BlocBuilder<MapBloc, MapState>(
+        builder: (context, state) {
+          return state.when(
+            initial: () => Container(color: Colors.black),
+            loadInProgress: () => Container(
+              color: Colors.black,
+              child: Center(
+                child: FractionallySizedBox(
+                  heightFactor: 0.5,
+                  child: Image.asset(
+                    'assets/splash_screen.jpeg',
+                    fit: BoxFit.fitHeight,
+                  ),
                 ),
               ),
-              loadSuccess:
-                  (
-                    boundaryData,
-                    spots,
-                    selectedArea,
-                    selectedSpot,
-                    userVisitData,
-                    userSpotVisitData,
-                  ) {
-                    return ResponsiveLayout(
+            ),
+            loadSuccess:
+                (
+                  boundaryData,
+                  spots,
+                  selectedArea,
+                  selectedSpot,
+                  userVisitData,
+                  userSpotVisitData,
+                ) {
+                  return Scaffold(
+                    appBar: AppBar(
+                      backgroundColor: appTheme.background,
+                      elevation: 0,
+                      actions: const [
+                        Padding(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: UserProfileButton(),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: appTheme.background,
+                    body: ResponsiveLayout(
                       mobile: MobileLayout(
                         boundaryData: boundaryData,
                         spots: spots,
@@ -109,18 +112,21 @@ class MapExplorerScreen extends StatelessWidget {
                           MapEvent.spotSelected(spot: spot),
                         ),
                       ),
-                    );
-                  },
-              loadFailure: (error) => Center(
+                    ),
+                  );
+                },
+            loadFailure: (error) => Scaffold(
+              backgroundColor: appTheme.background,
+              body: Center(
                 child: StatusCard(
                   message: 'Failed to load map data:\n$error',
                   color: appTheme.error,
                   icon: Icons.error_outline,
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -31,8 +31,32 @@
 
   <title>The Green Map Project</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    body, html {
+      background-color: #000000;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .loader {
+      height: 50vh;
+      transition: opacity 1s ease-out;
+    }
+    flutter-view {
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
+  <img src="assets/splash_screen.jpeg" class="loader" id="splash-screen" alt="Loading..." />
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
