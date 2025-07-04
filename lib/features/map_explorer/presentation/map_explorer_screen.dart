@@ -58,7 +58,13 @@ class MapExplorerScreen extends StatelessWidget {
             return state.when(
               initial: () => const Center(child: Text('Initializing BLoC...')),
               loadInProgress: () => const Center(
-                child: CircularProgressIndicator(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    Text('WE LOADING? WHY!'),
+                  ],
+                ),
               ),
               loadSuccess:
                   (

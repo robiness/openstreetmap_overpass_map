@@ -32,9 +32,6 @@ Future<void> main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsdGxrd25oaG9tZmpkd29zYmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMzc3NTEsImV4cCI6MjA2NjcxMzc1MX0.N0iIz79hGhlOth2jRTsUbrtrzp2M1pWjdi8nGwBfmMk',
   );
-  // It's important to wait for the Supabase client to be fully initialized
-  // and for the session to be restored.
-  await Future.delayed(const Duration(milliseconds: 200));
 
   // --- Data Layer Setup ---
   final database = AppDatabase();
@@ -81,8 +78,7 @@ Future<void> main() async {
               ),
             ),
             BlocProvider(
-              create: (context) =>
-                  LocationBloc(locationRepository: locationRepository),
+              create: (context) => LocationBloc(locationRepository: locationRepository),
             ),
             BlocProvider(
               create: (context) =>
