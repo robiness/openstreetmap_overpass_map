@@ -22,9 +22,8 @@ Spot _$SpotFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Spot {
   String get id => throw _privateConstructorUsedError;
-  int get osmId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get category => throw _privateConstructorUsedError;
+  List<String> get categories => throw _privateConstructorUsedError;
   @LatLngConverter()
   LatLng get location => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
@@ -50,9 +49,8 @@ abstract class $SpotCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    int osmId,
     String name,
-    String category,
+    List<String> categories,
     @LatLngConverter() LatLng location,
     String? description,
     List<String> tags,
@@ -79,9 +77,8 @@ class _$SpotCopyWithImpl<$Res, $Val extends Spot>
   @override
   $Res call({
     Object? id = null,
-    Object? osmId = null,
     Object? name = null,
-    Object? category = null,
+    Object? categories = null,
     Object? location = null,
     Object? description = freezed,
     Object? tags = null,
@@ -96,18 +93,14 @@ class _$SpotCopyWithImpl<$Res, $Val extends Spot>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            osmId: null == osmId
-                ? _value.osmId
-                : osmId // ignore: cast_nullable_to_non_nullable
-                      as int,
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
                       as String,
-            category: null == category
-                ? _value.category
-                : category // ignore: cast_nullable_to_non_nullable
-                      as String,
+            categories: null == categories
+                ? _value.categories
+                : categories // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
             location: null == location
                 ? _value.location
                 : location // ignore: cast_nullable_to_non_nullable
@@ -152,9 +145,8 @@ abstract class _$$SpotImplCopyWith<$Res> implements $SpotCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    int osmId,
     String name,
-    String category,
+    List<String> categories,
     @LatLngConverter() LatLng location,
     String? description,
     List<String> tags,
@@ -178,9 +170,8 @@ class __$$SpotImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? osmId = null,
     Object? name = null,
-    Object? category = null,
+    Object? categories = null,
     Object? location = null,
     Object? description = freezed,
     Object? tags = null,
@@ -195,18 +186,14 @@ class __$$SpotImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        osmId: null == osmId
-            ? _value.osmId
-            : osmId // ignore: cast_nullable_to_non_nullable
-                  as int,
         name: null == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
                   as String,
-        category: null == category
-            ? _value.category
-            : category // ignore: cast_nullable_to_non_nullable
-                  as String,
+        categories: null == categories
+            ? _value._categories
+            : categories // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
         location: null == location
             ? _value.location
             : location // ignore: cast_nullable_to_non_nullable
@@ -245,9 +232,8 @@ class __$$SpotImplCopyWithImpl<$Res>
 class _$SpotImpl implements _Spot {
   const _$SpotImpl({
     required this.id,
-    required this.osmId,
     required this.name,
-    required this.category,
+    required final List<String> categories,
     @LatLngConverter() required this.location,
     this.description,
     final List<String> tags = const [],
@@ -255,7 +241,8 @@ class _$SpotImpl implements _Spot {
     this.createdBy,
     final Map<String, dynamic> properties = const {},
     this.parentAreaId,
-  }) : _tags = tags,
+  }) : _categories = categories,
+       _tags = tags,
        _properties = properties;
 
   factory _$SpotImpl.fromJson(Map<String, dynamic> json) =>
@@ -264,11 +251,15 @@ class _$SpotImpl implements _Spot {
   @override
   final String id;
   @override
-  final int osmId;
-  @override
   final String name;
+  final List<String> _categories;
   @override
-  final String category;
+  List<String> get categories {
+    if (_categories is EqualUnmodifiableListView) return _categories;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_categories);
+  }
+
   @override
   @LatLngConverter()
   final LatLng location;
@@ -301,7 +292,7 @@ class _$SpotImpl implements _Spot {
 
   @override
   String toString() {
-    return 'Spot(id: $id, osmId: $osmId, name: $name, category: $category, location: $location, description: $description, tags: $tags, createdAt: $createdAt, createdBy: $createdBy, properties: $properties, parentAreaId: $parentAreaId)';
+    return 'Spot(id: $id, name: $name, categories: $categories, location: $location, description: $description, tags: $tags, createdAt: $createdAt, createdBy: $createdBy, properties: $properties, parentAreaId: $parentAreaId)';
   }
 
   @override
@@ -310,10 +301,11 @@ class _$SpotImpl implements _Spot {
         (other.runtimeType == runtimeType &&
             other is _$SpotImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.osmId, osmId) || other.osmId == osmId) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.category, category) ||
-                other.category == category) &&
+            const DeepCollectionEquality().equals(
+              other._categories,
+              _categories,
+            ) &&
             (identical(other.location, location) ||
                 other.location == location) &&
             (identical(other.description, description) ||
@@ -336,9 +328,8 @@ class _$SpotImpl implements _Spot {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    osmId,
     name,
-    category,
+    const DeepCollectionEquality().hash(_categories),
     location,
     description,
     const DeepCollectionEquality().hash(_tags),
@@ -365,9 +356,8 @@ class _$SpotImpl implements _Spot {
 abstract class _Spot implements Spot {
   const factory _Spot({
     required final String id,
-    required final int osmId,
     required final String name,
-    required final String category,
+    required final List<String> categories,
     @LatLngConverter() required final LatLng location,
     final String? description,
     final List<String> tags,
@@ -382,11 +372,9 @@ abstract class _Spot implements Spot {
   @override
   String get id;
   @override
-  int get osmId;
-  @override
   String get name;
   @override
-  String get category;
+  List<String> get categories;
   @override
   @LatLngConverter()
   LatLng get location;

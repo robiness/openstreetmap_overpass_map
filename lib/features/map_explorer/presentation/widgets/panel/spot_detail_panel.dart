@@ -50,7 +50,7 @@ class SpotDetailPanel extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            Text(spot!.category, style: Theme.of(context).textTheme.bodyMedium),
+            Text(spot!.categories.join(','), style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
@@ -63,8 +63,7 @@ class SpotDetailPanel extends StatelessWidget {
                   context.read<AuthBloc>().state.map(
                     initial: (_) => _showLogin(context),
                     loading: (_) {}, // Do nothing while loading
-                    authenticated: (authState) =>
-                        _performCheckIn(context, authState.user.id),
+                    authenticated: (authState) => _performCheckIn(context, authState.user.id),
                     unauthenticated: (_) => _showLogin(context),
                     error: (_) => _showLogin(context),
                   );

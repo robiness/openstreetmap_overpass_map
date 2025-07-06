@@ -8,9 +8,10 @@ part of 'spot.dart';
 
 _$SpotImpl _$$SpotImplFromJson(Map<String, dynamic> json) => _$SpotImpl(
   id: json['id'] as String,
-  osmId: (json['osmId'] as num).toInt(),
   name: json['name'] as String,
-  category: json['category'] as String,
+  categories: (json['categories'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
   location: const LatLngConverter().fromJson(
     json['location'] as Map<String, dynamic>,
   ),
@@ -27,9 +28,8 @@ _$SpotImpl _$$SpotImplFromJson(Map<String, dynamic> json) => _$SpotImpl(
 Map<String, dynamic> _$$SpotImplToJson(_$SpotImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'osmId': instance.osmId,
       'name': instance.name,
-      'category': instance.category,
+      'categories': instance.categories,
       'location': const LatLngConverter().toJson(instance.location),
       'description': instance.description,
       'tags': instance.tags,

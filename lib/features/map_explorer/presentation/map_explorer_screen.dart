@@ -45,8 +45,7 @@ class MapExplorerScreen extends StatelessWidget {
         builder: (context, state) {
           return state.when(
             initial: () => const Center(child: CircularProgressIndicator()),
-            loadInProgress: () =>
-                const Center(child: CircularProgressIndicator()),
+            loadInProgress: () => const Center(child: CircularProgressIndicator()),
             loadSuccess:
                 (
                   boundaryData,
@@ -112,16 +111,18 @@ class MapExplorerScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-            loadFailure: (error) => Scaffold(
-              backgroundColor: appTheme.background,
-              body: Center(
-                child: StatusCard(
-                  message: 'Failed to load map data:\n$error',
-                  color: appTheme.error,
-                  icon: Icons.error_outline,
+            loadFailure: (error) {
+              return Scaffold(
+                backgroundColor: appTheme.background,
+                body: Center(
+                  child: StatusCard(
+                    message: 'Failed to load map data:\n$error',
+                    color: appTheme.error,
+                    icon: Icons.error_outline,
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         },
       ),

@@ -21,7 +21,6 @@ mixin _$MapEvent {
   TResult when<TResult extends Object?>({
     required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
-    required TResult Function(LatLngBounds bounds) mapViewChanged,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(String userId) refreshAreaDataRequested,
@@ -30,7 +29,6 @@ mixin _$MapEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult? Function(LatLngBounds bounds)? mapViewChanged,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(String userId)? refreshAreaDataRequested,
@@ -39,7 +37,6 @@ mixin _$MapEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult Function(LatLngBounds bounds)? mapViewChanged,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(String userId)? refreshAreaDataRequested,
@@ -48,7 +45,6 @@ mixin _$MapEvent {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_MapViewChanged value) mapViewChanged,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_RefreshAreaDataRequested value)
@@ -57,7 +53,6 @@ mixin _$MapEvent {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_MapViewChanged value)? mapViewChanged,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_RefreshAreaDataRequested value)?
@@ -66,7 +61,6 @@ mixin _$MapEvent {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_MapViewChanged value)? mapViewChanged,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
@@ -205,7 +199,6 @@ class _$FetchDataRequestedImpl
   TResult when<TResult extends Object?>({
     required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
-    required TResult Function(LatLngBounds bounds) mapViewChanged,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(String userId) refreshAreaDataRequested,
@@ -218,7 +211,6 @@ class _$FetchDataRequestedImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult? Function(LatLngBounds bounds)? mapViewChanged,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(String userId)? refreshAreaDataRequested,
@@ -231,7 +223,6 @@ class _$FetchDataRequestedImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult Function(LatLngBounds bounds)? mapViewChanged,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(String userId)? refreshAreaDataRequested,
@@ -247,7 +238,6 @@ class _$FetchDataRequestedImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_MapViewChanged value) mapViewChanged,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_RefreshAreaDataRequested value)
@@ -260,7 +250,6 @@ class _$FetchDataRequestedImpl
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_MapViewChanged value)? mapViewChanged,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_RefreshAreaDataRequested value)?
@@ -273,7 +262,6 @@ class _$FetchDataRequestedImpl
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_MapViewChanged value)? mapViewChanged,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
@@ -301,185 +289,6 @@ abstract class _FetchDataRequested implements MapEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$FetchDataRequestedImplCopyWith<_$FetchDataRequestedImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$MapViewChangedImplCopyWith<$Res> {
-  factory _$$MapViewChangedImplCopyWith(
-    _$MapViewChangedImpl value,
-    $Res Function(_$MapViewChangedImpl) then,
-  ) = __$$MapViewChangedImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({LatLngBounds bounds});
-}
-
-/// @nodoc
-class __$$MapViewChangedImplCopyWithImpl<$Res>
-    extends _$MapEventCopyWithImpl<$Res, _$MapViewChangedImpl>
-    implements _$$MapViewChangedImplCopyWith<$Res> {
-  __$$MapViewChangedImplCopyWithImpl(
-    _$MapViewChangedImpl _value,
-    $Res Function(_$MapViewChangedImpl) _then,
-  ) : super(_value, _then);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? bounds = null}) {
-    return _then(
-      _$MapViewChangedImpl(
-        bounds: null == bounds
-            ? _value.bounds
-            : bounds // ignore: cast_nullable_to_non_nullable
-                  as LatLngBounds,
-      ),
-    );
-  }
-}
-
-/// @nodoc
-
-class _$MapViewChangedImpl
-    with DiagnosticableTreeMixin
-    implements _MapViewChanged {
-  const _$MapViewChangedImpl({required this.bounds});
-
-  @override
-  final LatLngBounds bounds;
-
-  @override
-  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'MapEvent.mapViewChanged(bounds: $bounds)';
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties
-      ..add(DiagnosticsProperty('type', 'MapEvent.mapViewChanged'))
-      ..add(DiagnosticsProperty('bounds', bounds));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$MapViewChangedImpl &&
-            (identical(other.bounds, bounds) || other.bounds == bounds));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, bounds);
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$MapViewChangedImplCopyWith<_$MapViewChangedImpl> get copyWith =>
-      __$$MapViewChangedImplCopyWithImpl<_$MapViewChangedImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(String cityName, int adminLevel, String? userId)
-    fetchDataRequested,
-    required TResult Function(LatLngBounds bounds) mapViewChanged,
-    required TResult Function(GeographicArea? area) areaSelected,
-    required TResult Function(Spot? spot) spotSelected,
-    required TResult Function(String userId) refreshAreaDataRequested,
-  }) {
-    return mapViewChanged(bounds);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(String cityName, int adminLevel, String? userId)?
-    fetchDataRequested,
-    TResult? Function(LatLngBounds bounds)? mapViewChanged,
-    TResult? Function(GeographicArea? area)? areaSelected,
-    TResult? Function(Spot? spot)? spotSelected,
-    TResult? Function(String userId)? refreshAreaDataRequested,
-  }) {
-    return mapViewChanged?.call(bounds);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(String cityName, int adminLevel, String? userId)?
-    fetchDataRequested,
-    TResult Function(LatLngBounds bounds)? mapViewChanged,
-    TResult Function(GeographicArea? area)? areaSelected,
-    TResult Function(Spot? spot)? spotSelected,
-    TResult Function(String userId)? refreshAreaDataRequested,
-    required TResult orElse(),
-  }) {
-    if (mapViewChanged != null) {
-      return mapViewChanged(bounds);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_MapViewChanged value) mapViewChanged,
-    required TResult Function(_AreaSelected value) areaSelected,
-    required TResult Function(_SpotSelected value) spotSelected,
-    required TResult Function(_RefreshAreaDataRequested value)
-    refreshAreaDataRequested,
-  }) {
-    return mapViewChanged(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_MapViewChanged value)? mapViewChanged,
-    TResult? Function(_AreaSelected value)? areaSelected,
-    TResult? Function(_SpotSelected value)? spotSelected,
-    TResult? Function(_RefreshAreaDataRequested value)?
-    refreshAreaDataRequested,
-  }) {
-    return mapViewChanged?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_MapViewChanged value)? mapViewChanged,
-    TResult Function(_AreaSelected value)? areaSelected,
-    TResult Function(_SpotSelected value)? spotSelected,
-    TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
-    required TResult orElse(),
-  }) {
-    if (mapViewChanged != null) {
-      return mapViewChanged(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class _MapViewChanged implements MapEvent {
-  const factory _MapViewChanged({required final LatLngBounds bounds}) =
-      _$MapViewChangedImpl;
-
-  LatLngBounds get bounds;
-
-  /// Create a copy of MapEvent
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$MapViewChangedImplCopyWith<_$MapViewChangedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -563,7 +372,6 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult when<TResult extends Object?>({
     required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
-    required TResult Function(LatLngBounds bounds) mapViewChanged,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(String userId) refreshAreaDataRequested,
@@ -576,7 +384,6 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult? Function(LatLngBounds bounds)? mapViewChanged,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(String userId)? refreshAreaDataRequested,
@@ -589,7 +396,6 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult Function(LatLngBounds bounds)? mapViewChanged,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(String userId)? refreshAreaDataRequested,
@@ -605,7 +411,6 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_MapViewChanged value) mapViewChanged,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_RefreshAreaDataRequested value)
@@ -618,7 +423,6 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_MapViewChanged value)? mapViewChanged,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_RefreshAreaDataRequested value)?
@@ -631,7 +435,6 @@ class _$AreaSelectedImpl with DiagnosticableTreeMixin implements _AreaSelected {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_MapViewChanged value)? mapViewChanged,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
@@ -753,7 +556,6 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult when<TResult extends Object?>({
     required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
-    required TResult Function(LatLngBounds bounds) mapViewChanged,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(String userId) refreshAreaDataRequested,
@@ -766,7 +568,6 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult? Function(LatLngBounds bounds)? mapViewChanged,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(String userId)? refreshAreaDataRequested,
@@ -779,7 +580,6 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult Function(LatLngBounds bounds)? mapViewChanged,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(String userId)? refreshAreaDataRequested,
@@ -795,7 +595,6 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_MapViewChanged value) mapViewChanged,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_RefreshAreaDataRequested value)
@@ -808,7 +607,6 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_MapViewChanged value)? mapViewChanged,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_RefreshAreaDataRequested value)?
@@ -821,7 +619,6 @@ class _$SpotSelectedImpl with DiagnosticableTreeMixin implements _SpotSelected {
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_MapViewChanged value)? mapViewChanged,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,
@@ -931,7 +728,6 @@ class _$RefreshAreaDataRequestedImpl
   TResult when<TResult extends Object?>({
     required TResult Function(String cityName, int adminLevel, String? userId)
     fetchDataRequested,
-    required TResult Function(LatLngBounds bounds) mapViewChanged,
     required TResult Function(GeographicArea? area) areaSelected,
     required TResult Function(Spot? spot) spotSelected,
     required TResult Function(String userId) refreshAreaDataRequested,
@@ -944,7 +740,6 @@ class _$RefreshAreaDataRequestedImpl
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult? Function(LatLngBounds bounds)? mapViewChanged,
     TResult? Function(GeographicArea? area)? areaSelected,
     TResult? Function(Spot? spot)? spotSelected,
     TResult? Function(String userId)? refreshAreaDataRequested,
@@ -957,7 +752,6 @@ class _$RefreshAreaDataRequestedImpl
   TResult maybeWhen<TResult extends Object?>({
     TResult Function(String cityName, int adminLevel, String? userId)?
     fetchDataRequested,
-    TResult Function(LatLngBounds bounds)? mapViewChanged,
     TResult Function(GeographicArea? area)? areaSelected,
     TResult Function(Spot? spot)? spotSelected,
     TResult Function(String userId)? refreshAreaDataRequested,
@@ -973,7 +767,6 @@ class _$RefreshAreaDataRequestedImpl
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
     required TResult Function(_FetchDataRequested value) fetchDataRequested,
-    required TResult Function(_MapViewChanged value) mapViewChanged,
     required TResult Function(_AreaSelected value) areaSelected,
     required TResult Function(_SpotSelected value) spotSelected,
     required TResult Function(_RefreshAreaDataRequested value)
@@ -986,7 +779,6 @@ class _$RefreshAreaDataRequestedImpl
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult? Function(_MapViewChanged value)? mapViewChanged,
     TResult? Function(_AreaSelected value)? areaSelected,
     TResult? Function(_SpotSelected value)? spotSelected,
     TResult? Function(_RefreshAreaDataRequested value)?
@@ -999,7 +791,6 @@ class _$RefreshAreaDataRequestedImpl
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(_FetchDataRequested value)? fetchDataRequested,
-    TResult Function(_MapViewChanged value)? mapViewChanged,
     TResult Function(_AreaSelected value)? areaSelected,
     TResult Function(_SpotSelected value)? spotSelected,
     TResult Function(_RefreshAreaDataRequested value)? refreshAreaDataRequested,

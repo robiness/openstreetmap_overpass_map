@@ -48,6 +48,12 @@ class FakeApiClient implements IApiClient {
       throw Exception('Simulated API failure');
     }
   }
+
+  @override
+  Future<List<String>> getAllSpotIds() {
+    // TODO: implement getAllSpotIds
+    throw UnimplementedError();
+  }
 }
 
 class FakeCheckInRepository implements CheckInRepository {
@@ -253,8 +259,7 @@ void main() {
           updatedAt: DateTime.now(),
         );
 
-        fakeApiClient = FakeApiClient(shouldSucceed: true)
-          ..checkInsToReturn = [remoteCheckIn];
+        fakeApiClient = FakeApiClient(shouldSucceed: true)..checkInsToReturn = [remoteCheckIn];
         syncService = SyncService(
           database: db,
           apiClient: fakeApiClient,

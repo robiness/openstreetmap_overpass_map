@@ -1,5 +1,5 @@
-import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -74,7 +74,7 @@ class CustomSpotPainter extends CustomPainter {
     final isCheckedIn = spotVisitData?.isCheckedIn ?? false;
 
     // Get colors and size based on category, selection state, visit status, and check-in status
-    final colors = _getCategoryColors(spot.category, isVisited, isCheckedIn);
+    final colors = _getCategoryColors(spot.categories.first, isVisited, isCheckedIn);
     final baseSize = isSelected ? 18.0 : (isCheckedIn ? 16.0 : 14.0);
     final borderWidth = isSelected ? 3.0 : 2.0;
 
@@ -144,7 +144,7 @@ class CustomSpotPainter extends CustomPainter {
     _drawEnhancedCategoryIcon(
       canvas,
       screenPoint,
-      spot.category,
+      spot.categories.first,
       baseSize,
       colors.icon,
     );
@@ -1143,8 +1143,7 @@ class CustomSpotPainter extends CustomPainter {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared &&
-          distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle

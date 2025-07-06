@@ -1692,15 +1692,6 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _osmIdMeta = const VerificationMeta('osmId');
-  @override
-  late final GeneratedColumn<int> osmId = GeneratedColumn<int>(
-    'osm_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -1710,17 +1701,15 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _categoryMeta = const VerificationMeta(
-    'category',
-  );
   @override
-  late final GeneratedColumn<String> category = GeneratedColumn<String>(
-    'category',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
+  late final GeneratedColumnWithTypeConverter<List<String>, String> categories =
+      GeneratedColumn<String>(
+        'categories',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($SpotsTable.$convertercategories);
   static const VerificationMeta _latMeta = const VerificationMeta('lat');
   @override
   late final GeneratedColumn<double> lat = GeneratedColumn<double>(
@@ -1804,9 +1793,8 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    osmId,
     name,
-    category,
+    categories,
     lat,
     lon,
     description,
@@ -1833,14 +1821,6 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('osm_id')) {
-      context.handle(
-        _osmIdMeta,
-        osmId.isAcceptableOrUnknown(data['osm_id']!, _osmIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_osmIdMeta);
-    }
     if (data.containsKey('name')) {
       context.handle(
         _nameMeta,
@@ -1848,14 +1828,6 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
       );
     } else if (isInserting) {
       context.missing(_nameMeta);
-    }
-    if (data.containsKey('category')) {
-      context.handle(
-        _categoryMeta,
-        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_categoryMeta);
     }
     if (data.containsKey('lat')) {
       context.handle(
@@ -1918,18 +1890,16 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      osmId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}osm_id'],
-      )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      category: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}category'],
-      )!,
+      categories: $SpotsTable.$convertercategories.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}categories'],
+        )!,
+      ),
       lat: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}lat'],
@@ -1974,6 +1944,8 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
     return $SpotsTable(attachedDatabase, alias);
   }
 
+  static TypeConverter<List<String>, String> $convertercategories =
+      const ListStringConverter();
   static TypeConverter<List<String>, String> $convertertags =
       const ListStringConverter();
   static TypeConverter<Map<String, dynamic>, String> $converterproperties =
@@ -1982,9 +1954,8 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
 
 class SpotData extends DataClass implements Insertable<SpotData> {
   final String id;
-  final int osmId;
   final String name;
-  final String category;
+  final List<String> categories;
   final double lat;
   final double lon;
   final String? description;
@@ -1995,9 +1966,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
   final String? parentAreaId;
   const SpotData({
     required this.id,
-    required this.osmId,
     required this.name,
-    required this.category,
+    required this.categories,
     required this.lat,
     required this.lon,
     this.description,
@@ -2011,9 +1981,12 @@ class SpotData extends DataClass implements Insertable<SpotData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['osm_id'] = Variable<int>(osmId);
     map['name'] = Variable<String>(name);
-    map['category'] = Variable<String>(category);
+    {
+      map['categories'] = Variable<String>(
+        $SpotsTable.$convertercategories.toSql(categories),
+      );
+    }
     map['lat'] = Variable<double>(lat);
     map['lon'] = Variable<double>(lon);
     if (!nullToAbsent || description != null) {
@@ -2040,9 +2013,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
   SpotsCompanion toCompanion(bool nullToAbsent) {
     return SpotsCompanion(
       id: Value(id),
-      osmId: Value(osmId),
       name: Value(name),
-      category: Value(category),
+      categories: Value(categories),
       lat: Value(lat),
       lon: Value(lon),
       description: description == null && nullToAbsent
@@ -2067,9 +2039,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return SpotData(
       id: serializer.fromJson<String>(json['id']),
-      osmId: serializer.fromJson<int>(json['osmId']),
       name: serializer.fromJson<String>(json['name']),
-      category: serializer.fromJson<String>(json['category']),
+      categories: serializer.fromJson<List<String>>(json['categories']),
       lat: serializer.fromJson<double>(json['lat']),
       lon: serializer.fromJson<double>(json['lon']),
       description: serializer.fromJson<String?>(json['description']),
@@ -2092,9 +2063,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'osmId': serializer.toJson<int>(osmId),
       'name': serializer.toJson<String>(name),
-      'category': serializer.toJson<String>(category),
+      'categories': serializer.toJson<List<String>>(categories),
       'lat': serializer.toJson<double>(lat),
       'lon': serializer.toJson<double>(lon),
       'description': serializer.toJson<String?>(description),
@@ -2108,9 +2078,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
 
   SpotData copyWith({
     String? id,
-    int? osmId,
     String? name,
-    String? category,
+    List<String>? categories,
     double? lat,
     double? lon,
     Value<String?> description = const Value.absent(),
@@ -2121,9 +2090,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
     Value<String?> parentAreaId = const Value.absent(),
   }) => SpotData(
     id: id ?? this.id,
-    osmId: osmId ?? this.osmId,
     name: name ?? this.name,
-    category: category ?? this.category,
+    categories: categories ?? this.categories,
     lat: lat ?? this.lat,
     lon: lon ?? this.lon,
     description: description.present ? description.value : this.description,
@@ -2136,9 +2104,10 @@ class SpotData extends DataClass implements Insertable<SpotData> {
   SpotData copyWithCompanion(SpotsCompanion data) {
     return SpotData(
       id: data.id.present ? data.id.value : this.id,
-      osmId: data.osmId.present ? data.osmId.value : this.osmId,
       name: data.name.present ? data.name.value : this.name,
-      category: data.category.present ? data.category.value : this.category,
+      categories: data.categories.present
+          ? data.categories.value
+          : this.categories,
       lat: data.lat.present ? data.lat.value : this.lat,
       lon: data.lon.present ? data.lon.value : this.lon,
       description: data.description.present
@@ -2160,9 +2129,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
   String toString() {
     return (StringBuffer('SpotData(')
           ..write('id: $id, ')
-          ..write('osmId: $osmId, ')
           ..write('name: $name, ')
-          ..write('category: $category, ')
+          ..write('categories: $categories, ')
           ..write('lat: $lat, ')
           ..write('lon: $lon, ')
           ..write('description: $description, ')
@@ -2178,9 +2146,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
   @override
   int get hashCode => Object.hash(
     id,
-    osmId,
     name,
-    category,
+    categories,
     lat,
     lon,
     description,
@@ -2195,9 +2162,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
       identical(this, other) ||
       (other is SpotData &&
           other.id == this.id &&
-          other.osmId == this.osmId &&
           other.name == this.name &&
-          other.category == this.category &&
+          other.categories == this.categories &&
           other.lat == this.lat &&
           other.lon == this.lon &&
           other.description == this.description &&
@@ -2210,9 +2176,8 @@ class SpotData extends DataClass implements Insertable<SpotData> {
 
 class SpotsCompanion extends UpdateCompanion<SpotData> {
   final Value<String> id;
-  final Value<int> osmId;
   final Value<String> name;
-  final Value<String> category;
+  final Value<List<String>> categories;
   final Value<double> lat;
   final Value<double> lon;
   final Value<String?> description;
@@ -2224,9 +2189,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
   final Value<int> rowid;
   const SpotsCompanion({
     this.id = const Value.absent(),
-    this.osmId = const Value.absent(),
     this.name = const Value.absent(),
-    this.category = const Value.absent(),
+    this.categories = const Value.absent(),
     this.lat = const Value.absent(),
     this.lon = const Value.absent(),
     this.description = const Value.absent(),
@@ -2239,9 +2203,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
   });
   SpotsCompanion.insert({
     required String id,
-    required int osmId,
     required String name,
-    required String category,
+    required List<String> categories,
     required double lat,
     required double lon,
     this.description = const Value.absent(),
@@ -2252,9 +2215,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
     this.parentAreaId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       osmId = Value(osmId),
        name = Value(name),
-       category = Value(category),
+       categories = Value(categories),
        lat = Value(lat),
        lon = Value(lon),
        tags = Value(tags),
@@ -2262,9 +2224,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
        properties = Value(properties);
   static Insertable<SpotData> custom({
     Expression<String>? id,
-    Expression<int>? osmId,
     Expression<String>? name,
-    Expression<String>? category,
+    Expression<String>? categories,
     Expression<double>? lat,
     Expression<double>? lon,
     Expression<String>? description,
@@ -2277,9 +2238,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (osmId != null) 'osm_id': osmId,
       if (name != null) 'name': name,
-      if (category != null) 'category': category,
+      if (categories != null) 'categories': categories,
       if (lat != null) 'lat': lat,
       if (lon != null) 'lon': lon,
       if (description != null) 'description': description,
@@ -2294,9 +2254,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
 
   SpotsCompanion copyWith({
     Value<String>? id,
-    Value<int>? osmId,
     Value<String>? name,
-    Value<String>? category,
+    Value<List<String>>? categories,
     Value<double>? lat,
     Value<double>? lon,
     Value<String?>? description,
@@ -2309,9 +2268,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
   }) {
     return SpotsCompanion(
       id: id ?? this.id,
-      osmId: osmId ?? this.osmId,
       name: name ?? this.name,
-      category: category ?? this.category,
+      categories: categories ?? this.categories,
       lat: lat ?? this.lat,
       lon: lon ?? this.lon,
       description: description ?? this.description,
@@ -2330,14 +2288,13 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (osmId.present) {
-      map['osm_id'] = Variable<int>(osmId.value);
-    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (category.present) {
-      map['category'] = Variable<String>(category.value);
+    if (categories.present) {
+      map['categories'] = Variable<String>(
+        $SpotsTable.$convertercategories.toSql(categories.value),
+      );
     }
     if (lat.present) {
       map['lat'] = Variable<double>(lat.value);
@@ -2377,9 +2334,8 @@ class SpotsCompanion extends UpdateCompanion<SpotData> {
   String toString() {
     return (StringBuffer('SpotsCompanion(')
           ..write('id: $id, ')
-          ..write('osmId: $osmId, ')
           ..write('name: $name, ')
-          ..write('category: $category, ')
+          ..write('categories: $categories, ')
           ..write('lat: $lat, ')
           ..write('lon: $lon, ')
           ..write('description: $description, ')
@@ -3590,9 +3546,8 @@ typedef $$CitiesTableProcessedTableManager =
 typedef $$SpotsTableCreateCompanionBuilder =
     SpotsCompanion Function({
       required String id,
-      required int osmId,
       required String name,
-      required String category,
+      required List<String> categories,
       required double lat,
       required double lon,
       Value<String?> description,
@@ -3606,9 +3561,8 @@ typedef $$SpotsTableCreateCompanionBuilder =
 typedef $$SpotsTableUpdateCompanionBuilder =
     SpotsCompanion Function({
       Value<String> id,
-      Value<int> osmId,
       Value<String> name,
-      Value<String> category,
+      Value<List<String>> categories,
       Value<double> lat,
       Value<double> lon,
       Value<String?> description,
@@ -3633,19 +3587,15 @@ class $$SpotsTableFilterComposer extends Composer<_$AppDatabase, $SpotsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get osmId => $composableBuilder(
-    column: $table.osmId,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get category => $composableBuilder(
-    column: $table.category,
-    builder: (column) => ColumnFilters(column),
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String>
+  get categories => $composableBuilder(
+    column: $table.categories,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<double> get lat => $composableBuilder(
@@ -3709,18 +3659,13 @@ class $$SpotsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get osmId => $composableBuilder(
-    column: $table.osmId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get name => $composableBuilder(
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get category => $composableBuilder(
-    column: $table.category,
+  ColumnOrderings<String> get categories => $composableBuilder(
+    column: $table.categories,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3777,14 +3722,14 @@ class $$SpotsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<int> get osmId =>
-      $composableBuilder(column: $table.osmId, builder: (column) => column);
-
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get category =>
-      $composableBuilder(column: $table.category, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<List<String>, String> get categories =>
+      $composableBuilder(
+        column: $table.categories,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<double> get lat =>
       $composableBuilder(column: $table.lat, builder: (column) => column);
@@ -3847,9 +3792,8 @@ class $$SpotsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<int> osmId = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> category = const Value.absent(),
+                Value<List<String>> categories = const Value.absent(),
                 Value<double> lat = const Value.absent(),
                 Value<double> lon = const Value.absent(),
                 Value<String?> description = const Value.absent(),
@@ -3861,9 +3805,8 @@ class $$SpotsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => SpotsCompanion(
                 id: id,
-                osmId: osmId,
                 name: name,
-                category: category,
+                categories: categories,
                 lat: lat,
                 lon: lon,
                 description: description,
@@ -3877,9 +3820,8 @@ class $$SpotsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
-                required int osmId,
                 required String name,
-                required String category,
+                required List<String> categories,
                 required double lat,
                 required double lon,
                 Value<String?> description = const Value.absent(),
@@ -3891,9 +3833,8 @@ class $$SpotsTableTableManager
                 Value<int> rowid = const Value.absent(),
               }) => SpotsCompanion.insert(
                 id: id,
-                osmId: osmId,
                 name: name,
-                category: category,
+                categories: categories,
                 lat: lat,
                 lon: lon,
                 description: description,

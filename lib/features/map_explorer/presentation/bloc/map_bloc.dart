@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:overpass_map/data/database/app_database.dart' as db;
 import 'package:overpass_map/data/repositories/map_repository.dart';
@@ -33,13 +32,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
        super(const MapState.initial()) {
     on<MapEvent>((event, emit) async {
       await event.when(
-        fetchDataRequested: (cityName, adminLevel, userId) =>
-            _onFetchDataRequested(emit, cityName, adminLevel, userId),
-        mapViewChanged: (bounds) => _onMapViewChanged(emit),
+        fetchDataRequested: (cityName, adminLevel, userId) => _onFetchDataRequested(emit, cityName, adminLevel, userId),
         areaSelected: (area) => _onAreaSelected(emit, area),
         spotSelected: (spot) => _onSpotSelected(emit, spot),
-        refreshAreaDataRequested: (userId) =>
-            _onRefreshAreaDataRequested(emit, userId),
+        refreshAreaDataRequested: (userId) => _onRefreshAreaDataRequested(emit, userId),
       );
     });
 
@@ -89,9 +85,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       print('✅ MapBloc: Loaded ${spots.length} spots');
 
       print('👤 MapBloc: Loading user area data...');
-      final userAreaData = userId != null
-          ? await _loadUserAreaData(userId)
-          : <String, UserAreaData>{};
+      final userAreaData = userId != null ? await _loadUserAreaData(userId) : <String, UserAreaData>{};
       print(
         '✅ MapBloc: Loaded user area data for ${userAreaData.length} areas',
       );
@@ -108,34 +102,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         ),
       );
       print('✅ MapBloc: State emitted successfully');
-    } catch (e) {
+    } catch (e, s) {
       print('❌ MapBloc: Error in _onFetchDataRequested: $e');
+      print('📝 Stack trace: $s');
       emit(MapState.loadFailure(error: e.toString()));
-    }
-  }
-
-  Future<void> _onMapViewChanged(
-    Emitter<MapState> emit,
-  ) async {
-    print('🗺️ MapBloc: _onMapViewChanged called');
-    // Avoid refetching if we are already in a success state
-    if (state is! _LoadSuccess) {
-      print('⚠️ MapBloc: Not in success state, skipping map view change');
-      return;
-    }
-
-    final currentState = state as _LoadSuccess;
-    print('🔄 MapBloc: Current state has ${currentState.spots.length} spots');
-
-    try {
-      print('🎯 MapBloc: Fetching spots for map view change...');
-      final spots = await _mapRepository.getSpots();
-      print('✅ MapBloc: Fetched ${spots.length} spots, emitting updated state');
-      emit(currentState.copyWith(spots: spots));
-    } catch (e) {
-      // We can choose to notify the user or just log the error
-      // For now, we'll just print it and not change the state
-      print('❌ MapBloc: Error fetching spots for new view: $e');
     }
   }
 
