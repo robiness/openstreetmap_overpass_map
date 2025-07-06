@@ -17,4 +17,8 @@ abstract class IApiClient {
   ///
   /// If [since] is null, it should fetch all records.
   Future<List<CheckIn>> fetchLatestCheckIns({DateTime? since});
+
+  /// Fetches a complete list of all existing spot IDs from the server.
+  /// This is used to reconcile local data and remove deleted spots.
+  Future<List<String>> getAllSpotIds();
 }

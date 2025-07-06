@@ -62,4 +62,11 @@ class SupabaseApiClient implements IApiClient {
       );
     }).toList();
   }
+
+  @override
+  Future<List<String>> getAllSpotIds() async {
+    final response = await _client.from('spots').select('id');
+    final data = response as List<dynamic>;
+    return data.map((map) => map['id'] as String).toList();
+  }
 }

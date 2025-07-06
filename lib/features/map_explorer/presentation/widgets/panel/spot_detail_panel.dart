@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:overpass_map/features/auth/presentation/widgets/login_prompt.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
+import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 
 class SpotDetailPanel extends StatelessWidget {
   final Spot? spot;
@@ -37,7 +38,8 @@ class SpotDetailPanel extends StatelessWidget {
                   context.read<AuthBloc>().state.map(
                     initial: (_) => _showLogin(context),
                     loading: (_) {}, // Do nothing while loading
-                    authenticated: (_) => _performCheckIn(context),
+                    authenticated: (authState) =>
+                        _performCheckIn(context, authState.user.id),
                     unauthenticated: (_) => _showLogin(context),
                     error: (_) => _showLogin(context),
                   );
@@ -50,13 +52,31 @@ class SpotDetailPanel extends StatelessWidget {
     );
   }
 
-  void _performCheckIn(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Check-in successful! (Not really)'),
-        backgroundColor: Colors.green,
-      ),
-    );
+  void _performCheckIn(BuildContext context, String userId) async {
+    try {
+      await context.read<CheckInRepository>().createCheckIn(
+        spotId: spot!.id,
+        userId: userId,
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Check-in successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Check-in failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _showLogin(BuildContext context) {

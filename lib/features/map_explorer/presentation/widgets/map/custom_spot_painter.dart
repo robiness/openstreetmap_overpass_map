@@ -336,30 +336,56 @@ class CustomSpotPainter extends CustomPainter {
     double spotSize,
     Color iconColor,
   ) {
-    final iconSize = spotSize * 0.5;
-
-    switch (category) {
+    // Choose icon based on category
+    switch (category.toLowerCase()) {
       case 'restaurant':
-        _drawEnhancedRestaurantIcon(canvas, center, iconSize, iconColor);
+        _drawEnhancedRestaurantIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
       case 'cafe':
-        _drawEnhancedCafeIcon(canvas, center, iconSize, iconColor);
+        _drawEnhancedCafeIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
       case 'bar':
       case 'pub':
-        _drawEnhancedBarIcon(canvas, center, iconSize, iconColor);
+        _drawEnhancedBarIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
       case 'biergarten':
-        _drawEnhancedBeerIcon(canvas, center, iconSize, iconColor);
+        _drawEnhancedBiergartenIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
       case 'viewpoint':
-        _drawEnhancedViewpointIcon(canvas, center, iconSize, iconColor);
+      case 'aussichtspunkt':
+        _drawEnhancedViewpointIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
       case 'shop':
-        _drawEnhancedShopIcon(canvas, center, iconSize, iconColor);
+        _drawEnhancedShopIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'kultur':
+        _drawEnhancedKulturIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'natur':
+        _drawEnhancedNaturIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'erholung':
+        _drawEnhancedErholungIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'geschichte':
+        _drawEnhancedGeschichteIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'architektur':
+        _drawEnhancedArchitekturIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'sport':
+        _drawEnhancedSportIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'bildung':
+        _drawEnhancedBildungIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'soziales':
+      case 'gemeinschaft':
+        _drawEnhancedSozialesIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
       default:
-        _drawEnhancedDefaultIcon(canvas, center, iconSize, iconColor);
+        _drawEnhancedDefaultIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
     }
   }
 
@@ -499,9 +525,12 @@ class CustomSpotPainter extends CustomPainter {
       size * 0.08,
       Paint()..color = color,
     );
+
+    // Draw modern star icon in the center of the glass
+    _drawModernStar(canvas, center, size * 0.3, color.withValues(alpha: 0.6));
   }
 
-  void _drawEnhancedBeerIcon(
+  void _drawEnhancedBiergartenIcon(
     Canvas canvas,
     Offset center,
     double size,
@@ -545,6 +574,9 @@ class CustomSpotPainter extends CustomPainter {
       ),
       foamPaint,
     );
+
+    // Draw modern star icon in the center of the mug
+    _drawModernStar(canvas, center, size * 0.3, color.withValues(alpha: 0.6));
   }
 
   void _drawEnhancedViewpointIcon(
@@ -558,51 +590,22 @@ class CustomSpotPainter extends CustomPainter {
       ..strokeWidth = 2.5
       ..style = PaintingStyle.stroke;
 
-    // Eye outline with better proportions
-    final eyePath = ui.Path()
-      ..moveTo(center.dx - size * 0.5, center.dy)
-      ..cubicTo(
-        center.dx - size * 0.3,
-        center.dy - size * 0.4,
-        center.dx + size * 0.3,
-        center.dy - size * 0.4,
-        center.dx + size * 0.5,
-        center.dy,
-      )
-      ..cubicTo(
-        center.dx + size * 0.3,
-        center.dy + size * 0.4,
-        center.dx - size * 0.3,
-        center.dy + size * 0.4,
-        center.dx - size * 0.5,
-        center.dy,
-      );
+    // Telescope body
+    canvas.drawCircle(center, size * 0.4, paint);
 
-    canvas.drawPath(eyePath, paint);
+    // Eyepiece
+    final eyePiecePath = ui.Path()
+      ..moveTo(center.dx - size * 0.3, center.dy - size * 0.3)
+      ..lineTo(center.dx - size * 0.6, center.dy - size * 0.6);
+    canvas.drawPath(eyePiecePath, paint);
 
-    // Iris
-    canvas.drawCircle(
-      center,
-      size * 0.25,
-      Paint()
-        ..color = color
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0,
-    );
-
-    // Pupil
-    canvas.drawCircle(
-      center,
-      size * 0.12,
-      Paint()..color = color,
-    );
-
-    // Highlight
-    canvas.drawCircle(
-      center.translate(-size * 0.05, -size * 0.05),
-      size * 0.04,
-      Paint()..color = color.withValues(alpha: 0.8),
-    );
+    // Stand
+    final standPath = ui.Path()
+      ..moveTo(center.dx, center.dy + size * 0.4)
+      ..lineTo(center.dx - size * 0.2, center.dy + size * 0.8)
+      ..moveTo(center.dx, center.dy + size * 0.4)
+      ..lineTo(center.dx + size * 0.2, center.dy + size * 0.8);
+    canvas.drawPath(standPath, paint);
   }
 
   void _drawEnhancedShopIcon(
@@ -651,6 +654,309 @@ class CustomSpotPainter extends CustomPainter {
         ..color = color
         ..style = PaintingStyle.fill,
     );
+  }
+
+  void _drawEnhancedKulturIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Draw happy mask
+    final happyPath = ui.Path()
+      ..addOval(
+        Rect.fromCenter(
+          center: center.translate(-size * 0.4, 0),
+          width: size,
+          height: size * 1.2,
+        ),
+      )
+      ..moveTo(center.dx - size * 0.7, center.dy)
+      ..quadraticBezierTo(
+        center.dx - size * 0.4,
+        center.dy + size * 0.5,
+        center.dx,
+        center.dy,
+      );
+    canvas.drawPath(happyPath, paint);
+    canvas.drawCircle(
+      center.translate(-size * 0.4, -size * 0.2),
+      size * 0.1,
+      paint..style = PaintingStyle.fill,
+    );
+
+    // Draw sad mask
+    final sadPath = ui.Path()
+      ..addOval(
+        Rect.fromCenter(
+          center: center.translate(size * 0.4, 0),
+          width: size,
+          height: size * 1.2,
+        ),
+      )
+      ..moveTo(center.dx + size * 0.1, center.dy + size * 0.2)
+      ..quadraticBezierTo(
+        center.dx + size * 0.4,
+        center.dy - size * 0.1,
+        center.dx + size * 0.7,
+        center.dy + size * 0.2,
+      );
+    canvas.drawPath(sadPath, paint..style = PaintingStyle.stroke);
+    canvas.drawCircle(
+      center.translate(size * 0.4, -size * 0.2),
+      size * 0.1,
+      paint..style = PaintingStyle.fill,
+    );
+  }
+
+  void _drawEnhancedNaturIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    // Tree trunk
+    final trunkPath = ui.Path()
+      ..moveTo(center.dx - size * 0.1, center.dy + size * 0.8)
+      ..lineTo(center.dx + size * 0.1, center.dy + size * 0.8)
+      ..lineTo(center.dx + size * 0.2, center.dy - size * 0.2)
+      ..lineTo(center.dx - size * 0.2, center.dy - size * 0.2)
+      ..close();
+    canvas.drawPath(trunkPath, paint);
+
+    // Tree crown
+    canvas.drawCircle(center.translate(0, -size * 0.4), size * 0.6, paint);
+  }
+
+  void _drawEnhancedErholungIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Lotus pose
+    // Head
+    canvas.drawCircle(center.translate(0, -size * 0.5), size * 0.2, paint);
+    // Body
+    final bodyPath = ui.Path()
+      ..moveTo(center.dx, center.dy - size * 0.3)
+      ..lineTo(center.dx, center.dy + size * 0.2);
+    canvas.drawPath(bodyPath, paint);
+    // Legs
+    final legPath = ui.Path()
+      ..moveTo(center.dx - size * 0.6, center.dy + size * 0.5)
+      ..quadraticBezierTo(
+        center.dx,
+        center.dy + size * 0.2,
+        center.dx + size * 0.6,
+        center.dy + size * 0.5,
+      )
+      ..moveTo(center.dx - size * 0.4, center.dy + size * 0.5)
+      ..lineTo(center.dx - size * 0.7, center.dy + size * 0.6)
+      ..moveTo(center.dx + size * 0.4, center.dy + size * 0.5)
+      ..lineTo(center.dx + size * 0.7, center.dy + size * 0.6);
+    canvas.drawPath(legPath, paint);
+    // Arms
+    final armPath = ui.Path()
+      ..moveTo(center.dx - size * 0.4, center.dy)
+      ..lineTo(center.dx + size * 0.4, center.dy);
+    canvas.drawPath(armPath, paint);
+  }
+
+  void _drawEnhancedGeschichteIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    // Column
+    final rect = Rect.fromCenter(
+      center: center,
+      width: size * 0.4,
+      height: size * 1.2,
+    );
+    canvas.drawRect(rect, paint);
+    // Base and top
+    final basePath = ui.Path()
+      ..moveTo(rect.left - size * 0.1, rect.bottom)
+      ..lineTo(rect.right + size * 0.1, rect.bottom)
+      ..moveTo(rect.left - size * 0.1, rect.top)
+      ..lineTo(rect.right + size * 0.1, rect.top);
+    canvas.drawPath(
+      basePath,
+      paint
+        ..strokeWidth = 2.0
+        ..style = PaintingStyle.stroke,
+    );
+  }
+
+  void _drawEnhancedArchitekturIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Building outline
+    final path = ui.Path()
+      ..moveTo(center.dx - size * 0.6, center.dy + size * 0.6)
+      ..lineTo(center.dx - size * 0.6, center.dy - size * 0.6)
+      ..lineTo(center.dx + size * 0.6, center.dy - size * 0.2)
+      ..lineTo(center.dx + size * 0.6, center.dy + size * 0.6)
+      ..close()
+      // Roof line
+      ..moveTo(center.dx - size * 0.6, center.dy - size * 0.6)
+      ..lineTo(center.dx, center.dy - size);
+    canvas.drawPath(path, paint);
+  }
+
+  void _drawEnhancedSportIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Soccer ball
+    canvas.drawCircle(center, size, paint);
+    // Hexagon pattern
+    final path = ui.Path();
+    for (int i = 0; i < 6; i++) {
+      path.moveTo(
+        center.dx + size * 0.5 * math.cos(math.pi / 3 * i),
+        center.dy + size * 0.5 * math.sin(math.pi / 3 * i),
+      );
+      path.lineTo(
+        center.dx + size * 0.5 * math.cos(math.pi / 3 * (i + 1)),
+        center.dy + size * 0.5 * math.sin(math.pi / 3 * (i + 1)),
+      );
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  void _drawEnhancedBildungIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Open book
+    final path = ui.Path()
+      ..moveTo(center.dx - size * 0.8, center.dy - size * 0.1)
+      ..quadraticBezierTo(
+        center.dx,
+        center.dy + size * 0.4,
+        center.dx + size * 0.8,
+        center.dy - size * 0.1,
+      )
+      ..moveTo(center.dx, center.dy - size * 0.1)
+      ..lineTo(center.dx, center.dy + size * 0.4);
+    canvas.drawPath(path, paint);
+    // Page lines
+    final linesPath = ui.Path()
+      ..moveTo(center.dx - size * 0.6, center.dy)
+      ..lineTo(center.dx - size * 0.2, center.dy)
+      ..moveTo(center.dx - size * 0.6, center.dy + size * 0.2)
+      ..lineTo(center.dx - size * 0.2, center.dy + size * 0.2)
+      ..moveTo(center.dx + size * 0.6, center.dy)
+      ..lineTo(center.dx + size * 0.2, center.dy)
+      ..moveTo(center.dx + size * 0.6, center.dy + size * 0.2)
+      ..lineTo(center.dx + size * 0.2, center.dy + size * 0.2);
+    canvas.drawPath(linesPath, paint..strokeWidth = 1.0);
+  }
+
+  void _drawEnhancedSozialesIcon(
+    Canvas canvas,
+    Offset center,
+    double size,
+    Color color,
+  ) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0;
+
+    // Three figures holding hands
+    // Left figure
+    canvas.drawCircle(
+      center.translate(-size * 0.6, 0),
+      size * 0.2,
+      paint..style = PaintingStyle.fill,
+    );
+    final leftBody = ui.Path()
+      ..moveTo(center.dx - size * 0.6, center.dy + size * 0.2)
+      ..lineTo(center.dx - size * 0.6, center.dy + size * 0.6)
+      ..lineTo(center.dx - size * 0.8, center.dy + size)
+      ..moveTo(center.dx - size * 0.6, center.dy + size * 0.6)
+      ..lineTo(center.dx - size * 0.4, center.dy + size);
+    canvas.drawPath(leftBody, paint..style = PaintingStyle.stroke);
+
+    // Center figure
+    canvas.drawCircle(
+      center.translate(0, -size * 0.2),
+      size * 0.2,
+      paint..style = PaintingStyle.fill,
+    );
+    final centerBody = ui.Path()
+      ..moveTo(center.dx, center.dy)
+      ..lineTo(center.dx, center.dy + size * 0.4)
+      ..lineTo(center.dx - size * 0.2, center.dy + size * 0.8)
+      ..moveTo(center.dx, center.dy + size * 0.4)
+      ..lineTo(center.dx + size * 0.2, center.dy + size * 0.8);
+    canvas.drawPath(centerBody, paint..style = PaintingStyle.stroke);
+
+    // Right figure
+    canvas.drawCircle(
+      center.translate(size * 0.6, 0),
+      size * 0.2,
+      paint..style = PaintingStyle.fill,
+    );
+    final rightBody = ui.Path()
+      ..moveTo(center.dx + size * 0.6, center.dy + size * 0.2)
+      ..lineTo(center.dx + size * 0.6, center.dy + size * 0.6)
+      ..lineTo(center.dx + size * 0.4, center.dy + size)
+      ..moveTo(center.dx + size * 0.6, center.dy + size * 0.6)
+      ..lineTo(center.dx + size * 0.8, center.dy + size);
+    canvas.drawPath(rightBody, paint..style = PaintingStyle.stroke);
+
+    // Holding hands
+    final handsPath = ui.Path()
+      ..moveTo(center.dx - size * 0.4, center.dy + size * 0.3)
+      ..lineTo(center.dx - size * 0.1, center.dy + size * 0.2)
+      ..moveTo(center.dx + size * 0.4, center.dy + size * 0.3)
+      ..lineTo(center.dx + size * 0.1, center.dy + size * 0.2);
+    canvas.drawPath(handsPath, paint);
   }
 
   void _drawEnhancedDefaultIcon(
@@ -706,7 +1012,7 @@ class CustomSpotPainter extends CustomPainter {
   }
 
   SpotColors _getBaseCategoryColors(String category) {
-    switch (category) {
+    switch (category.toLowerCase()) {
       case 'restaurant':
         return SpotColors(Colors.red.shade600, Colors.white);
       case 'cafe':
@@ -717,9 +1023,39 @@ class CustomSpotPainter extends CustomPainter {
       case 'biergarten':
         return SpotColors(Colors.amber.shade600, Colors.white);
       case 'viewpoint':
-        return SpotColors(Colors.green.shade600, Colors.white);
+      case 'aussichtspunkt':
+        return SpotColors(Colors.teal.shade600, Colors.white);
       case 'shop':
         return SpotColors(Colors.blue.shade600, Colors.white);
+      case 'kultur':
+        return SpotColors(Colors.purple.shade700, Colors.white);
+      case 'natur':
+        return SpotColors(Colors.green.shade600, Colors.white);
+      case 'erholung':
+        return SpotColors(Colors.cyan.shade600, Colors.white);
+      case 'geschichte':
+        return SpotColors(Colors.brown.shade700, Colors.white);
+      case 'architektur':
+        return SpotColors(Colors.orange.shade700, Colors.white);
+      case 'sport':
+        return SpotColors(Colors.blue.shade700, Colors.white);
+      case 'bildung':
+        return SpotColors(Colors.indigo.shade600, Colors.white);
+      case 'soziales':
+      case 'gemeinschaft':
+        return SpotColors(Colors.pink.shade400, Colors.white);
+      case 'infrastruktur':
+      case 'verwaltung':
+      case 'technik':
+        return SpotColors(Colors.blueGrey.shade600, Colors.white);
+      case 'wirtschaft':
+        return SpotColors(Colors.deepOrange.shade600, Colors.white);
+      case 'gesundheit':
+        return SpotColors(Colors.red.shade400, Colors.white);
+      case 'ökologie':
+        return SpotColors(Colors.lightGreen.shade600, Colors.white);
+      case 'wissenschaft':
+        return SpotColors(Colors.deepPurple.shade600, Colors.white);
       default:
         return SpotColors(Colors.grey.shade600, Colors.white);
     }

@@ -92,7 +92,29 @@ class SyncService {
   /// local database.
   Future<void> pull() async {
     try {
-      // 1. Find the last sync time.
+      // --- Reconciliation Step: Remove deleted spots ---
+      // 1. Get all spot IDs from the remote server
+      final remoteSpotIds = (await _apiClient.getAllSpotIds()).toSet();
+
+      // 2. Get all spot IDs from the local database
+      final localSpots = await _db.select(_db.spots).get();
+      final localSpotIds = localSpots.map((s) => s.id).toSet();
+
+      // 3. Find local spots that don't exist remotely
+      final orphanedSpotIds = localSpotIds.difference(remoteSpotIds);
+
+      // 4. Delete orphaned spots from the local database
+      if (orphanedSpotIds.isNotEmpty) {
+        await (_db.delete(
+          _db.spots,
+        )..where((s) => s.id.isIn(orphanedSpotIds))).go();
+        print(
+          '🧹 SyncService: Removed ${orphanedSpotIds.length} orphaned spots.',
+        );
+      }
+
+      // --- Fetch Updates Step: Get new/modified check-ins ---
+      // 5. Find the last sync time for check-ins.
       final lastSync =
           await (_db.select(_db.checkIns)
                 ..orderBy([
@@ -105,34 +127,32 @@ class SyncService {
                 ..limit(1))
               .getSingleOrNull();
 
-      // 2. Fetch latest records from the API.
+      // 6. Fetch latest check-in records from the API.
       final remoteCheckIns = await _apiClient.fetchLatestCheckIns(
         since: lastSync?.syncedAt,
       );
 
-      if (remoteCheckIns.isEmpty) {
-        return;
+      if (remoteCheckIns.isNotEmpty) {
+        // 7. Upsert check-in records into the local database in a batch.
+        final now = DateTime.now();
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.checkIns,
+            remoteCheckIns.map(
+              (c) => CheckInsCompanion.insert(
+                id: c.id,
+                userId: c.userId,
+                spotId: c.spotId,
+                updatedAt: Value(c.updatedAt),
+                syncedAt: Value(now),
+              ),
+            ),
+            mode: InsertMode.insertOrReplace,
+          );
+        });
       }
 
-      // 3. Upsert records into the local database in a batch.
-      final now = DateTime.now();
-      await _db.batch((batch) {
-        batch.insertAll(
-          _db.checkIns,
-          remoteCheckIns.map(
-            (c) => CheckInsCompanion.insert(
-              id: c.id,
-              userId: c.userId,
-              spotId: c.spotId,
-              updatedAt: Value(c.updatedAt),
-              syncedAt: Value(now),
-            ),
-          ),
-          mode: InsertMode.insertOrReplace,
-        );
-      });
-
-      // 4. Recalculate all area stats to ensure consistency
+      // 8. Recalculate all area stats to ensure consistency
       final currentUser = _authRepository.currentUser;
       if (currentUser != null) {
         await _checkInRepository.recalculateAllAreaStats(currentUser.id);
