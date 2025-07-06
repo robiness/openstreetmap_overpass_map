@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overpass_map/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:overpass_map/features/auth/presentation/bloc/auth_state.dart';
 import 'package:overpass_map/features/auth/presentation/widgets/login_prompt.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
+import 'package:overpass_map/features/map_explorer/presentation/widgets/panel/feedback_modal.dart';
 
 class SpotDetailPanel extends StatelessWidget {
   final Spot? spot;
@@ -23,7 +25,30 @@ class SpotDetailPanel extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(spot!.name, style: Theme.of(context).textTheme.headlineSmall),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    spot!.name,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                BlocBuilder<AuthBloc, AuthState>(
+                  builder: (context, state) {
+                    return state.maybeWhen(
+                      authenticated: (user, profile) => IconButton(
+                        icon: const Icon(Icons.flag_outlined),
+                        onPressed: () => _showFeedbackModal(context, spot!),
+                        tooltip: 'Report an issue with this spot',
+                      ),
+                      orElse: () => const SizedBox.shrink(),
+                    );
+                  },
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             Text(spot!.category, style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 16),
@@ -83,6 +108,14 @@ class SpotDetailPanel extends StatelessWidget {
     showModalBottomSheet(
       context: context,
       builder: (_) => const LoginPrompt(),
+    );
+  }
+
+  void _showFeedbackModal(BuildContext context, Spot spot) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => FeedbackModal(spot: spot),
+      isScrollControlled: true,
     );
   }
 }
