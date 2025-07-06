@@ -15,7 +15,7 @@ abstract class CheckInRepository {
   Stream<List<CheckIn>> watchUserCheckIns(String userId);
 
   /// Watches for all check-ins for a specific spot and user.
-  Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, int spotId);
+  Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, String spotId);
 
   /// Stream that emits user IDs when area completion stats are updated.
   /// This allows MapBloc to refresh area data in real-time when check-ins change.
@@ -26,13 +26,13 @@ abstract class CheckInRepository {
   /// This operation will first write to the local database for an immediate
   /// offline-first experience and then queue a synchronization with the cloud.
   Future<void> createCheckIn({
-    required int spotId,
+    required String spotId,
     required String userId,
   });
 
   /// Deletes all check-ins for a specific spot for a given user.
   Future<void> deleteCheckInsForSpot({
-    required int spotId,
+    required String spotId,
     required String userId,
   });
 

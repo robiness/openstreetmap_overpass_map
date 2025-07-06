@@ -73,9 +73,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signInWithGoogle() async {
     await _supabaseClient.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: kIsWeb
-          ? null
-          : 'io.supabase.flutterquickstart://login-callback/',
+      redirectTo: kDebugMode
+          ? 'http://localhost:3000/'
+          : 'https://tgmp.netlify.app/',
     );
   }
 
@@ -83,9 +83,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> signInWithApple() async {
     await _supabaseClient.auth.signInWithOAuth(
       OAuthProvider.apple,
-      redirectTo: kIsWeb
-          ? null
-          : 'io.supabase.flutterquickstart://login-callback/',
+      redirectTo: kDebugMode
+          ? 'http://localhost:3000/'
+          : 'https://tgmp.netlify.app/',
     );
   }
 

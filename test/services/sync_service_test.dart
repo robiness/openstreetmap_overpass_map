@@ -1,8 +1,12 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overpass_map/data/database/app_database.dart';
+import 'package:overpass_map/features/auth/domain/entities/user_profile.dart';
+import 'package:overpass_map/features/auth/domain/repositories/auth_repository.dart';
+import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 import 'package:overpass_map/services/api_client.dart';
 import 'package:overpass_map/services/sync_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
 import '../helpers/database_helper.dart';
@@ -46,14 +50,84 @@ class FakeApiClient implements IApiClient {
   }
 }
 
+class FakeCheckInRepository implements CheckInRepository {
+  @override
+  Future<void> createCheckIn({required String spotId, required String userId}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> deleteCheckInsForSpot({
+    required String spotId,
+    required String userId,
+  }) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> recalculateAllAreaStats(String userId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<CheckIn>> watchUserCheckIns(String userId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, String spotId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<String> get areaStatsUpdated => throw UnimplementedError();
+}
+
+class FakeAuthRepository implements AuthRepository {
+  @override
+  Stream<User?> get authStateChanges => throw UnimplementedError();
+
+  @override
+  Future<UserProfile?> createProfile(User user) {
+    throw UnimplementedError();
+  }
+
+  @override
+  User? get currentUser => throw UnimplementedError();
+
+  @override
+  Future<UserProfile?> getProfile(String userId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> signInWithApple() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> signInWithGoogle() {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> signOut() {
+    throw UnimplementedError();
+  }
+}
+
 void main() {
   late AppDatabase db;
   late FakeApiClient fakeApiClient;
   late SyncService syncService;
   const uuid = Uuid();
+  late CheckInRepository checkInRepository;
+  late AuthRepository authRepository;
 
   setUp(() {
     db = createTestDatabase();
+    checkInRepository = FakeCheckInRepository();
+    authRepository = FakeAuthRepository();
   });
 
   tearDown(() async {
@@ -69,15 +143,15 @@ void main() {
         syncService = SyncService(
           database: db,
           apiClient: fakeApiClient,
-          checkInRepositorientull,
-          authRepository: null,
+          checkInRepository: checkInRepository,
+          authRepository: authRepository,
         );
 
         final checkInId = uuid.v4();
         final unsyncedCheckIn = CheckInsCompanion(
           id: Value(checkInId),
           userId: const Value('test-user'),
-          spotId: const Value(1),
+          spotId: const Value('1'),
         );
         await db.into(db.checkIns).insert(unsyncedCheckIn);
 
@@ -100,13 +174,18 @@ void main() {
     test('should NOT update synced_at on failed push', () async {
       // Arrange
       fakeApiClient = FakeApiClient(shouldSucceed: false);
-      syncService = SyncService(database: db, apiClient: fakeApiClient);
+      syncService = SyncService(
+        database: db,
+        apiClient: fakeApiClient,
+        checkInRepository: checkInRepository,
+        authRepository: authRepository,
+      );
 
       final checkInId = uuid.v4();
       final unsyncedCheckIn = CheckInsCompanion(
         id: Value(checkInId),
         userId: const Value('test-user'),
-        spotId: const Value(1),
+        spotId: const Value('1'),
       );
       await db.into(db.checkIns).insert(unsyncedCheckIn);
 
@@ -125,13 +204,18 @@ void main() {
       () async {
         // Arrange
         fakeApiClient = FakeApiClient(shouldSucceed: true);
-        syncService = SyncService(database: db, apiClient: fakeApiClient);
+        syncService = SyncService(
+          database: db,
+          apiClient: fakeApiClient,
+          checkInRepository: checkInRepository,
+          authRepository: authRepository,
+        );
 
         final checkInId = uuid.v4();
         final deletedCheckIn = CheckInsCompanion(
           id: Value(checkInId),
           userId: const Value('test-user'),
-          spotId: const Value(1),
+          spotId: const Value('1'),
           deletedAt: Value(DateTime.now()),
           syncedAt: const Value(null), // Mark as unsynced
         );
@@ -165,12 +249,18 @@ void main() {
         final remoteCheckIn = CheckIn(
           id: remoteCheckInId,
           userId: 'remote-user',
-          spotId: 1,
+          spotId: '1',
           updatedAt: DateTime.now(),
         );
 
-        fakeApiClient = FakeApiClient(shouldSucceed: true)..checkInsToReturn = [remoteCheckIn];
-        syncService = SyncService(database: db, apiClient: fakeApiClient);
+        fakeApiClient = FakeApiClient(shouldSucceed: true)
+          ..checkInsToReturn = [remoteCheckIn];
+        syncService = SyncService(
+          database: db,
+          apiClient: fakeApiClient,
+          checkInRepository: checkInRepository,
+          authRepository: authRepository,
+        );
 
         // Act
         await syncService.pull();

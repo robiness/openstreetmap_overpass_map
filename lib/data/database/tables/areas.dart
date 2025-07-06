@@ -1,9 +1,14 @@
 import 'package:drift/drift.dart';
 
+/// Defines the schema for the `areas` table in the local database.
 @DataClassName('Area')
 class Areas extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get parentId => integer().nullable().references(Areas, #id)();
+  /// Unique identifier for the area (e.g., from Supabase).
+  TextColumn get id => text()();
+
+  /// OSM relation ID for this area (e.g., a city boundary).
+  IntColumn get osmId => integer().unique()();
+  TextColumn get parentId => text().nullable().references(Areas, #id)();
   TextColumn get name => text()();
   TextColumn get type => text()();
   IntColumn get adminLevel => integer()();

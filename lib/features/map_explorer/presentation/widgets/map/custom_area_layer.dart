@@ -12,7 +12,7 @@ class CustomAreaLayer extends StatelessWidget {
   final List<GeographicArea> areas;
   final void Function(GeographicArea, LatLng)? onAreaTap;
   final GeographicArea? selectedArea;
-  final Map<int, UserAreaData> userVisitData;
+  final Map<String, UserAreaData> userVisitData;
 
   const CustomAreaLayer({
     super.key,
@@ -31,9 +31,11 @@ class CustomAreaLayer extends StatelessWidget {
     final sortedAreas = List<GeographicArea>.from(areas);
     sortedAreas.sort((a, b) {
       final statusA =
-          userVisitData[a.id]?.status ?? AreaExplorationStatus.unvisited;
+          userVisitData[a.id.toString()]?.status ??
+          AreaExplorationStatus.unvisited;
       final statusB =
-          userVisitData[b.id]?.status ?? AreaExplorationStatus.unvisited;
+          userVisitData[b.id.toString()]?.status ??
+          AreaExplorationStatus.unvisited;
       return statusA.index.compareTo(statusB.index);
     });
 

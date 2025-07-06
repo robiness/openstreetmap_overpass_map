@@ -28,11 +28,11 @@ class $CheckInsTable extends CheckIns with TableInfo<$CheckInsTable, CheckIn> {
   );
   static const VerificationMeta _spotIdMeta = const VerificationMeta('spotId');
   @override
-  late final GeneratedColumn<int> spotId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> spotId = GeneratedColumn<String>(
     'spot_id',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
@@ -147,7 +147,7 @@ class $CheckInsTable extends CheckIns with TableInfo<$CheckInsTable, CheckIn> {
         data['${effectivePrefix}user_id'],
       )!,
       spotId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}spot_id'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
@@ -179,7 +179,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
   final String userId;
 
   /// The ID of the spot that was visited.
-  final int spotId;
+  final String spotId;
 
   /// The timestamp when this record was last modified locally.
   /// This is automatically set on creation.
@@ -207,7 +207,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['user_id'] = Variable<String>(userId);
-    map['spot_id'] = Variable<int>(spotId);
+    map['spot_id'] = Variable<String>(spotId);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || syncedAt != null) {
       map['synced_at'] = Variable<DateTime>(syncedAt);
@@ -241,7 +241,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
     return CheckIn(
       id: serializer.fromJson<String>(json['id']),
       userId: serializer.fromJson<String>(json['userId']),
-      spotId: serializer.fromJson<int>(json['spotId']),
+      spotId: serializer.fromJson<String>(json['spotId']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       syncedAt: serializer.fromJson<DateTime?>(json['syncedAt']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
@@ -260,7 +260,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'userId': serializer.toJson<String>(userId),
-      'spotId': serializer.toJson<int>(spotId),
+      'spotId': serializer.toJson<String>(spotId),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'syncedAt': serializer.toJson<DateTime?>(syncedAt),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
@@ -270,7 +270,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
   CheckIn copyWith({
     String? id,
     String? userId,
-    int? spotId,
+    String? spotId,
     DateTime? updatedAt,
     Value<DateTime?> syncedAt = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
@@ -324,7 +324,7 @@ class CheckIn extends DataClass implements Insertable<CheckIn> {
 class CheckInsCompanion extends UpdateCompanion<CheckIn> {
   final Value<String> id;
   final Value<String> userId;
-  final Value<int> spotId;
+  final Value<String> spotId;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> syncedAt;
   final Value<DateTime?> deletedAt;
@@ -341,7 +341,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
   CheckInsCompanion.insert({
     required String id,
     required String userId,
-    required int spotId,
+    required String spotId,
     this.updatedAt = const Value.absent(),
     this.syncedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -352,7 +352,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
   static Insertable<CheckIn> custom({
     Expression<String>? id,
     Expression<String>? userId,
-    Expression<int>? spotId,
+    Expression<String>? spotId,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? syncedAt,
     Expression<DateTime>? deletedAt,
@@ -372,7 +372,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
   CheckInsCompanion copyWith({
     Value<String>? id,
     Value<String>? userId,
-    Value<int>? spotId,
+    Value<String>? spotId,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? syncedAt,
     Value<DateTime?>? deletedAt,
@@ -399,7 +399,7 @@ class CheckInsCompanion extends UpdateCompanion<CheckIn> {
       map['user_id'] = Variable<String>(userId.value);
     }
     if (spotId.present) {
-      map['spot_id'] = Variable<int>(spotId.value);
+      map['spot_id'] = Variable<String>(spotId.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -438,26 +438,32 @@ class $AreasTable extends Areas with TableInfo<$AreasTable, Area> {
   $AreasTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
     false,
-    hasAutoIncrement: true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _osmIdMeta = const VerificationMeta('osmId');
+  @override
+  late final GeneratedColumn<int> osmId = GeneratedColumn<int>(
+    'osm_id',
+    aliasedName,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _parentIdMeta = const VerificationMeta(
     'parentId',
   );
   @override
-  late final GeneratedColumn<int> parentId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> parentId = GeneratedColumn<String>(
     'parent_id',
     aliasedName,
     true,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES areas (id)',
@@ -506,6 +512,7 @@ class $AreasTable extends Areas with TableInfo<$AreasTable, Area> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    osmId,
     parentId,
     name,
     type,
@@ -526,6 +533,16 @@ class $AreasTable extends Areas with TableInfo<$AreasTable, Area> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('osm_id')) {
+      context.handle(
+        _osmIdMeta,
+        osmId.isAcceptableOrUnknown(data['osm_id']!, _osmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_osmIdMeta);
     }
     if (data.containsKey('parent_id')) {
       context.handle(
@@ -572,17 +589,21 @@ class $AreasTable extends Areas with TableInfo<$AreasTable, Area> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
   Area map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Area(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      parentId: attachedDatabase.typeMapping.read(
+      osmId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
+        data['${effectivePrefix}osm_id'],
+      )!,
+      parentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
         data['${effectivePrefix}parent_id'],
       ),
       name: attachedDatabase.typeMapping.read(
@@ -611,8 +632,12 @@ class $AreasTable extends Areas with TableInfo<$AreasTable, Area> {
 }
 
 class Area extends DataClass implements Insertable<Area> {
-  final int id;
-  final int? parentId;
+  /// Unique identifier for the area (e.g., from Supabase).
+  final String id;
+
+  /// OSM relation ID for this area (e.g., a city boundary).
+  final int osmId;
+  final String? parentId;
   final String name;
   final String type;
   final int adminLevel;
@@ -621,6 +646,7 @@ class Area extends DataClass implements Insertable<Area> {
   final String coordinates;
   const Area({
     required this.id,
+    required this.osmId,
     this.parentId,
     required this.name,
     required this.type,
@@ -630,9 +656,10 @@ class Area extends DataClass implements Insertable<Area> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    map['id'] = Variable<String>(id);
+    map['osm_id'] = Variable<int>(osmId);
     if (!nullToAbsent || parentId != null) {
-      map['parent_id'] = Variable<int>(parentId);
+      map['parent_id'] = Variable<String>(parentId);
     }
     map['name'] = Variable<String>(name);
     map['type'] = Variable<String>(type);
@@ -644,6 +671,7 @@ class Area extends DataClass implements Insertable<Area> {
   AreasCompanion toCompanion(bool nullToAbsent) {
     return AreasCompanion(
       id: Value(id),
+      osmId: Value(osmId),
       parentId: parentId == null && nullToAbsent
           ? const Value.absent()
           : Value(parentId),
@@ -660,8 +688,9 @@ class Area extends DataClass implements Insertable<Area> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Area(
-      id: serializer.fromJson<int>(json['id']),
-      parentId: serializer.fromJson<int?>(json['parentId']),
+      id: serializer.fromJson<String>(json['id']),
+      osmId: serializer.fromJson<int>(json['osmId']),
+      parentId: serializer.fromJson<String?>(json['parentId']),
       name: serializer.fromJson<String>(json['name']),
       type: serializer.fromJson<String>(json['type']),
       adminLevel: serializer.fromJson<int>(json['adminLevel']),
@@ -679,8 +708,9 @@ class Area extends DataClass implements Insertable<Area> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'parentId': serializer.toJson<int?>(parentId),
+      'id': serializer.toJson<String>(id),
+      'osmId': serializer.toJson<int>(osmId),
+      'parentId': serializer.toJson<String?>(parentId),
       'name': serializer.toJson<String>(name),
       'type': serializer.toJson<String>(type),
       'adminLevel': serializer.toJson<int>(adminLevel),
@@ -689,14 +719,16 @@ class Area extends DataClass implements Insertable<Area> {
   }
 
   Area copyWith({
-    int? id,
-    Value<int?> parentId = const Value.absent(),
+    String? id,
+    int? osmId,
+    Value<String?> parentId = const Value.absent(),
     String? name,
     String? type,
     int? adminLevel,
     String? coordinates,
   }) => Area(
     id: id ?? this.id,
+    osmId: osmId ?? this.osmId,
     parentId: parentId.present ? parentId.value : this.parentId,
     name: name ?? this.name,
     type: type ?? this.type,
@@ -706,6 +738,7 @@ class Area extends DataClass implements Insertable<Area> {
   Area copyWithCompanion(AreasCompanion data) {
     return Area(
       id: data.id.present ? data.id.value : this.id,
+      osmId: data.osmId.present ? data.osmId.value : this.osmId,
       parentId: data.parentId.present ? data.parentId.value : this.parentId,
       name: data.name.present ? data.name.value : this.name,
       type: data.type.present ? data.type.value : this.type,
@@ -722,6 +755,7 @@ class Area extends DataClass implements Insertable<Area> {
   String toString() {
     return (StringBuffer('Area(')
           ..write('id: $id, ')
+          ..write('osmId: $osmId, ')
           ..write('parentId: $parentId, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
@@ -733,12 +767,13 @@ class Area extends DataClass implements Insertable<Area> {
 
   @override
   int get hashCode =>
-      Object.hash(id, parentId, name, type, adminLevel, coordinates);
+      Object.hash(id, osmId, parentId, name, type, adminLevel, coordinates);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Area &&
           other.id == this.id &&
+          other.osmId == this.osmId &&
           other.parentId == this.parentId &&
           other.name == this.name &&
           other.type == this.type &&
@@ -747,64 +782,80 @@ class Area extends DataClass implements Insertable<Area> {
 }
 
 class AreasCompanion extends UpdateCompanion<Area> {
-  final Value<int> id;
-  final Value<int?> parentId;
+  final Value<String> id;
+  final Value<int> osmId;
+  final Value<String?> parentId;
   final Value<String> name;
   final Value<String> type;
   final Value<int> adminLevel;
   final Value<String> coordinates;
+  final Value<int> rowid;
   const AreasCompanion({
     this.id = const Value.absent(),
+    this.osmId = const Value.absent(),
     this.parentId = const Value.absent(),
     this.name = const Value.absent(),
     this.type = const Value.absent(),
     this.adminLevel = const Value.absent(),
     this.coordinates = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   AreasCompanion.insert({
-    this.id = const Value.absent(),
+    required String id,
+    required int osmId,
     this.parentId = const Value.absent(),
     required String name,
     required String type,
     required int adminLevel,
     required String coordinates,
-  }) : name = Value(name),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       osmId = Value(osmId),
+       name = Value(name),
        type = Value(type),
        adminLevel = Value(adminLevel),
        coordinates = Value(coordinates);
   static Insertable<Area> custom({
-    Expression<int>? id,
-    Expression<int>? parentId,
+    Expression<String>? id,
+    Expression<int>? osmId,
+    Expression<String>? parentId,
     Expression<String>? name,
     Expression<String>? type,
     Expression<int>? adminLevel,
     Expression<String>? coordinates,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (osmId != null) 'osm_id': osmId,
       if (parentId != null) 'parent_id': parentId,
       if (name != null) 'name': name,
       if (type != null) 'type': type,
       if (adminLevel != null) 'admin_level': adminLevel,
       if (coordinates != null) 'coordinates': coordinates,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   AreasCompanion copyWith({
-    Value<int>? id,
-    Value<int?>? parentId,
+    Value<String>? id,
+    Value<int>? osmId,
+    Value<String?>? parentId,
     Value<String>? name,
     Value<String>? type,
     Value<int>? adminLevel,
     Value<String>? coordinates,
+    Value<int>? rowid,
   }) {
     return AreasCompanion(
       id: id ?? this.id,
+      osmId: osmId ?? this.osmId,
       parentId: parentId ?? this.parentId,
       name: name ?? this.name,
       type: type ?? this.type,
       adminLevel: adminLevel ?? this.adminLevel,
       coordinates: coordinates ?? this.coordinates,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -812,10 +863,13 @@ class AreasCompanion extends UpdateCompanion<Area> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
+    }
+    if (osmId.present) {
+      map['osm_id'] = Variable<int>(osmId.value);
     }
     if (parentId.present) {
-      map['parent_id'] = Variable<int>(parentId.value);
+      map['parent_id'] = Variable<String>(parentId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -829,6 +883,9 @@ class AreasCompanion extends UpdateCompanion<Area> {
     if (coordinates.present) {
       map['coordinates'] = Variable<String>(coordinates.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
@@ -836,11 +893,13 @@ class AreasCompanion extends UpdateCompanion<Area> {
   String toString() {
     return (StringBuffer('AreasCompanion(')
           ..write('id: $id, ')
+          ..write('osmId: $osmId, ')
           ..write('parentId: $parentId, ')
           ..write('name: $name, ')
           ..write('type: $type, ')
           ..write('adminLevel: $adminLevel, ')
-          ..write('coordinates: $coordinates')
+          ..write('coordinates: $coordinates, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -854,11 +913,11 @@ class $UserAreasTable extends UserAreas
   $UserAreasTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _areaIdMeta = const VerificationMeta('areaId');
   @override
-  late final GeneratedColumn<int> areaId = GeneratedColumn<int>(
+  late final GeneratedColumn<String> areaId = GeneratedColumn<String>(
     'area_id',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES areas (id)',
@@ -980,7 +1039,7 @@ class $UserAreasTable extends UserAreas
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return UserArea(
       areaId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}area_id'],
       )!,
       userId: attachedDatabase.typeMapping.read(
@@ -1009,7 +1068,10 @@ class $UserAreasTable extends UserAreas
 }
 
 class UserArea extends DataClass implements Insertable<UserArea> {
-  final int areaId;
+  /// Foreign key to the `areas` table.
+  final String areaId;
+
+  /// Foreign key to a user ID (from Supabase Auth).
   final String userId;
   final int totalSpots;
   final int visitedSpots;
@@ -1024,7 +1086,7 @@ class UserArea extends DataClass implements Insertable<UserArea> {
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['area_id'] = Variable<int>(areaId);
+    map['area_id'] = Variable<String>(areaId);
     map['user_id'] = Variable<String>(userId);
     map['total_spots'] = Variable<int>(totalSpots);
     map['visited_spots'] = Variable<int>(visitedSpots);
@@ -1052,7 +1114,7 @@ class UserArea extends DataClass implements Insertable<UserArea> {
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return UserArea(
-      areaId: serializer.fromJson<int>(json['areaId']),
+      areaId: serializer.fromJson<String>(json['areaId']),
       userId: serializer.fromJson<String>(json['userId']),
       totalSpots: serializer.fromJson<int>(json['totalSpots']),
       visitedSpots: serializer.fromJson<int>(json['visitedSpots']),
@@ -1070,7 +1132,7 @@ class UserArea extends DataClass implements Insertable<UserArea> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'areaId': serializer.toJson<int>(areaId),
+      'areaId': serializer.toJson<String>(areaId),
       'userId': serializer.toJson<String>(userId),
       'totalSpots': serializer.toJson<int>(totalSpots),
       'visitedSpots': serializer.toJson<int>(visitedSpots),
@@ -1079,7 +1141,7 @@ class UserArea extends DataClass implements Insertable<UserArea> {
   }
 
   UserArea copyWith({
-    int? areaId,
+    String? areaId,
     String? userId,
     int? totalSpots,
     int? visitedSpots,
@@ -1134,7 +1196,7 @@ class UserArea extends DataClass implements Insertable<UserArea> {
 }
 
 class UserAreasCompanion extends UpdateCompanion<UserArea> {
-  final Value<int> areaId;
+  final Value<String> areaId;
   final Value<String> userId;
   final Value<int> totalSpots;
   final Value<int> visitedSpots;
@@ -1149,7 +1211,7 @@ class UserAreasCompanion extends UpdateCompanion<UserArea> {
     this.rowid = const Value.absent(),
   });
   UserAreasCompanion.insert({
-    required int areaId,
+    required String areaId,
     required String userId,
     required int totalSpots,
     required int visitedSpots,
@@ -1160,7 +1222,7 @@ class UserAreasCompanion extends UpdateCompanion<UserArea> {
        totalSpots = Value(totalSpots),
        visitedSpots = Value(visitedSpots);
   static Insertable<UserArea> custom({
-    Expression<int>? areaId,
+    Expression<String>? areaId,
     Expression<String>? userId,
     Expression<int>? totalSpots,
     Expression<int>? visitedSpots,
@@ -1178,7 +1240,7 @@ class UserAreasCompanion extends UpdateCompanion<UserArea> {
   }
 
   UserAreasCompanion copyWith({
-    Value<int>? areaId,
+    Value<String>? areaId,
     Value<String>? userId,
     Value<int>? totalSpots,
     Value<int>? visitedSpots,
@@ -1199,7 +1261,7 @@ class UserAreasCompanion extends UpdateCompanion<UserArea> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (areaId.present) {
-      map['area_id'] = Variable<int>(areaId.value);
+      map['area_id'] = Variable<String>(areaId.value);
     }
     if (userId.present) {
       map['user_id'] = Variable<String>(userId.value);
@@ -1616,19 +1678,28 @@ class CitiesCompanion extends UpdateCompanion<City> {
   }
 }
 
-class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
+class $SpotsTable extends Spots with TableInfo<$SpotsTable, SpotData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $SpotsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
     aliasedName,
     false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _osmIdMeta = const VerificationMeta('osmId');
+  @override
+  late final GeneratedColumn<int> osmId = GeneratedColumn<int>(
+    'osm_id',
+    aliasedName,
+    false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
@@ -1668,38 +1739,35 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
     type: DriftSqlType.double,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _parentAreaIdMeta = const VerificationMeta(
-    'parentAreaId',
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
   );
   @override
-  late final GeneratedColumn<int> parentAreaId = GeneratedColumn<int>(
-    'parent_area_id',
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
     aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES areas (id)',
-    ),
-  );
-  static const VerificationMeta _spotTypeMeta = const VerificationMeta(
-    'spotType',
-  );
-  @override
-  late final GeneratedColumn<String> spotType = GeneratedColumn<String>(
-    'spot_type',
-    aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
   @override
-  late final GeneratedColumn<String> status = GeneratedColumn<String>(
-    'status',
+  late final GeneratedColumnWithTypeConverter<List<String>, String> tags =
+      GeneratedColumn<String>(
+        'tags',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<List<String>>($SpotsTable.$convertertags);
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _createdByMeta = const VerificationMeta(
@@ -1713,12 +1781,21 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _propertiesMeta = const VerificationMeta(
+  @override
+  late final GeneratedColumnWithTypeConverter<Map<String, dynamic>, String>
+  properties = GeneratedColumn<String>(
     'properties',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<Map<String, dynamic>>($SpotsTable.$converterproperties);
+  static const VerificationMeta _parentAreaIdMeta = const VerificationMeta(
+    'parentAreaId',
   );
   @override
-  late final GeneratedColumn<String> properties = GeneratedColumn<String>(
-    'properties',
+  late final GeneratedColumn<String> parentAreaId = GeneratedColumn<String>(
+    'parent_area_id',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -1727,15 +1804,17 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    osmId,
     name,
     category,
     lat,
     lon,
-    parentAreaId,
-    spotType,
-    status,
+    description,
+    tags,
+    createdAt,
     createdBy,
     properties,
+    parentAreaId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1744,13 +1823,23 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
   static const String $name = 'spots';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Spot> instance, {
+    Insertable<SpotData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('osm_id')) {
+      context.handle(
+        _osmIdMeta,
+        osmId.isAcceptableOrUnknown(data['osm_id']!, _osmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_osmIdMeta);
     }
     if (data.containsKey('name')) {
       context.handle(
@@ -1784,6 +1873,29 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
     } else if (isInserting) {
       context.missing(_lonMeta);
     }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    }
     if (data.containsKey('parent_area_id')) {
       context.handle(
         _parentAreaIdMeta,
@@ -1792,36 +1904,6 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
           _parentAreaIdMeta,
         ),
       );
-    } else if (isInserting) {
-      context.missing(_parentAreaIdMeta);
-    }
-    if (data.containsKey('spot_type')) {
-      context.handle(
-        _spotTypeMeta,
-        spotType.isAcceptableOrUnknown(data['spot_type']!, _spotTypeMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_spotTypeMeta);
-    }
-    if (data.containsKey('status')) {
-      context.handle(
-        _statusMeta,
-        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_statusMeta);
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    }
-    if (data.containsKey('properties')) {
-      context.handle(
-        _propertiesMeta,
-        properties.isAcceptableOrUnknown(data['properties']!, _propertiesMeta),
-      );
     }
     return context;
   }
@@ -1829,12 +1911,16 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Spot map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SpotData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Spot(
+    return SpotData(
       id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
+        DriftSqlType.string,
         data['${effectivePrefix}id'],
+      )!,
+      osmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}osm_id'],
       )!,
       name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -1852,25 +1938,33 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
         DriftSqlType.double,
         data['${effectivePrefix}lon'],
       )!,
-      parentAreaId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}parent_area_id'],
-      )!,
-      spotType: attachedDatabase.typeMapping.read(
+      description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}spot_type'],
-      )!,
-      status: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}status'],
+        data['${effectivePrefix}description'],
+      ),
+      tags: $SpotsTable.$convertertags.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}tags'],
+        )!,
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
       )!,
       createdBy: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}created_by'],
       ),
-      properties: attachedDatabase.typeMapping.read(
+      properties: $SpotsTable.$converterproperties.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}properties'],
+        )!,
+      ),
+      parentAreaId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}properties'],
+        data['${effectivePrefix}parent_area_id'],
       ),
     );
   }
@@ -1879,47 +1973,66 @@ class $SpotsTable extends Spots with TableInfo<$SpotsTable, Spot> {
   $SpotsTable createAlias(String alias) {
     return $SpotsTable(attachedDatabase, alias);
   }
+
+  static TypeConverter<List<String>, String> $convertertags =
+      const ListStringConverter();
+  static TypeConverter<Map<String, dynamic>, String> $converterproperties =
+      const MapDynamicConverter();
 }
 
-class Spot extends DataClass implements Insertable<Spot> {
-  final int id;
+class SpotData extends DataClass implements Insertable<SpotData> {
+  final String id;
+  final int osmId;
   final String name;
   final String category;
   final double lat;
   final double lon;
-  final int parentAreaId;
-  final String spotType;
-  final String status;
+  final String? description;
+  final List<String> tags;
+  final DateTime createdAt;
   final String? createdBy;
-  final String? properties;
-  const Spot({
+  final Map<String, dynamic> properties;
+  final String? parentAreaId;
+  const SpotData({
     required this.id,
+    required this.osmId,
     required this.name,
     required this.category,
     required this.lat,
     required this.lon,
-    required this.parentAreaId,
-    required this.spotType,
-    required this.status,
+    this.description,
+    required this.tags,
+    required this.createdAt,
     this.createdBy,
-    this.properties,
+    required this.properties,
+    this.parentAreaId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
+    map['id'] = Variable<String>(id);
+    map['osm_id'] = Variable<int>(osmId);
     map['name'] = Variable<String>(name);
     map['category'] = Variable<String>(category);
     map['lat'] = Variable<double>(lat);
     map['lon'] = Variable<double>(lon);
-    map['parent_area_id'] = Variable<int>(parentAreaId);
-    map['spot_type'] = Variable<String>(spotType);
-    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    {
+      map['tags'] = Variable<String>($SpotsTable.$convertertags.toSql(tags));
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || createdBy != null) {
       map['created_by'] = Variable<String>(createdBy);
     }
-    if (!nullToAbsent || properties != null) {
-      map['properties'] = Variable<String>(properties);
+    {
+      map['properties'] = Variable<String>(
+        $SpotsTable.$converterproperties.toSql(properties),
+      );
+    }
+    if (!nullToAbsent || parentAreaId != null) {
+      map['parent_area_id'] = Variable<String>(parentAreaId);
     }
     return map;
   }
@@ -1927,44 +2040,50 @@ class Spot extends DataClass implements Insertable<Spot> {
   SpotsCompanion toCompanion(bool nullToAbsent) {
     return SpotsCompanion(
       id: Value(id),
+      osmId: Value(osmId),
       name: Value(name),
       category: Value(category),
       lat: Value(lat),
       lon: Value(lon),
-      parentAreaId: Value(parentAreaId),
-      spotType: Value(spotType),
-      status: Value(status),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      tags: Value(tags),
+      createdAt: Value(createdAt),
       createdBy: createdBy == null && nullToAbsent
           ? const Value.absent()
           : Value(createdBy),
-      properties: properties == null && nullToAbsent
+      properties: Value(properties),
+      parentAreaId: parentAreaId == null && nullToAbsent
           ? const Value.absent()
-          : Value(properties),
+          : Value(parentAreaId),
     );
   }
 
-  factory Spot.fromJson(
+  factory SpotData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Spot(
-      id: serializer.fromJson<int>(json['id']),
+    return SpotData(
+      id: serializer.fromJson<String>(json['id']),
+      osmId: serializer.fromJson<int>(json['osmId']),
       name: serializer.fromJson<String>(json['name']),
       category: serializer.fromJson<String>(json['category']),
       lat: serializer.fromJson<double>(json['lat']),
       lon: serializer.fromJson<double>(json['lon']),
-      parentAreaId: serializer.fromJson<int>(json['parentAreaId']),
-      spotType: serializer.fromJson<String>(json['spotType']),
-      status: serializer.fromJson<String>(json['status']),
+      description: serializer.fromJson<String?>(json['description']),
+      tags: serializer.fromJson<List<String>>(json['tags']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       createdBy: serializer.fromJson<String?>(json['createdBy']),
-      properties: serializer.fromJson<String?>(json['properties']),
+      properties: serializer.fromJson<Map<String, dynamic>>(json['properties']),
+      parentAreaId: serializer.fromJson<String?>(json['parentAreaId']),
     );
   }
-  factory Spot.fromJsonString(
+  factory SpotData.fromJsonString(
     String encodedJson, {
     ValueSerializer? serializer,
-  }) => Spot.fromJson(
+  }) => SpotData.fromJson(
     DataClass.parseJson(encodedJson) as Map<String, dynamic>,
     serializer: serializer,
   );
@@ -1972,74 +2091,86 @@ class Spot extends DataClass implements Insertable<Spot> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
+      'id': serializer.toJson<String>(id),
+      'osmId': serializer.toJson<int>(osmId),
       'name': serializer.toJson<String>(name),
       'category': serializer.toJson<String>(category),
       'lat': serializer.toJson<double>(lat),
       'lon': serializer.toJson<double>(lon),
-      'parentAreaId': serializer.toJson<int>(parentAreaId),
-      'spotType': serializer.toJson<String>(spotType),
-      'status': serializer.toJson<String>(status),
+      'description': serializer.toJson<String?>(description),
+      'tags': serializer.toJson<List<String>>(tags),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
       'createdBy': serializer.toJson<String?>(createdBy),
-      'properties': serializer.toJson<String?>(properties),
+      'properties': serializer.toJson<Map<String, dynamic>>(properties),
+      'parentAreaId': serializer.toJson<String?>(parentAreaId),
     };
   }
 
-  Spot copyWith({
-    int? id,
+  SpotData copyWith({
+    String? id,
+    int? osmId,
     String? name,
     String? category,
     double? lat,
     double? lon,
-    int? parentAreaId,
-    String? spotType,
-    String? status,
+    Value<String?> description = const Value.absent(),
+    List<String>? tags,
+    DateTime? createdAt,
     Value<String?> createdBy = const Value.absent(),
-    Value<String?> properties = const Value.absent(),
-  }) => Spot(
+    Map<String, dynamic>? properties,
+    Value<String?> parentAreaId = const Value.absent(),
+  }) => SpotData(
     id: id ?? this.id,
+    osmId: osmId ?? this.osmId,
     name: name ?? this.name,
     category: category ?? this.category,
     lat: lat ?? this.lat,
     lon: lon ?? this.lon,
-    parentAreaId: parentAreaId ?? this.parentAreaId,
-    spotType: spotType ?? this.spotType,
-    status: status ?? this.status,
+    description: description.present ? description.value : this.description,
+    tags: tags ?? this.tags,
+    createdAt: createdAt ?? this.createdAt,
     createdBy: createdBy.present ? createdBy.value : this.createdBy,
-    properties: properties.present ? properties.value : this.properties,
+    properties: properties ?? this.properties,
+    parentAreaId: parentAreaId.present ? parentAreaId.value : this.parentAreaId,
   );
-  Spot copyWithCompanion(SpotsCompanion data) {
-    return Spot(
+  SpotData copyWithCompanion(SpotsCompanion data) {
+    return SpotData(
       id: data.id.present ? data.id.value : this.id,
+      osmId: data.osmId.present ? data.osmId.value : this.osmId,
       name: data.name.present ? data.name.value : this.name,
       category: data.category.present ? data.category.value : this.category,
       lat: data.lat.present ? data.lat.value : this.lat,
       lon: data.lon.present ? data.lon.value : this.lon,
-      parentAreaId: data.parentAreaId.present
-          ? data.parentAreaId.value
-          : this.parentAreaId,
-      spotType: data.spotType.present ? data.spotType.value : this.spotType,
-      status: data.status.present ? data.status.value : this.status,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      tags: data.tags.present ? data.tags.value : this.tags,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
       properties: data.properties.present
           ? data.properties.value
           : this.properties,
+      parentAreaId: data.parentAreaId.present
+          ? data.parentAreaId.value
+          : this.parentAreaId,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Spot(')
+    return (StringBuffer('SpotData(')
           ..write('id: $id, ')
+          ..write('osmId: $osmId, ')
           ..write('name: $name, ')
           ..write('category: $category, ')
           ..write('lat: $lat, ')
           ..write('lon: $lon, ')
-          ..write('parentAreaId: $parentAreaId, ')
-          ..write('spotType: $spotType, ')
-          ..write('status: $status, ')
+          ..write('description: $description, ')
+          ..write('tags: $tags, ')
+          ..write('createdAt: $createdAt, ')
           ..write('createdBy: $createdBy, ')
-          ..write('properties: $properties')
+          ..write('properties: $properties, ')
+          ..write('parentAreaId: $parentAreaId')
           ..write(')'))
         .toString();
   }
@@ -2047,122 +2178,149 @@ class Spot extends DataClass implements Insertable<Spot> {
   @override
   int get hashCode => Object.hash(
     id,
+    osmId,
     name,
     category,
     lat,
     lon,
-    parentAreaId,
-    spotType,
-    status,
+    description,
+    tags,
+    createdAt,
     createdBy,
     properties,
+    parentAreaId,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Spot &&
+      (other is SpotData &&
           other.id == this.id &&
+          other.osmId == this.osmId &&
           other.name == this.name &&
           other.category == this.category &&
           other.lat == this.lat &&
           other.lon == this.lon &&
-          other.parentAreaId == this.parentAreaId &&
-          other.spotType == this.spotType &&
-          other.status == this.status &&
+          other.description == this.description &&
+          other.tags == this.tags &&
+          other.createdAt == this.createdAt &&
           other.createdBy == this.createdBy &&
-          other.properties == this.properties);
+          other.properties == this.properties &&
+          other.parentAreaId == this.parentAreaId);
 }
 
-class SpotsCompanion extends UpdateCompanion<Spot> {
-  final Value<int> id;
+class SpotsCompanion extends UpdateCompanion<SpotData> {
+  final Value<String> id;
+  final Value<int> osmId;
   final Value<String> name;
   final Value<String> category;
   final Value<double> lat;
   final Value<double> lon;
-  final Value<int> parentAreaId;
-  final Value<String> spotType;
-  final Value<String> status;
+  final Value<String?> description;
+  final Value<List<String>> tags;
+  final Value<DateTime> createdAt;
   final Value<String?> createdBy;
-  final Value<String?> properties;
+  final Value<Map<String, dynamic>> properties;
+  final Value<String?> parentAreaId;
+  final Value<int> rowid;
   const SpotsCompanion({
     this.id = const Value.absent(),
+    this.osmId = const Value.absent(),
     this.name = const Value.absent(),
     this.category = const Value.absent(),
     this.lat = const Value.absent(),
     this.lon = const Value.absent(),
-    this.parentAreaId = const Value.absent(),
-    this.spotType = const Value.absent(),
-    this.status = const Value.absent(),
+    this.description = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.createdAt = const Value.absent(),
     this.createdBy = const Value.absent(),
     this.properties = const Value.absent(),
+    this.parentAreaId = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
   SpotsCompanion.insert({
-    this.id = const Value.absent(),
+    required String id,
+    required int osmId,
     required String name,
     required String category,
     required double lat,
     required double lon,
-    required int parentAreaId,
-    required String spotType,
-    required String status,
+    this.description = const Value.absent(),
+    required List<String> tags,
+    required DateTime createdAt,
     this.createdBy = const Value.absent(),
-    this.properties = const Value.absent(),
-  }) : name = Value(name),
+    required Map<String, dynamic> properties,
+    this.parentAreaId = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       osmId = Value(osmId),
+       name = Value(name),
        category = Value(category),
        lat = Value(lat),
        lon = Value(lon),
-       parentAreaId = Value(parentAreaId),
-       spotType = Value(spotType),
-       status = Value(status);
-  static Insertable<Spot> custom({
-    Expression<int>? id,
+       tags = Value(tags),
+       createdAt = Value(createdAt),
+       properties = Value(properties);
+  static Insertable<SpotData> custom({
+    Expression<String>? id,
+    Expression<int>? osmId,
     Expression<String>? name,
     Expression<String>? category,
     Expression<double>? lat,
     Expression<double>? lon,
-    Expression<int>? parentAreaId,
-    Expression<String>? spotType,
-    Expression<String>? status,
+    Expression<String>? description,
+    Expression<String>? tags,
+    Expression<DateTime>? createdAt,
     Expression<String>? createdBy,
     Expression<String>? properties,
+    Expression<String>? parentAreaId,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (osmId != null) 'osm_id': osmId,
       if (name != null) 'name': name,
       if (category != null) 'category': category,
       if (lat != null) 'lat': lat,
       if (lon != null) 'lon': lon,
-      if (parentAreaId != null) 'parent_area_id': parentAreaId,
-      if (spotType != null) 'spot_type': spotType,
-      if (status != null) 'status': status,
+      if (description != null) 'description': description,
+      if (tags != null) 'tags': tags,
+      if (createdAt != null) 'created_at': createdAt,
       if (createdBy != null) 'created_by': createdBy,
       if (properties != null) 'properties': properties,
+      if (parentAreaId != null) 'parent_area_id': parentAreaId,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
   SpotsCompanion copyWith({
-    Value<int>? id,
+    Value<String>? id,
+    Value<int>? osmId,
     Value<String>? name,
     Value<String>? category,
     Value<double>? lat,
     Value<double>? lon,
-    Value<int>? parentAreaId,
-    Value<String>? spotType,
-    Value<String>? status,
+    Value<String?>? description,
+    Value<List<String>>? tags,
+    Value<DateTime>? createdAt,
     Value<String?>? createdBy,
-    Value<String?>? properties,
+    Value<Map<String, dynamic>>? properties,
+    Value<String?>? parentAreaId,
+    Value<int>? rowid,
   }) {
     return SpotsCompanion(
       id: id ?? this.id,
+      osmId: osmId ?? this.osmId,
       name: name ?? this.name,
       category: category ?? this.category,
       lat: lat ?? this.lat,
       lon: lon ?? this.lon,
-      parentAreaId: parentAreaId ?? this.parentAreaId,
-      spotType: spotType ?? this.spotType,
-      status: status ?? this.status,
+      description: description ?? this.description,
+      tags: tags ?? this.tags,
+      createdAt: createdAt ?? this.createdAt,
       createdBy: createdBy ?? this.createdBy,
       properties: properties ?? this.properties,
+      parentAreaId: parentAreaId ?? this.parentAreaId,
+      rowid: rowid ?? this.rowid,
     );
   }
 
@@ -2170,7 +2328,10 @@ class SpotsCompanion extends UpdateCompanion<Spot> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<String>(id.value);
+    }
+    if (osmId.present) {
+      map['osm_id'] = Variable<int>(osmId.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -2184,20 +2345,30 @@ class SpotsCompanion extends UpdateCompanion<Spot> {
     if (lon.present) {
       map['lon'] = Variable<double>(lon.value);
     }
-    if (parentAreaId.present) {
-      map['parent_area_id'] = Variable<int>(parentAreaId.value);
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
-    if (spotType.present) {
-      map['spot_type'] = Variable<String>(spotType.value);
+    if (tags.present) {
+      map['tags'] = Variable<String>(
+        $SpotsTable.$convertertags.toSql(tags.value),
+      );
     }
-    if (status.present) {
-      map['status'] = Variable<String>(status.value);
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (createdBy.present) {
       map['created_by'] = Variable<String>(createdBy.value);
     }
     if (properties.present) {
-      map['properties'] = Variable<String>(properties.value);
+      map['properties'] = Variable<String>(
+        $SpotsTable.$converterproperties.toSql(properties.value),
+      );
+    }
+    if (parentAreaId.present) {
+      map['parent_area_id'] = Variable<String>(parentAreaId.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
     }
     return map;
   }
@@ -2206,15 +2377,18 @@ class SpotsCompanion extends UpdateCompanion<Spot> {
   String toString() {
     return (StringBuffer('SpotsCompanion(')
           ..write('id: $id, ')
+          ..write('osmId: $osmId, ')
           ..write('name: $name, ')
           ..write('category: $category, ')
           ..write('lat: $lat, ')
           ..write('lon: $lon, ')
-          ..write('parentAreaId: $parentAreaId, ')
-          ..write('spotType: $spotType, ')
-          ..write('status: $status, ')
+          ..write('description: $description, ')
+          ..write('tags: $tags, ')
+          ..write('createdAt: $createdAt, ')
           ..write('createdBy: $createdBy, ')
-          ..write('properties: $properties')
+          ..write('properties: $properties, ')
+          ..write('parentAreaId: $parentAreaId, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2245,7 +2419,7 @@ typedef $$CheckInsTableCreateCompanionBuilder =
     CheckInsCompanion Function({
       required String id,
       required String userId,
-      required int spotId,
+      required String spotId,
       Value<DateTime> updatedAt,
       Value<DateTime?> syncedAt,
       Value<DateTime?> deletedAt,
@@ -2255,7 +2429,7 @@ typedef $$CheckInsTableUpdateCompanionBuilder =
     CheckInsCompanion Function({
       Value<String> id,
       Value<String> userId,
-      Value<int> spotId,
+      Value<String> spotId,
       Value<DateTime> updatedAt,
       Value<DateTime?> syncedAt,
       Value<DateTime?> deletedAt,
@@ -2281,7 +2455,7 @@ class $$CheckInsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get spotId => $composableBuilder(
+  ColumnFilters<String> get spotId => $composableBuilder(
     column: $table.spotId,
     builder: (column) => ColumnFilters(column),
   );
@@ -2321,7 +2495,7 @@ class $$CheckInsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get spotId => $composableBuilder(
+  ColumnOrderings<String> get spotId => $composableBuilder(
     column: $table.spotId,
     builder: (column) => ColumnOrderings(column),
   );
@@ -2357,7 +2531,7 @@ class $$CheckInsTableAnnotationComposer
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
 
-  GeneratedColumn<int> get spotId =>
+  GeneratedColumn<String> get spotId =>
       $composableBuilder(column: $table.spotId, builder: (column) => column);
 
   GeneratedColumn<DateTime> get updatedAt =>
@@ -2400,7 +2574,7 @@ class $$CheckInsTableTableManager
               ({
                 Value<String> id = const Value.absent(),
                 Value<String> userId = const Value.absent(),
-                Value<int> spotId = const Value.absent(),
+                Value<String> spotId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -2418,7 +2592,7 @@ class $$CheckInsTableTableManager
               ({
                 required String id,
                 required String userId,
-                required int spotId,
+                required String spotId,
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> syncedAt = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
@@ -2456,21 +2630,25 @@ typedef $$CheckInsTableProcessedTableManager =
     >;
 typedef $$AreasTableCreateCompanionBuilder =
     AreasCompanion Function({
-      Value<int> id,
-      Value<int?> parentId,
+      required String id,
+      required int osmId,
+      Value<String?> parentId,
       required String name,
       required String type,
       required int adminLevel,
       required String coordinates,
+      Value<int> rowid,
     });
 typedef $$AreasTableUpdateCompanionBuilder =
     AreasCompanion Function({
-      Value<int> id,
-      Value<int?> parentId,
+      Value<String> id,
+      Value<int> osmId,
+      Value<String?> parentId,
       Value<String> name,
       Value<String> type,
       Value<int> adminLevel,
       Value<String> coordinates,
+      Value<int> rowid,
     });
 
 final class $$AreasTableReferences
@@ -2482,7 +2660,7 @@ final class $$AreasTableReferences
   );
 
   $$AreasTableProcessedTableManager? get parentId {
-    final $_column = $_itemColumn<int>('parent_id');
+    final $_column = $_itemColumn<String>('parent_id');
     if ($_column == null) return null;
     final manager = $$AreasTableTableManager(
       $_db,
@@ -2505,28 +2683,9 @@ final class $$AreasTableReferences
     final manager = $$UserAreasTableTableManager(
       $_db,
       $_db.userAreas,
-    ).filter((f) => f.areaId.id.sqlEquals($_itemColumn<int>('id')!));
+    ).filter((f) => f.areaId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_userAreasRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$SpotsTable, List<Spot>> _spotsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.spots,
-    aliasName: $_aliasNameGenerator(db.areas.id, db.spots.parentAreaId),
-  );
-
-  $$SpotsTableProcessedTableManager get spotsRefs {
-    final manager = $$SpotsTableTableManager(
-      $_db,
-      $_db.spots,
-    ).filter((f) => f.parentAreaId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_spotsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2541,8 +2700,13 @@ class $$AreasTableFilterComposer extends Composer<_$AppDatabase, $AreasTable> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
+  ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get osmId => $composableBuilder(
+    column: $table.osmId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2613,31 +2777,6 @@ class $$AreasTableFilterComposer extends Composer<_$AppDatabase, $AreasTable> {
     );
     return f(composer);
   }
-
-  Expression<bool> spotsRefs(
-    Expression<bool> Function($$SpotsTableFilterComposer f) f,
-  ) {
-    final $$SpotsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.spots,
-      getReferencedColumn: (t) => t.parentAreaId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SpotsTableFilterComposer(
-            $db: $db,
-            $table: $db.spots,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$AreasTableOrderingComposer
@@ -2649,8 +2788,13 @@ class $$AreasTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
+  ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get osmId => $composableBuilder(
+    column: $table.osmId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2707,8 +2851,11 @@ class $$AreasTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
+  GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get osmId =>
+      $composableBuilder(column: $table.osmId, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -2773,31 +2920,6 @@ class $$AreasTableAnnotationComposer
     );
     return f(composer);
   }
-
-  Expression<T> spotsRefs<T extends Object>(
-    Expression<T> Function($$SpotsTableAnnotationComposer a) f,
-  ) {
-    final $$SpotsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.spots,
-      getReferencedColumn: (t) => t.parentAreaId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$SpotsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.spots,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$AreasTableTableManager
@@ -2813,11 +2935,7 @@ class $$AreasTableTableManager
           $$AreasTableUpdateCompanionBuilder,
           (Area, $$AreasTableReferences),
           Area,
-          PrefetchHooks Function({
-            bool parentId,
-            bool userAreasRefs,
-            bool spotsRefs,
-          })
+          PrefetchHooks Function({bool parentId, bool userAreasRefs})
         > {
   $$AreasTableTableManager(_$AppDatabase db, $AreasTable table)
     : super(
@@ -2832,35 +2950,43 @@ class $$AreasTableTableManager
               $$AreasTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
-                Value<int?> parentId = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<int> osmId = const Value.absent(),
+                Value<String?> parentId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<int> adminLevel = const Value.absent(),
                 Value<String> coordinates = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => AreasCompanion(
                 id: id,
+                osmId: osmId,
                 parentId: parentId,
                 name: name,
                 type: type,
                 adminLevel: adminLevel,
                 coordinates: coordinates,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
-                Value<int?> parentId = const Value.absent(),
+                required String id,
+                required int osmId,
+                Value<String?> parentId = const Value.absent(),
                 required String name,
                 required String type,
                 required int adminLevel,
                 required String coordinates,
+                Value<int> rowid = const Value.absent(),
               }) => AreasCompanion.insert(
                 id: id,
+                osmId: osmId,
                 parentId: parentId,
                 name: name,
                 type: type,
                 adminLevel: adminLevel,
                 coordinates: coordinates,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2868,82 +2994,59 @@ class $$AreasTableTableManager
                     (e.readTable(table), $$AreasTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback:
-              ({parentId = false, userAreasRefs = false, spotsRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (userAreasRefs) db.userAreas,
-                    if (spotsRefs) db.spots,
-                  ],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (parentId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.parentId,
-                                    referencedTable: $$AreasTableReferences
-                                        ._parentIdTable(db),
-                                    referencedColumn: $$AreasTableReferences
-                                        ._parentIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
+          prefetchHooksCallback: ({parentId = false, userAreasRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (userAreasRefs) db.userAreas],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (parentId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.parentId,
+                                referencedTable: $$AreasTableReferences
+                                    ._parentIdTable(db),
+                                referencedColumn: $$AreasTableReferences
+                                    ._parentIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
 
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (userAreasRefs)
-                        await $_getPrefetchedData<Area, $AreasTable, UserArea>(
-                          currentTable: table,
-                          referencedTable: $$AreasTableReferences
-                              ._userAreasRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$AreasTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).userAreasRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.areaId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (spotsRefs)
-                        await $_getPrefetchedData<Area, $AreasTable, Spot>(
-                          currentTable: table,
-                          referencedTable: $$AreasTableReferences
-                              ._spotsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$AreasTableReferences(db, table, p0).spotsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.parentAreaId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
+                    return state;
                   },
-                );
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (userAreasRefs)
+                    await $_getPrefetchedData<Area, $AreasTable, UserArea>(
+                      currentTable: table,
+                      referencedTable: $$AreasTableReferences
+                          ._userAreasRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$AreasTableReferences(db, table, p0).userAreasRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.areaId == item.id),
+                      typedResults: items,
+                    ),
+                ];
               },
+            );
+          },
         ),
       );
 }
@@ -2960,15 +3063,11 @@ typedef $$AreasTableProcessedTableManager =
       $$AreasTableUpdateCompanionBuilder,
       (Area, $$AreasTableReferences),
       Area,
-      PrefetchHooks Function({
-        bool parentId,
-        bool userAreasRefs,
-        bool spotsRefs,
-      })
+      PrefetchHooks Function({bool parentId, bool userAreasRefs})
     >;
 typedef $$UserAreasTableCreateCompanionBuilder =
     UserAreasCompanion Function({
-      required int areaId,
+      required String areaId,
       required String userId,
       required int totalSpots,
       required int visitedSpots,
@@ -2977,7 +3076,7 @@ typedef $$UserAreasTableCreateCompanionBuilder =
     });
 typedef $$UserAreasTableUpdateCompanionBuilder =
     UserAreasCompanion Function({
-      Value<int> areaId,
+      Value<String> areaId,
       Value<String> userId,
       Value<int> totalSpots,
       Value<int> visitedSpots,
@@ -2994,7 +3093,7 @@ final class $$UserAreasTableReferences
   );
 
   $$AreasTableProcessedTableManager get areaId {
-    final $_column = $_itemColumn<int>('area_id')!;
+    final $_column = $_itemColumn<String>('area_id')!;
 
     final manager = $$AreasTableTableManager(
       $_db,
@@ -3193,7 +3292,7 @@ class $$UserAreasTableTableManager
               $$UserAreasTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> areaId = const Value.absent(),
+                Value<String> areaId = const Value.absent(),
                 Value<String> userId = const Value.absent(),
                 Value<int> totalSpots = const Value.absent(),
                 Value<int> visitedSpots = const Value.absent(),
@@ -3209,7 +3308,7 @@ class $$UserAreasTableTableManager
               ),
           createCompanionCallback:
               ({
-                required int areaId,
+                required String areaId,
                 required String userId,
                 required int totalSpots,
                 required int visitedSpots,
@@ -3490,52 +3589,36 @@ typedef $$CitiesTableProcessedTableManager =
     >;
 typedef $$SpotsTableCreateCompanionBuilder =
     SpotsCompanion Function({
-      Value<int> id,
+      required String id,
+      required int osmId,
       required String name,
       required String category,
       required double lat,
       required double lon,
-      required int parentAreaId,
-      required String spotType,
-      required String status,
+      Value<String?> description,
+      required List<String> tags,
+      required DateTime createdAt,
       Value<String?> createdBy,
-      Value<String?> properties,
+      required Map<String, dynamic> properties,
+      Value<String?> parentAreaId,
+      Value<int> rowid,
     });
 typedef $$SpotsTableUpdateCompanionBuilder =
     SpotsCompanion Function({
-      Value<int> id,
+      Value<String> id,
+      Value<int> osmId,
       Value<String> name,
       Value<String> category,
       Value<double> lat,
       Value<double> lon,
-      Value<int> parentAreaId,
-      Value<String> spotType,
-      Value<String> status,
+      Value<String?> description,
+      Value<List<String>> tags,
+      Value<DateTime> createdAt,
       Value<String?> createdBy,
-      Value<String?> properties,
+      Value<Map<String, dynamic>> properties,
+      Value<String?> parentAreaId,
+      Value<int> rowid,
     });
-
-final class $$SpotsTableReferences
-    extends BaseReferences<_$AppDatabase, $SpotsTable, Spot> {
-  $$SpotsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $AreasTable _parentAreaIdTable(_$AppDatabase db) => db.areas
-      .createAlias($_aliasNameGenerator(db.spots.parentAreaId, db.areas.id));
-
-  $$AreasTableProcessedTableManager get parentAreaId {
-    final $_column = $_itemColumn<int>('parent_area_id')!;
-
-    final manager = $$AreasTableTableManager(
-      $_db,
-      $_db.areas,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_parentAreaIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
 
 class $$SpotsTableFilterComposer extends Composer<_$AppDatabase, $SpotsTable> {
   $$SpotsTableFilterComposer({
@@ -3545,8 +3628,13 @@ class $$SpotsTableFilterComposer extends Composer<_$AppDatabase, $SpotsTable> {
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
+  ColumnFilters<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get osmId => $composableBuilder(
+    column: $table.osmId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3570,13 +3658,19 @@ class $$SpotsTableFilterComposer extends Composer<_$AppDatabase, $SpotsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get spotType => $composableBuilder(
-    column: $table.spotType,
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get status => $composableBuilder(
-    column: $table.status,
+  ColumnWithTypeConverterFilters<List<String>, List<String>, String> get tags =>
+      $composableBuilder(
+        column: $table.tags,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3585,33 +3679,20 @@ class $$SpotsTableFilterComposer extends Composer<_$AppDatabase, $SpotsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get properties => $composableBuilder(
+  ColumnWithTypeConverterFilters<
+    Map<String, dynamic>,
+    Map<String, dynamic>,
+    String
+  >
+  get properties => $composableBuilder(
     column: $table.properties,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
-  $$AreasTableFilterComposer get parentAreaId {
-    final $$AreasTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.parentAreaId,
-      referencedTable: $db.areas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$AreasTableFilterComposer(
-            $db: $db,
-            $table: $db.areas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnFilters<String> get parentAreaId => $composableBuilder(
+    column: $table.parentAreaId,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$SpotsTableOrderingComposer
@@ -3623,8 +3704,13 @@ class $$SpotsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
+  ColumnOrderings<String> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get osmId => $composableBuilder(
+    column: $table.osmId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3648,13 +3734,18 @@ class $$SpotsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get spotType => $composableBuilder(
-    column: $table.spotType,
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get status => $composableBuilder(
-    column: $table.status,
+  ColumnOrderings<String> get tags => $composableBuilder(
+    column: $table.tags,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3668,28 +3759,10 @@ class $$SpotsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$AreasTableOrderingComposer get parentAreaId {
-    final $$AreasTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.parentAreaId,
-      referencedTable: $db.areas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$AreasTableOrderingComposer(
-            $db: $db,
-            $table: $db.areas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  ColumnOrderings<String> get parentAreaId => $composableBuilder(
+    column: $table.parentAreaId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SpotsTableAnnotationComposer
@@ -3701,8 +3774,11 @@ class $$SpotsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
+  GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get osmId =>
+      $composableBuilder(column: $table.osmId, builder: (column) => column);
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
@@ -3716,42 +3792,30 @@ class $$SpotsTableAnnotationComposer
   GeneratedColumn<double> get lon =>
       $composableBuilder(column: $table.lon, builder: (column) => column);
 
-  GeneratedColumn<String> get spotType =>
-      $composableBuilder(column: $table.spotType, builder: (column) => column);
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
+  GeneratedColumnWithTypeConverter<List<String>, String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
   GeneratedColumn<String> get createdBy =>
       $composableBuilder(column: $table.createdBy, builder: (column) => column);
 
-  GeneratedColumn<String> get properties => $composableBuilder(
+  GeneratedColumnWithTypeConverter<Map<String, dynamic>, String>
+  get properties => $composableBuilder(
     column: $table.properties,
     builder: (column) => column,
   );
 
-  $$AreasTableAnnotationComposer get parentAreaId {
-    final $$AreasTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.parentAreaId,
-      referencedTable: $db.areas,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$AreasTableAnnotationComposer(
-            $db: $db,
-            $table: $db.areas,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
+  GeneratedColumn<String> get parentAreaId => $composableBuilder(
+    column: $table.parentAreaId,
+    builder: (column) => column,
+  );
 }
 
 class $$SpotsTableTableManager
@@ -3759,15 +3823,15 @@ class $$SpotsTableTableManager
         RootTableManager<
           _$AppDatabase,
           $SpotsTable,
-          Spot,
+          SpotData,
           $$SpotsTableFilterComposer,
           $$SpotsTableOrderingComposer,
           $$SpotsTableAnnotationComposer,
           $$SpotsTableCreateCompanionBuilder,
           $$SpotsTableUpdateCompanionBuilder,
-          (Spot, $$SpotsTableReferences),
-          Spot,
-          PrefetchHooks Function({bool parentAreaId})
+          (SpotData, BaseReferences<_$AppDatabase, $SpotsTable, SpotData>),
+          SpotData,
+          PrefetchHooks Function()
         > {
   $$SpotsTableTableManager(_$AppDatabase db, $SpotsTable table)
     : super(
@@ -3782,99 +3846,68 @@ class $$SpotsTableTableManager
               $$SpotsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<int> osmId = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<String> category = const Value.absent(),
                 Value<double> lat = const Value.absent(),
                 Value<double> lon = const Value.absent(),
-                Value<int> parentAreaId = const Value.absent(),
-                Value<String> spotType = const Value.absent(),
-                Value<String> status = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<List<String>> tags = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
                 Value<String?> createdBy = const Value.absent(),
-                Value<String?> properties = const Value.absent(),
+                Value<Map<String, dynamic>> properties = const Value.absent(),
+                Value<String?> parentAreaId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => SpotsCompanion(
                 id: id,
+                osmId: osmId,
                 name: name,
                 category: category,
                 lat: lat,
                 lon: lon,
-                parentAreaId: parentAreaId,
-                spotType: spotType,
-                status: status,
+                description: description,
+                tags: tags,
+                createdAt: createdAt,
                 createdBy: createdBy,
                 properties: properties,
+                parentAreaId: parentAreaId,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
+                required String id,
+                required int osmId,
                 required String name,
                 required String category,
                 required double lat,
                 required double lon,
-                required int parentAreaId,
-                required String spotType,
-                required String status,
+                Value<String?> description = const Value.absent(),
+                required List<String> tags,
+                required DateTime createdAt,
                 Value<String?> createdBy = const Value.absent(),
-                Value<String?> properties = const Value.absent(),
+                required Map<String, dynamic> properties,
+                Value<String?> parentAreaId = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
               }) => SpotsCompanion.insert(
                 id: id,
+                osmId: osmId,
                 name: name,
                 category: category,
                 lat: lat,
                 lon: lon,
-                parentAreaId: parentAreaId,
-                spotType: spotType,
-                status: status,
+                description: description,
+                tags: tags,
+                createdAt: createdAt,
                 createdBy: createdBy,
                 properties: properties,
+                parentAreaId: parentAreaId,
+                rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map(
-                (e) =>
-                    (e.readTable(table), $$SpotsTableReferences(db, table, e)),
-              )
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
               .toList(),
-          prefetchHooksCallback: ({parentAreaId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (parentAreaId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.parentAreaId,
-                                referencedTable: $$SpotsTableReferences
-                                    ._parentAreaIdTable(db),
-                                referencedColumn: $$SpotsTableReferences
-                                    ._parentAreaIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
+          prefetchHooksCallback: null,
         ),
       );
 }
@@ -3883,15 +3916,15 @@ typedef $$SpotsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $SpotsTable,
-      Spot,
+      SpotData,
       $$SpotsTableFilterComposer,
       $$SpotsTableOrderingComposer,
       $$SpotsTableAnnotationComposer,
       $$SpotsTableCreateCompanionBuilder,
       $$SpotsTableUpdateCompanionBuilder,
-      (Spot, $$SpotsTableReferences),
-      Spot,
-      PrefetchHooks Function({bool parentAreaId})
+      (SpotData, BaseReferences<_$AppDatabase, $SpotsTable, SpotData>),
+      SpotData,
+      PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {

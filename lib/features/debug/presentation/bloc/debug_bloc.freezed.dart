@@ -21,24 +21,24 @@ mixin _$DebugEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
-    required TResult Function(int spotId, String userId) checkInRequested,
-    required TResult Function(int spotId, String userId) checkOutRequested,
+    required TResult Function(String spotId, String userId) checkInRequested,
+    required TResult Function(String spotId, String userId) checkOutRequested,
     required TResult Function(String message) logMessage,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
-    TResult? Function(int spotId, String userId)? checkInRequested,
-    TResult? Function(int spotId, String userId)? checkOutRequested,
+    TResult? Function(String spotId, String userId)? checkInRequested,
+    TResult? Function(String spotId, String userId)? checkOutRequested,
     TResult? Function(String message)? logMessage,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
-    TResult Function(int spotId, String userId)? checkInRequested,
-    TResult Function(int spotId, String userId)? checkOutRequested,
+    TResult Function(String spotId, String userId)? checkInRequested,
+    TResult Function(String spotId, String userId)? checkOutRequested,
     TResult Function(String message)? logMessage,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
@@ -136,8 +136,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
-    required TResult Function(int spotId, String userId) checkInRequested,
-    required TResult Function(int spotId, String userId) checkOutRequested,
+    required TResult Function(String spotId, String userId) checkInRequested,
+    required TResult Function(String spotId, String userId) checkOutRequested,
     required TResult Function(String message) logMessage,
   }) {
     return toggleDebugMode();
@@ -148,8 +148,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
-    TResult? Function(int spotId, String userId)? checkInRequested,
-    TResult? Function(int spotId, String userId)? checkOutRequested,
+    TResult? Function(String spotId, String userId)? checkInRequested,
+    TResult? Function(String spotId, String userId)? checkOutRequested,
     TResult? Function(String message)? logMessage,
   }) {
     return toggleDebugMode?.call();
@@ -160,8 +160,8 @@ class _$ToggleDebugModeImpl implements _ToggleDebugMode {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
-    TResult Function(int spotId, String userId)? checkInRequested,
-    TResult Function(int spotId, String userId)? checkOutRequested,
+    TResult Function(String spotId, String userId)? checkInRequested,
+    TResult Function(String spotId, String userId)? checkOutRequested,
     TResult Function(String message)? logMessage,
     required TResult orElse(),
   }) {
@@ -262,8 +262,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
-    required TResult Function(int spotId, String userId) checkInRequested,
-    required TResult Function(int spotId, String userId) checkOutRequested,
+    required TResult Function(String spotId, String userId) checkInRequested,
+    required TResult Function(String spotId, String userId) checkOutRequested,
     required TResult Function(String message) logMessage,
   }) {
     return pickLocationToggled();
@@ -274,8 +274,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
-    TResult? Function(int spotId, String userId)? checkInRequested,
-    TResult? Function(int spotId, String userId)? checkOutRequested,
+    TResult? Function(String spotId, String userId)? checkInRequested,
+    TResult? Function(String spotId, String userId)? checkOutRequested,
     TResult? Function(String message)? logMessage,
   }) {
     return pickLocationToggled?.call();
@@ -286,8 +286,8 @@ class _$PickLocationToggledImpl implements _PickLocationToggled {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
-    TResult Function(int spotId, String userId)? checkInRequested,
-    TResult Function(int spotId, String userId)? checkOutRequested,
+    TResult Function(String spotId, String userId)? checkInRequested,
+    TResult Function(String spotId, String userId)? checkOutRequested,
     TResult Function(String message)? logMessage,
     required TResult orElse(),
   }) {
@@ -349,7 +349,7 @@ abstract class _$$CheckInRequestedImplCopyWith<$Res> {
     $Res Function(_$CheckInRequestedImpl) then,
   ) = __$$CheckInRequestedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({int spotId, String userId});
+  $Res call({String spotId, String userId});
 }
 
 /// @nodoc
@@ -371,7 +371,7 @@ class __$$CheckInRequestedImplCopyWithImpl<$Res>
         spotId: null == spotId
             ? _value.spotId
             : spotId // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as String,
         userId: null == userId
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
@@ -387,7 +387,7 @@ class _$CheckInRequestedImpl implements _CheckInRequested {
   const _$CheckInRequestedImpl({required this.spotId, required this.userId});
 
   @override
-  final int spotId;
+  final String spotId;
   @override
   final String userId;
 
@@ -424,8 +424,8 @@ class _$CheckInRequestedImpl implements _CheckInRequested {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
-    required TResult Function(int spotId, String userId) checkInRequested,
-    required TResult Function(int spotId, String userId) checkOutRequested,
+    required TResult Function(String spotId, String userId) checkInRequested,
+    required TResult Function(String spotId, String userId) checkOutRequested,
     required TResult Function(String message) logMessage,
   }) {
     return checkInRequested(spotId, userId);
@@ -436,8 +436,8 @@ class _$CheckInRequestedImpl implements _CheckInRequested {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
-    TResult? Function(int spotId, String userId)? checkInRequested,
-    TResult? Function(int spotId, String userId)? checkOutRequested,
+    TResult? Function(String spotId, String userId)? checkInRequested,
+    TResult? Function(String spotId, String userId)? checkOutRequested,
     TResult? Function(String message)? logMessage,
   }) {
     return checkInRequested?.call(spotId, userId);
@@ -448,8 +448,8 @@ class _$CheckInRequestedImpl implements _CheckInRequested {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
-    TResult Function(int spotId, String userId)? checkInRequested,
-    TResult Function(int spotId, String userId)? checkOutRequested,
+    TResult Function(String spotId, String userId)? checkInRequested,
+    TResult Function(String spotId, String userId)? checkOutRequested,
     TResult Function(String message)? logMessage,
     required TResult orElse(),
   }) {
@@ -502,11 +502,11 @@ class _$CheckInRequestedImpl implements _CheckInRequested {
 
 abstract class _CheckInRequested implements DebugEvent {
   const factory _CheckInRequested({
-    required final int spotId,
+    required final String spotId,
     required final String userId,
   }) = _$CheckInRequestedImpl;
 
-  int get spotId;
+  String get spotId;
   String get userId;
 
   /// Create a copy of DebugEvent
@@ -523,7 +523,7 @@ abstract class _$$CheckOutRequestedImplCopyWith<$Res> {
     $Res Function(_$CheckOutRequestedImpl) then,
   ) = __$$CheckOutRequestedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({int spotId, String userId});
+  $Res call({String spotId, String userId});
 }
 
 /// @nodoc
@@ -545,7 +545,7 @@ class __$$CheckOutRequestedImplCopyWithImpl<$Res>
         spotId: null == spotId
             ? _value.spotId
             : spotId // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as String,
         userId: null == userId
             ? _value.userId
             : userId // ignore: cast_nullable_to_non_nullable
@@ -561,7 +561,7 @@ class _$CheckOutRequestedImpl implements _CheckOutRequested {
   const _$CheckOutRequestedImpl({required this.spotId, required this.userId});
 
   @override
-  final int spotId;
+  final String spotId;
   @override
   final String userId;
 
@@ -598,8 +598,8 @@ class _$CheckOutRequestedImpl implements _CheckOutRequested {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
-    required TResult Function(int spotId, String userId) checkInRequested,
-    required TResult Function(int spotId, String userId) checkOutRequested,
+    required TResult Function(String spotId, String userId) checkInRequested,
+    required TResult Function(String spotId, String userId) checkOutRequested,
     required TResult Function(String message) logMessage,
   }) {
     return checkOutRequested(spotId, userId);
@@ -610,8 +610,8 @@ class _$CheckOutRequestedImpl implements _CheckOutRequested {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
-    TResult? Function(int spotId, String userId)? checkInRequested,
-    TResult? Function(int spotId, String userId)? checkOutRequested,
+    TResult? Function(String spotId, String userId)? checkInRequested,
+    TResult? Function(String spotId, String userId)? checkOutRequested,
     TResult? Function(String message)? logMessage,
   }) {
     return checkOutRequested?.call(spotId, userId);
@@ -622,8 +622,8 @@ class _$CheckOutRequestedImpl implements _CheckOutRequested {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
-    TResult Function(int spotId, String userId)? checkInRequested,
-    TResult Function(int spotId, String userId)? checkOutRequested,
+    TResult Function(String spotId, String userId)? checkInRequested,
+    TResult Function(String spotId, String userId)? checkOutRequested,
     TResult Function(String message)? logMessage,
     required TResult orElse(),
   }) {
@@ -676,11 +676,11 @@ class _$CheckOutRequestedImpl implements _CheckOutRequested {
 
 abstract class _CheckOutRequested implements DebugEvent {
   const factory _CheckOutRequested({
-    required final int spotId,
+    required final String spotId,
     required final String userId,
   }) = _$CheckOutRequestedImpl;
 
-  int get spotId;
+  String get spotId;
   String get userId;
 
   /// Create a copy of DebugEvent
@@ -762,8 +762,8 @@ class _$LogMessageImpl implements _LogMessage {
   TResult when<TResult extends Object?>({
     required TResult Function() toggleDebugMode,
     required TResult Function() pickLocationToggled,
-    required TResult Function(int spotId, String userId) checkInRequested,
-    required TResult Function(int spotId, String userId) checkOutRequested,
+    required TResult Function(String spotId, String userId) checkInRequested,
+    required TResult Function(String spotId, String userId) checkOutRequested,
     required TResult Function(String message) logMessage,
   }) {
     return logMessage(message);
@@ -774,8 +774,8 @@ class _$LogMessageImpl implements _LogMessage {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? toggleDebugMode,
     TResult? Function()? pickLocationToggled,
-    TResult? Function(int spotId, String userId)? checkInRequested,
-    TResult? Function(int spotId, String userId)? checkOutRequested,
+    TResult? Function(String spotId, String userId)? checkInRequested,
+    TResult? Function(String spotId, String userId)? checkOutRequested,
     TResult? Function(String message)? logMessage,
   }) {
     return logMessage?.call(message);
@@ -786,8 +786,8 @@ class _$LogMessageImpl implements _LogMessage {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? toggleDebugMode,
     TResult Function()? pickLocationToggled,
-    TResult Function(int spotId, String userId)? checkInRequested,
-    TResult Function(int spotId, String userId)? checkOutRequested,
+    TResult Function(String spotId, String userId)? checkInRequested,
+    TResult Function(String spotId, String userId)? checkOutRequested,
     TResult Function(String message)? logMessage,
     required TResult orElse(),
   }) {

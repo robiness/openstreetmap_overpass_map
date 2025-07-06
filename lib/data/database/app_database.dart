@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:drift/drift.dart';
 import 'package:overpass_map/data/database/tables/areas.dart';
 import 'package:overpass_map/data/database/tables/check_ins.dart';
@@ -8,6 +9,32 @@ import 'connection/stub.dart' if (dart.library.io) 'connection/native.dart';
 
 part 'app_database.g.dart';
 
+class ListStringConverter extends TypeConverter<List<String>, String> {
+  const ListStringConverter();
+  @override
+  List<String> fromSql(String fromDb) {
+    return (json.decode(fromDb) as List).cast<String>();
+  }
+
+  @override
+  String toSql(List<String> value) {
+    return json.encode(value);
+  }
+}
+
+class MapDynamicConverter extends TypeConverter<Map<String, dynamic>, String> {
+  const MapDynamicConverter();
+  @override
+  Map<String, dynamic> fromSql(String fromDb) {
+    return json.decode(fromDb) as Map<String, dynamic>;
+  }
+
+  @override
+  String toSql(Map<String, dynamic> value) {
+    return json.encode(value);
+  }
+}
+
 @DriftDatabase(tables: [CheckIns, Areas, UserAreas, Cities, Spots])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(connect());
@@ -16,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.connection);
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -44,6 +71,13 @@ class AppDatabase extends _$AppDatabase {
           // Migration to v5: Ensure parent_id column exists (recreate areas table if needed)
           await m.drop(areas);
           await m.createTable(areas);
+        }
+        if (from < 6) {
+          // Migration to v6: Spot and CheckIn ID changes from int to String
+          await m.drop(spots);
+          await m.createTable(spots);
+          await m.drop(checkIns);
+          await m.createTable(checkIns);
         }
       },
     );

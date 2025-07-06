@@ -11,7 +11,7 @@ import 'package:overpass_map/features/map_explorer/data/models/user_area_data.da
 class HierarchicalAreaList extends StatelessWidget {
   final BoundaryData? boundaryData;
   final GeographicArea? selectedArea;
-  final Map<int, UserAreaData> userVisitData;
+  final Map<String, UserAreaData> userVisitData;
   final Function(GeographicArea) onAreaTapped;
 
   const HierarchicalAreaList({
@@ -202,8 +202,8 @@ class HierarchicalAreaList extends StatelessWidget {
     required Color color,
   }) {
     final isSelected = selectedArea?.id == area.id;
-    final visitData = userVisitData[area.id];
-    final hasBeenVisited = visitData != null && visitData.visitCount > 0;
+    final visitData = userVisitData[area.id.toString()];
+    final hasBeenVisited = visitData != null && visitData.visitedSpots > 0;
     final appTheme = context.appTheme;
 
     Color tileColor = appTheme.surface;
@@ -284,7 +284,7 @@ class HierarchicalAreaList extends StatelessWidget {
                   ),
                 ),
                 if (visitData != null)
-                  _buildVisitCountChip(context, visitData.visitCount),
+                  _buildVisitCountChip(context, visitData.visitedSpots),
               ],
             ),
           ),

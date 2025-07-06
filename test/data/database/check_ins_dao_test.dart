@@ -27,7 +27,7 @@ void main() {
             CheckInsCompanion(
               id: Value(firstCheckInId),
               userId: const Value('test-user-1'),
-              spotId: const Value(1),
+              spotId: const Value('1'),
             ),
           );
       final firstCheckIn = await (db.select(
@@ -42,7 +42,7 @@ void main() {
             CheckInsCompanion(
               id: Value(secondCheckInId),
               userId: const Value('test-user-2'),
-              spotId: const Value(2),
+              spotId: const Value('2'),
             ),
           );
       final secondCheckIn = await (db.select(
@@ -65,7 +65,7 @@ void main() {
       final initialCheckIn = CheckInsCompanion(
         id: Value(checkInId),
         userId: const Value('test-user'),
-        spotId: const Value(1),
+        spotId: const Value('1'),
       );
       await db.into(db.checkIns).insert(initialCheckIn);
 

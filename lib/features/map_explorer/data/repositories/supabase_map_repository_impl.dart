@@ -1,21 +1,23 @@
 import 'dart:convert';
 
+import 'package:drift/drift.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:overpass_map/data/database/app_database.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
-import 'package:overpass_map/features/map_explorer/data/sources/overpass_api_data_source.dart';
 
 class SupabaseMapRepositoryImpl implements MapRepository {
   final SupabaseClient _supabaseClient;
-  final OverpassApiDataSource
-  _spotDataSource; // Still use Overpass for spots until we have spots in Supabase
+  final AppDatabase _db;
 
   SupabaseMapRepositoryImpl({
     required SupabaseClient supabaseClient,
-    OverpassApiDataSource? spotDataSource,
+    required AppDatabase db,
   }) : _supabaseClient = supabaseClient,
-       _spotDataSource = spotDataSource ?? OverpassApiDataSource();
+       _db = db;
 
   @override
   Future<BoundaryData> getCityBoundaryData({
@@ -78,23 +80,91 @@ class SupabaseMapRepositoryImpl implements MapRepository {
   }
 
   @override
-  Future<List<Spot>> getSpots({
-    required String cityName,
-    List<String> categories = const [
-      'restaurant',
-      'cafe',
-      'bar',
-      'biergarten',
-      'viewpoint',
-      'shop',
-    ],
-  }) async {
-    // For now, still use Overpass API for spots
-    // TODO: Implement spots from Supabase once spot data is available
-    return await _spotDataSource.getSpots(
-      cityName: cityName,
-      categories: categories,
-    );
+  Future<List<Spot>> getSpots() async {
+    print('🔍 getSpots() called');
+
+    // Fetch all spots from the local database
+    final cachedSpots = await _db.select(_db.spots).get();
+    print('📱 Found ${cachedSpots.length} cached spots in local database');
+
+    if (cachedSpots.isNotEmpty) {
+      print('✅ Using cached spots');
+      return cachedSpots.map((s) => _mapSpotDataToEntity(s)).toList();
+    }
+
+    // If cache is empty or stale, fetch all spots from Supabase
+    print('🌐 Fetching spots from Supabase...');
+    try {
+      final response = await _supabaseClient.rpc('get_all_spots');
+
+      print('📡 Supabase response: ${response?.length ?? 0} spots received');
+
+      if (response == null || response.isEmpty) {
+        print('❌ No spots received from Supabase');
+        return [];
+      }
+
+      print('🔄 Converting ${response.length} spots from Supabase format...');
+      final spots = <Spot>[];
+      for (final json in response) {
+        try {
+          // Convert Supabase data directly to Spot object
+          final spotData = Map<String, dynamic>.from(json);
+
+          // Extract coordinates
+          final lat = spotData['lat'] as double?;
+          final lon = spotData['lon'] as double?;
+
+          // Convert categories array to single category string
+          final categories = spotData['categories'] as List<dynamic>?;
+          final category = categories?.isNotEmpty == true
+              ? categories!.first.toString()
+              : 'unknown';
+
+          // Create Spot object directly
+          final spot = Spot(
+            id: spotData['id'] as String,
+            osmId: spotData['osm_id'] as int? ?? 0,
+            name: spotData['name'] as String? ?? 'Unknown',
+            category: category,
+            location: LatLng(lat ?? 0.0, lon ?? 0.0),
+            description: spotData['description'] as String?,
+            tags: [], // Default empty tags
+            createdAt:
+                DateTime.tryParse(spotData['created_at'] as String? ?? '') ??
+                DateTime.now(),
+            createdBy: null,
+            properties: {},
+            parentAreaId: spotData['parent_area_id']?.toString(),
+          );
+
+          spots.add(spot);
+          print('✅ Successfully converted spot: ${spotData['name']}');
+        } catch (e) {
+          print('❌ Error converting spot ${json['id']}: $e');
+          // Continue with other spots instead of failing completely
+        }
+      }
+
+      print('💾 Saving ${spots.length} spots to local database...');
+      // Save fetched spots to the local database
+      if (spots.isNotEmpty) {
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.spots,
+            spots.map((s) => _mapSpotEntityToData(s)),
+            mode: InsertMode.insertOrReplace,
+          );
+        });
+        print('✅ Successfully saved spots to local database');
+      }
+
+      print('🎯 Returning ${spots.length} spots');
+      return spots;
+    } catch (e) {
+      print('❌ Failed to load spots from Supabase: $e');
+      throw Exception('Failed to load spots: $e');
+    }
   }
 
   @override
@@ -167,5 +237,40 @@ class SupabaseMapRepositoryImpl implements MapRepository {
       'generator': 'Supabase to OSM converter',
       'elements': elements,
     };
+  }
+
+  // Helper to map from Spot entity to Drift's SpotData
+  SpotData _mapSpotEntityToData(Spot spot) {
+    return SpotData(
+      id: spot.id,
+      osmId: spot.osmId,
+      name: spot.name,
+      category: spot.category,
+      lat: spot.location.latitude,
+      lon: spot.location.longitude,
+      description: spot.description,
+      tags: spot.tags,
+      createdAt: spot.createdAt,
+      createdBy: spot.createdBy,
+      properties: spot.properties,
+      parentAreaId: spot.parentAreaId,
+    );
+  }
+
+  // Helper to map from Drift's SpotData to Spot entity
+  Spot _mapSpotDataToEntity(SpotData spotData) {
+    return Spot(
+      id: spotData.id,
+      osmId: spotData.osmId,
+      name: spotData.name,
+      category: spotData.category,
+      location: LatLng(spotData.lat, spotData.lon),
+      description: spotData.description,
+      tags: spotData.tags,
+      createdAt: spotData.createdAt,
+      createdBy: spotData.createdBy,
+      properties: spotData.properties,
+      parentAreaId: spotData.parentAreaId,
+    );
   }
 }

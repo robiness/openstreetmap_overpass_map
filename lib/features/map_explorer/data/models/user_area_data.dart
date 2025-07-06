@@ -6,11 +6,11 @@ part 'user_area_data.g.dart';
 @freezed
 class UserAreaData with _$UserAreaData {
   const factory UserAreaData({
-    required int areaId,
+    required String areaId,
     @Default(0) int visitCount,
     DateTime? lastVisited,
-    int? totalSpots,
-    int? visitedSpots,
+    required int totalSpots,
+    required int visitedSpots,
     DateTime? firstSpotVisit,
     DateTime? completedAt,
   }) = _UserAreaData;
@@ -31,26 +31,25 @@ enum AreaExplorationStatus {
 extension UserAreaDataExt on UserAreaData {
   /// Calculates the current exploration status of this area
   AreaExplorationStatus get status {
-    if (totalSpots == null || totalSpots == 0) {
+    if (totalSpots == 0) {
       return AreaExplorationStatus.noSpots;
     }
-    if (visitedSpots == null || visitedSpots == 0) {
+    if (visitedSpots == 0) {
       return AreaExplorationStatus.unvisited;
     }
-    if (visitedSpots! >= totalSpots!) {
+    if (visitedSpots >= totalSpots) {
       return AreaExplorationStatus.completed;
     }
     return AreaExplorationStatus.partial;
   }
 
   /// Returns true if the user has visited at least one spot in the area
-  bool get isVisited => visitedSpots != null && visitedSpots! > 0;
+  bool get isVisited => visitedSpots > 0;
 
   /// Returns completion percentage (0.0 to 1.0)
   double get completionPercentage {
-    if (totalSpots == null || totalSpots == 0) return 0.0;
-    if (visitedSpots == null) return 0.0;
-    return (visitedSpots! / totalSpots!).clamp(0.0, 1.0);
+    if (totalSpots == 0) return 0.0;
+    return (visitedSpots / totalSpots).clamp(0.0, 1.0);
   }
 
   /// Returns a user-friendly status description
@@ -61,7 +60,7 @@ extension UserAreaDataExt on UserAreaData {
       case AreaExplorationStatus.unvisited:
         return 'Not yet explored';
       case AreaExplorationStatus.partial:
-        return '${visitedSpots ?? 0}/${totalSpots ?? 0} spots visited';
+        return '$visitedSpots/$totalSpots spots visited';
       case AreaExplorationStatus.completed:
         return 'Fully explored!';
     }

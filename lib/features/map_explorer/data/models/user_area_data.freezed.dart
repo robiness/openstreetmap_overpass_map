@@ -21,11 +21,11 @@ UserAreaData _$UserAreaDataFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$UserAreaData {
-  int get areaId => throw _privateConstructorUsedError;
+  String get areaId => throw _privateConstructorUsedError;
   int get visitCount => throw _privateConstructorUsedError;
   DateTime? get lastVisited => throw _privateConstructorUsedError;
-  int? get totalSpots => throw _privateConstructorUsedError;
-  int? get visitedSpots => throw _privateConstructorUsedError;
+  int get totalSpots => throw _privateConstructorUsedError;
+  int get visitedSpots => throw _privateConstructorUsedError;
   DateTime? get firstSpotVisit => throw _privateConstructorUsedError;
   DateTime? get completedAt => throw _privateConstructorUsedError;
 
@@ -47,11 +47,11 @@ abstract class $UserAreaDataCopyWith<$Res> {
   ) = _$UserAreaDataCopyWithImpl<$Res, UserAreaData>;
   @useResult
   $Res call({
-    int areaId,
+    String areaId,
     int visitCount,
     DateTime? lastVisited,
-    int? totalSpots,
-    int? visitedSpots,
+    int totalSpots,
+    int visitedSpots,
     DateTime? firstSpotVisit,
     DateTime? completedAt,
   });
@@ -75,8 +75,8 @@ class _$UserAreaDataCopyWithImpl<$Res, $Val extends UserAreaData>
     Object? areaId = null,
     Object? visitCount = null,
     Object? lastVisited = freezed,
-    Object? totalSpots = freezed,
-    Object? visitedSpots = freezed,
+    Object? totalSpots = null,
+    Object? visitedSpots = null,
     Object? firstSpotVisit = freezed,
     Object? completedAt = freezed,
   }) {
@@ -85,7 +85,7 @@ class _$UserAreaDataCopyWithImpl<$Res, $Val extends UserAreaData>
             areaId: null == areaId
                 ? _value.areaId
                 : areaId // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as String,
             visitCount: null == visitCount
                 ? _value.visitCount
                 : visitCount // ignore: cast_nullable_to_non_nullable
@@ -94,14 +94,14 @@ class _$UserAreaDataCopyWithImpl<$Res, $Val extends UserAreaData>
                 ? _value.lastVisited
                 : lastVisited // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
-            totalSpots: freezed == totalSpots
+            totalSpots: null == totalSpots
                 ? _value.totalSpots
                 : totalSpots // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            visitedSpots: freezed == visitedSpots
+                      as int,
+            visitedSpots: null == visitedSpots
                 ? _value.visitedSpots
                 : visitedSpots // ignore: cast_nullable_to_non_nullable
-                      as int?,
+                      as int,
             firstSpotVisit: freezed == firstSpotVisit
                 ? _value.firstSpotVisit
                 : firstSpotVisit // ignore: cast_nullable_to_non_nullable
@@ -126,11 +126,11 @@ abstract class _$$UserAreaDataImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    int areaId,
+    String areaId,
     int visitCount,
     DateTime? lastVisited,
-    int? totalSpots,
-    int? visitedSpots,
+    int totalSpots,
+    int visitedSpots,
     DateTime? firstSpotVisit,
     DateTime? completedAt,
   });
@@ -153,8 +153,8 @@ class __$$UserAreaDataImplCopyWithImpl<$Res>
     Object? areaId = null,
     Object? visitCount = null,
     Object? lastVisited = freezed,
-    Object? totalSpots = freezed,
-    Object? visitedSpots = freezed,
+    Object? totalSpots = null,
+    Object? visitedSpots = null,
     Object? firstSpotVisit = freezed,
     Object? completedAt = freezed,
   }) {
@@ -163,7 +163,7 @@ class __$$UserAreaDataImplCopyWithImpl<$Res>
         areaId: null == areaId
             ? _value.areaId
             : areaId // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as String,
         visitCount: null == visitCount
             ? _value.visitCount
             : visitCount // ignore: cast_nullable_to_non_nullable
@@ -172,14 +172,14 @@ class __$$UserAreaDataImplCopyWithImpl<$Res>
             ? _value.lastVisited
             : lastVisited // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
-        totalSpots: freezed == totalSpots
+        totalSpots: null == totalSpots
             ? _value.totalSpots
             : totalSpots // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        visitedSpots: freezed == visitedSpots
+                  as int,
+        visitedSpots: null == visitedSpots
             ? _value.visitedSpots
             : visitedSpots // ignore: cast_nullable_to_non_nullable
-                  as int?,
+                  as int,
         firstSpotVisit: freezed == firstSpotVisit
             ? _value.firstSpotVisit
             : firstSpotVisit // ignore: cast_nullable_to_non_nullable
@@ -200,8 +200,8 @@ class _$UserAreaDataImpl implements _UserAreaData {
     required this.areaId,
     this.visitCount = 0,
     this.lastVisited,
-    this.totalSpots,
-    this.visitedSpots,
+    required this.totalSpots,
+    required this.visitedSpots,
     this.firstSpotVisit,
     this.completedAt,
   });
@@ -210,16 +210,16 @@ class _$UserAreaDataImpl implements _UserAreaData {
       _$$UserAreaDataImplFromJson(json);
 
   @override
-  final int areaId;
+  final String areaId;
   @override
   @JsonKey()
   final int visitCount;
   @override
   final DateTime? lastVisited;
   @override
-  final int? totalSpots;
+  final int totalSpots;
   @override
-  final int? visitedSpots;
+  final int visitedSpots;
   @override
   final DateTime? firstSpotVisit;
   @override
@@ -279,11 +279,11 @@ class _$UserAreaDataImpl implements _UserAreaData {
 
 abstract class _UserAreaData implements UserAreaData {
   const factory _UserAreaData({
-    required final int areaId,
+    required final String areaId,
     final int visitCount,
     final DateTime? lastVisited,
-    final int? totalSpots,
-    final int? visitedSpots,
+    required final int totalSpots,
+    required final int visitedSpots,
     final DateTime? firstSpotVisit,
     final DateTime? completedAt,
   }) = _$UserAreaDataImpl;
@@ -292,15 +292,15 @@ abstract class _UserAreaData implements UserAreaData {
       _$UserAreaDataImpl.fromJson;
 
   @override
-  int get areaId;
+  String get areaId;
   @override
   int get visitCount;
   @override
   DateTime? get lastVisited;
   @override
-  int? get totalSpots;
+  int get totalSpots;
   @override
-  int? get visitedSpots;
+  int get visitedSpots;
   @override
   DateTime? get firstSpotVisit;
   @override

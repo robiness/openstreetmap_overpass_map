@@ -8,6 +8,7 @@ import 'package:overpass_map/features/debug/presentation/widgets/theme_picker_bu
 import 'package:overpass_map/features/location/presentation/bloc/location_bloc.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 import 'package:overpass_map/features/map_explorer/presentation/bloc/map_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 /// A unified debug panel view that can be used in both mobile and desktop layouts
 /// This contains all the debug functionality in a scrollable container
@@ -160,10 +161,14 @@ class DebugPanelView extends StatelessWidget {
                   state.isPickingLocation ? Icons.cancel : Icons.location_pin,
                 ),
                 label: Text(
-                  state.isPickingLocation ? 'Cancel Picking' : 'Pick Location on Map',
+                  state.isPickingLocation
+                      ? 'Cancel Picking'
+                      : 'Pick Location on Map',
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: state.isPickingLocation ? Colors.red : Colors.blue,
+                  backgroundColor: state.isPickingLocation
+                      ? Colors.red
+                      : Colors.blue,
                   foregroundColor: Colors.white,
                 ),
               );
@@ -194,9 +199,13 @@ class DebugPanelView extends StatelessWidget {
                       onPressed: () async {
                         final userId = authState.maybeWhen(
                           authenticated: (user, profile) => user.id,
-                          orElse: () => 'test-user', // fallback for unauthenticated
+                          orElse: () =>
+                              'test-user', // fallback for unauthenticated
                         );
-                        final checkIns = await context.read<CheckInRepository>().watchUserCheckIns(userId).first;
+                        final checkIns = await context
+                            .read<CheckInRepository>()
+                            .watchUserCheckIns(userId)
+                            .first;
                         print('=== DATABASE CONTENTS ===');
                         print('User ID: $userId');
                         print('Check-ins count: ${checkIns.length}');
@@ -235,12 +244,12 @@ class DebugPanelView extends StatelessWidget {
               final selectedSpot = mapState.maybeWhen(
                 loadSuccess:
                     (
-                      _,
-                      _,
-                      _,
+                      boundaryData,
+                      spots,
+                      userVisitData,
+                      userSpotVisitData,
+                      selectedArea,
                       selectedSpot,
-                      _,
-                      _,
                     ) => selectedSpot,
                 orElse: () => null,
               );
@@ -253,68 +262,122 @@ class DebugPanelView extends StatelessWidget {
                       orElse: () => 'test-user',
                     );
 
-                    return StreamBuilder<List<dynamic>>(
-                      stream: context.read<CheckInRepository>().watchUserCheckInsForSpot(userId, selectedSpot.id),
-                      builder: (context, snapshot) {
-                        final count = snapshot.data?.length ?? 0;
-                        final isCheckedIn = count > 0;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'Selected Spot: ${selectedSpot.id}',
+                          style: appTheme.typography.bodyMedium,
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          child: const Text('Check In'),
+                          onPressed: () {
+                            context.read<CheckInRepository>().createCheckIn(
+                              userId: userId,
+                              spotId: selectedSpot.id,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: appTheme.error,
+                          ),
+                          child: const Text('Delete Check-Ins For Spot'),
+                          onPressed: () {
+                            context
+                                .read<CheckInRepository>()
+                                .deleteCheckInsForSpot(
+                                  userId: userId,
+                                  spotId: selectedSpot.id,
+                                );
+                          },
+                        ),
+                        const SizedBox(height: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red[800],
+                          ),
+                          child: const Text('Delete Spot (DEBUG ONLY)'),
+                          onPressed: () async {
+                            // Show confirmation dialog
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Delete Spot'),
+                                content: Text(
+                                  'Are you sure you want to delete "${selectedSpot.name}"?\n\nThis action cannot be undone and will remove the spot from the database permanently.',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: Colors.red,
+                                    ),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            );
 
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Selected Spot: ${selectedSpot.name} (ID: ${selectedSpot.id})',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text('Check-ins for this spot: $count'),
-                            Text('User: $userId'),
-                            const SizedBox(height: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                final event = isCheckedIn
-                                    ? DebugEvent.checkOutRequested(
-                                        spotId: selectedSpot.id,
-                                        userId: userId,
-                                      )
-                                    : DebugEvent.checkInRequested(
-                                        spotId: selectedSpot.id,
-                                        userId: userId,
-                                      );
-                                context.read<DebugBloc>().add(event);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isCheckedIn ? Colors.red : Colors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                              child: Text(
-                                isCheckedIn ? 'Check Out' : 'Check In',
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                            if (confirmed == true) {
+                              try {
+                                // Delete from Supabase
+                                final supabaseClient =
+                                    supabase.Supabase.instance.client;
+                                await supabaseClient
+                                    .from('spots')
+                                    .delete()
+                                    .eq('id', selectedSpot.id);
+
+                                print(
+                                  '✅ Deleted spot ${selectedSpot.name} from Supabase',
+                                );
+
+                                // Clear local cache by deleting from local database
+                                // Note: This is a simple approach - in production you'd want
+                                // proper repository methods for this
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        'Deleted spot "${selectedSpot.name}"',
+                                      ),
+                                      backgroundColor: Colors.green,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                print('❌ Error deleting spot: $e');
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Error deleting spot: $e'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
+                            }
+                          },
+                        ),
+                      ],
                     );
                   },
                 );
-              } else {
-                // No spot selected, show a disabled button
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Select a spot to enable check-in.',
-                      style: TextStyle(fontStyle: FontStyle.italic),
-                    ),
-                    const SizedBox(height: 8),
-                    const ElevatedButton(
-                      onPressed: null,
-                      child: Text('Check In'),
-                    ),
-                  ],
-                );
               }
+
+              return Text(
+                'No spot selected.',
+                style: appTheme.typography.bodyMedium,
+              );
             },
           ),
         ],

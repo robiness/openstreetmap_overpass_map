@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:drift/drift.dart' hide JsonKey;
 import 'package:flutter/foundation.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/database/app_database.dart' as db;
 import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
@@ -36,6 +35,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       await event.when(
         fetchDataRequested: (cityName, adminLevel, userId) =>
             _onFetchDataRequested(emit, cityName, adminLevel, userId),
+        mapViewChanged: (bounds) => _onMapViewChanged(emit),
         areaSelected: (area) => _onAreaSelected(emit, area),
         spotSelected: (spot) => _onSpotSelected(emit, spot),
         refreshAreaDataRequested: (userId) =>
@@ -69,104 +69,78 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     int adminLevel,
     String? userId,
   ) async {
+    print('🏙️ MapBloc: _onFetchDataRequested called for city: $cityName');
     emit(const MapState.loadInProgress());
 
     // Track current user ID for area stats updates
     _currentUserId = userId;
 
     try {
+      print('🏙️ MapBloc: Loading boundary data...');
       final boundaryData = await _mapRepository.getCityBoundaryData(
         cityName: cityName,
         cityAdminLevel: adminLevel,
       );
+      print('✅ MapBloc: Boundary data loaded successfully');
 
-      final allSpots = await _mapRepository.getSpots(cityName: cityName);
+      print('🎯 MapBloc: Loading spots...');
+      // Load all spots at startup
+      final spots = await _mapRepository.getSpots();
+      print('✅ MapBloc: Loaded ${spots.length} spots');
 
-      // Filter spots to get exactly one per area (Stadtteil)
-      final spotsToShow = _getOneSpotPerArea(
-        areas: boundaryData.stadtteile,
-        spots: allSpots,
-      );
-
-      // **NEW: Save spots to database for area stats calculations**
-      await _saveSpotsToDatabaseWithAreas(spotsToShow, boundaryData.stadtteile);
-
-      // Load user area data if user is authenticated
+      print('👤 MapBloc: Loading user area data...');
       final userAreaData = userId != null
           ? await _loadUserAreaData(userId)
-          : <int, UserAreaData>{};
+          : <String, UserAreaData>{};
+      print(
+        '✅ MapBloc: Loaded user area data for ${userAreaData.length} areas',
+      );
 
       print(
-        '🎯 MapBloc emitting state with ${userAreaData.length} user area entries',
+        '🚀 MapBloc: Emitting loadSuccess state with ${spots.length} spots',
       );
-      print('🎯 Areas in boundary data: ${boundaryData.stadtteile.length}');
-
       emit(
         MapState.loadSuccess(
           boundaryData: boundaryData,
-          spots: spotsToShow,
+          spots: spots,
           userVisitData: userAreaData,
-          userSpotVisitData: {}, // Start with empty spot visit data
+          userSpotVisitData: {},
         ),
       );
+      print('✅ MapBloc: State emitted successfully');
     } catch (e) {
+      print('❌ MapBloc: Error in _onFetchDataRequested: $e');
       emit(MapState.loadFailure(error: e.toString()));
     }
   }
 
-  /// **NEW: Save spots to database with area associations**
-  Future<void> _saveSpotsToDatabaseWithAreas(
-    List<Spot> spots,
-    List<GeographicArea> areas,
+  Future<void> _onMapViewChanged(
+    Emitter<MapState> emit,
   ) async {
+    print('🗺️ MapBloc: _onMapViewChanged called');
+    // Avoid refetching if we are already in a success state
+    if (state is! _LoadSuccess) {
+      print('⚠️ MapBloc: Not in success state, skipping map view change');
+      return;
+    }
+
+    final currentState = state as _LoadSuccess;
+    print('🔄 MapBloc: Current state has ${currentState.spots.length} spots');
+
     try {
-      for (final spot in spots) {
-        // Find which area this spot belongs to
-        int? parentAreaId;
-        for (final area in areas) {
-          for (final polygonRing in area.coordinates) {
-            final polygonLatLng = polygonRing
-                .map((coords) => LatLng(coords[1], coords[0]))
-                .toList();
-            if (_isPointInPolygon(spot.location, polygonLatLng)) {
-              parentAreaId = area.id;
-              break;
-            }
-          }
-          if (parentAreaId != null) break;
-        }
-
-        // Skip spots that aren't in any area
-        if (parentAreaId == null) continue;
-
-        // Convert domain Spot to database Spot and save
-        final dbSpot = db.SpotsCompanion.insert(
-          id: Value(spot.id),
-          name: spot.name,
-          category: spot.category,
-          lat: spot.location.latitude,
-          lon: spot.location.longitude,
-          parentAreaId: parentAreaId,
-          spotType: spot.category,
-          // Use category as spot type
-          status: 'active',
-          createdBy: Value(spot.createdBy),
-          properties: Value(
-            spot.properties.isNotEmpty ? spot.properties.toString() : null,
-          ),
-        );
-
-        await _database.into(_database.spots).insertOnConflictUpdate(dbSpot);
-      }
-
-      print('💾 Saved ${spots.length} spots to database');
+      print('🎯 MapBloc: Fetching spots for map view change...');
+      final spots = await _mapRepository.getSpots();
+      print('✅ MapBloc: Fetched ${spots.length} spots, emitting updated state');
+      emit(currentState.copyWith(spots: spots));
     } catch (e) {
-      print('❌ Failed to save spots to database: $e');
+      // We can choose to notify the user or just log the error
+      // For now, we'll just print it and not change the state
+      print('❌ MapBloc: Error fetching spots for new view: $e');
     }
   }
 
   /// Loads user area completion data from the database
-  Future<Map<int, UserAreaData>> _loadUserAreaData(String userId) async {
+  Future<Map<String, UserAreaData>> _loadUserAreaData(String userId) async {
     try {
       final userAreas = await (_database.select(
         _database.userAreas,
@@ -195,68 +169,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       print('❌ Failed to load user area data: $e');
       return {};
     }
-  }
-
-  List<Spot> _getOneSpotPerArea({
-    required List<GeographicArea> areas,
-    required List<Spot> spots,
-  }) {
-    final spotsForAreas = <Spot>[];
-    final assignedSpotIds = <int>{};
-
-    for (final area in areas) {
-      for (final spot in spots) {
-        if (assignedSpotIds.contains(spot.id)) {
-          continue; // This spot is already assigned to another area
-        }
-
-        bool isInside = false;
-        for (final polygonRing in area.coordinates) {
-          final polygonLatLng = polygonRing
-              .map((coords) => LatLng(coords[1], coords[0]))
-              .toList();
-          if (_isPointInPolygon(spot.location, polygonLatLng)) {
-            isInside = true;
-            break;
-          }
-        }
-        if (isInside) {
-          spotsForAreas.add(spot);
-          assignedSpotIds.add(spot.id);
-          break; // Found a spot for this area, move to the next area
-        }
-      }
-    }
-    return spotsForAreas;
-  }
-
-  bool _isPointInPolygon(LatLng point, List<LatLng> polygon) {
-    if (polygon.length < 3) {
-      return false;
-    }
-
-    bool isInside = false;
-    int j = polygon.length - 1;
-    for (int i = 0; i < polygon.length; i++) {
-      final p1 = polygon[i];
-      final p2 = polygon[j];
-
-      final isYBetween =
-          (p1.latitude > point.latitude) != (p2.latitude > point.latitude);
-      final isXBefore =
-          point.longitude <
-          (p2.longitude - p1.longitude) *
-                  (point.latitude - p1.latitude) /
-                  (p2.latitude - p1.latitude) +
-              p1.longitude;
-
-      if (isYBetween && isXBefore) {
-        isInside = !isInside;
-      }
-      j = i;
-    }
-
-    return isInside;
   }
 
   Future<void> _onAreaSelected(

@@ -8,13 +8,13 @@ part of 'user_area_data.dart';
 
 _$UserAreaDataImpl _$$UserAreaDataImplFromJson(Map<String, dynamic> json) =>
     _$UserAreaDataImpl(
-      areaId: (json['areaId'] as num).toInt(),
+      areaId: json['areaId'] as String,
       visitCount: (json['visitCount'] as num?)?.toInt() ?? 0,
       lastVisited: json['lastVisited'] == null
           ? null
           : DateTime.parse(json['lastVisited'] as String),
-      totalSpots: (json['totalSpots'] as num?)?.toInt(),
-      visitedSpots: (json['visitedSpots'] as num?)?.toInt(),
+      totalSpots: (json['totalSpots'] as num).toInt(),
+      visitedSpots: (json['visitedSpots'] as num).toInt(),
       firstSpotVisit: json['firstSpotVisit'] == null
           ? null
           : DateTime.parse(json['firstSpotVisit'] as String),

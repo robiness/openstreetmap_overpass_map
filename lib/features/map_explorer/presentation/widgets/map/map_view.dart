@@ -23,8 +23,8 @@ class MapView extends StatefulWidget {
   final List<Spot> spots;
   final GeographicArea? selectedArea;
   final Spot? selectedSpot;
-  final Map<int, UserSpotData>? userSpotVisitData;
-  final Map<int, UserAreaData>? userAreaVisitData;
+  final Map<String, UserSpotData>? userSpotVisitData;
+  final Map<String, UserAreaData>? userAreaVisitData;
 
   const MapView({
     super.key,
@@ -72,7 +72,8 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        initialCenter: const LatLng(50.9375, 6.9603), // Cologne
+        initialCenter: const LatLng(50.9375, 6.9603),
+        // Cologne
         initialZoom: 11,
         minZoom: 8,
         maxZoom: 18,
@@ -80,7 +81,9 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
           flags:
               InteractiveFlag.drag |
               InteractiveFlag.pinchZoom |
-              InteractiveFlag.doubleTapZoom,
+              InteractiveFlag.doubleTapZoom |
+              InteractiveFlag.scrollWheelZoom |
+              InteractiveFlag.doubleTapDragZoom,
         ),
         onTap: (tapPosition, latLng) {
           final debugBloc = context.read<DebugBloc>();
@@ -174,11 +177,11 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
               ),
               builder: (context, checkInSnapshot) {
                 // Merge check-in data into UserSpotData
-                final mergedUserSpotData = <int, UserSpotData>{};
+                final mergedUserSpotData = <String, UserSpotData>{};
                 final baseUserSpotData = widget.userSpotVisitData ?? {};
 
                 // Create a set of checked-in spot IDs
-                final checkedInSpotIds = <int>{};
+                final checkedInSpotIds = <String>{};
                 if (checkInSnapshot.hasData) {
                   for (final checkIn in checkInSnapshot.data!) {
                     if (checkIn.spotId != null) {

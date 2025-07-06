@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:overpass_map/app/theme/app_theme_data.dart';
+
 import 'package:overpass_map/app/theme/theme_provider.dart';
 
 class ThemePickerButton extends StatelessWidget {

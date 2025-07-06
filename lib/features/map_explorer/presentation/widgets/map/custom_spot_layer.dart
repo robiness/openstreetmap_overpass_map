@@ -7,7 +7,7 @@ class CustomSpotLayer extends StatelessWidget {
   final List<Spot> spots;
   final void Function(Spot)? onSpotTap;
   final Spot? selectedSpot;
-  final Map<int, UserSpotData> userSpotVisitData;
+  final Map<String, UserSpotData> userSpotVisitData;
 
   const CustomSpotLayer({
     super.key,

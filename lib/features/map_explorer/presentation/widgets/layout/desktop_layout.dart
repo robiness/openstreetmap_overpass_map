@@ -14,8 +14,8 @@ class DesktopLayout extends StatefulWidget {
   final List<Spot> spots;
   final GeographicArea? selectedArea;
   final Spot? selectedSpot;
-  final Map<int, UserAreaData> userAreaData;
-  final Map<int, UserSpotData> userSpotVisitData;
+  final Map<String, UserAreaData> userAreaData;
+  final Map<String, UserSpotData> userSpotVisitData;
   final Function(GeographicArea) onAreaTapped;
   final Function(Spot) onSpotTapped;
 

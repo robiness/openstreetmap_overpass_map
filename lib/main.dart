@@ -53,6 +53,7 @@ Future<void> main() async {
   // --- Repository Setup ---
   final mapRepository = SupabaseMapRepositoryImpl(
     supabaseClient: Supabase.instance.client,
+    db: database,
   );
   final locationRepository = LocationRepositoryImpl();
 
@@ -78,7 +79,8 @@ Future<void> main() async {
               ),
             ),
             BlocProvider(
-              create: (context) => LocationBloc(locationRepository: locationRepository),
+              create: (context) =>
+                  LocationBloc(locationRepository: locationRepository),
             ),
             BlocProvider(
               create: (context) =>

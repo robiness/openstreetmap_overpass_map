@@ -60,7 +60,7 @@ class AppThemeData {
   // === MAP STYLES ===
   final MapAreaStyles mapStyles;
 
-  const AppThemeData({
+  AppThemeData({
     required this.name,
     required this.description,
     required this.brightness,
@@ -111,9 +111,8 @@ class AppThemeData {
     surface: DesignTokens.gray800,
     surfaceVariant: DesignTokens.gray700,
     outline: DesignTokens.gray900,
-    shadow: DesignTokens.withOpacity(
-      DesignTokens.black,
-      DesignTokens.opacityMedium,
+    shadow: DesignTokens.black.withAlpha(
+      (255 * DesignTokens.opacityMedium).round(),
     ),
 
     // Content Colors
@@ -123,17 +122,14 @@ class AppThemeData {
     onSurfaceSubtle: DesignTokens.gray400,
 
     // Interactive States
-    hover: DesignTokens.withOpacity(
-      DesignTokens.white,
-      DesignTokens.opacitySubtle,
+    hover: DesignTokens.white.withAlpha(
+      (255 * DesignTokens.opacitySubtle).round(),
     ),
-    pressed: DesignTokens.withOpacity(
-      DesignTokens.white,
-      DesignTokens.opacityLight,
+    pressed: DesignTokens.white.withAlpha(
+      (255 * DesignTokens.opacityLight).round(),
     ),
-    focused: DesignTokens.withOpacity(
-      DesignTokens.brightBlue,
-      DesignTokens.opacityLight,
+    focused: DesignTokens.brightBlue.withAlpha(
+      (255 * DesignTokens.opacityLight).round(),
     ),
     disabled: DesignTokens.gray600,
     disabledContent: DesignTokens.gray500,
@@ -168,9 +164,8 @@ class AppThemeData {
     surface: DesignTokens.gray900,
     surfaceVariant: DesignTokens.gray800,
     outline: DesignTokens.gray400,
-    shadow: DesignTokens.withOpacity(
-      DesignTokens.black,
-      DesignTokens.opacityHeavy,
+    shadow: DesignTokens.black.withAlpha(
+      (255 * DesignTokens.opacityHeavy).round(),
     ),
 
     // Content Colors (maximum contrast)
@@ -180,17 +175,14 @@ class AppThemeData {
     onSurfaceSubtle: DesignTokens.gray300,
 
     // Interactive States
-    hover: DesignTokens.withOpacity(
-      DesignTokens.white,
-      DesignTokens.opacityLight,
+    hover: DesignTokens.white.withAlpha(
+      (255 * DesignTokens.opacityLight).round(),
     ),
-    pressed: DesignTokens.withOpacity(
-      DesignTokens.white,
-      DesignTokens.opacityMedium,
+    pressed: DesignTokens.white.withAlpha(
+      (255 * DesignTokens.opacityMedium).round(),
     ),
-    focused: DesignTokens.withOpacity(
-      DesignTokens.neonBlue,
-      DesignTokens.opacityMedium,
+    focused: DesignTokens.neonBlue.withAlpha(
+      (255 * DesignTokens.opacityMedium).round(),
     ),
     disabled: DesignTokens.gray700,
     disabledContent: DesignTokens.gray600,
@@ -225,9 +217,8 @@ class AppThemeData {
     surface: DesignTokens.gray50,
     surfaceVariant: DesignTokens.gray100,
     outline: DesignTokens.gray300,
-    shadow: DesignTokens.withOpacity(
-      DesignTokens.gray600,
-      DesignTokens.opacityLight,
+    shadow: DesignTokens.gray600.withAlpha(
+      (255 * DesignTokens.opacityLight).round(),
     ),
 
     // Content Colors
@@ -237,17 +228,14 @@ class AppThemeData {
     onSurfaceSubtle: DesignTokens.gray600,
 
     // Interactive States
-    hover: DesignTokens.withOpacity(
-      DesignTokens.gray600,
-      DesignTokens.opacitySubtle,
+    hover: DesignTokens.gray600.withAlpha(
+      (255 * DesignTokens.opacitySubtle).round(),
     ),
-    pressed: DesignTokens.withOpacity(
-      DesignTokens.gray600,
-      DesignTokens.opacityLight,
+    pressed: DesignTokens.gray600.withAlpha(
+      (255 * DesignTokens.opacityLight).round(),
     ),
-    focused: DesignTokens.withOpacity(
-      DesignTokens.brightBlue,
-      DesignTokens.opacityLight,
+    focused: DesignTokens.brightBlue.withAlpha(
+      (255 * DesignTokens.opacityLight).round(),
     ),
     disabled: DesignTokens.gray300,
     disabledContent: DesignTokens.gray400,
@@ -400,33 +388,53 @@ class AppComponentStyles {
   final ButtonStyles buttons;
   final CardStyles cards;
   final InputStyles inputs;
+  final Color cardShadow;
+  final Color buttonShadow;
+  final Color dialogScrim;
+  final Color panelScrim;
 
-  const AppComponentStyles({
+  AppComponentStyles({
     required this.spots,
     required this.buttons,
     required this.cards,
     required this.inputs,
+    required this.cardShadow,
+    required this.buttonShadow,
+    required this.dialogScrim,
+    required this.panelScrim,
   });
 
-  static const AppComponentStyles darkComfort = AppComponentStyles(
+  static AppComponentStyles get darkComfort => AppComponentStyles(
     spots: SpotStyles.darkComfort,
     buttons: ButtonStyles.darkComfort,
     cards: CardStyles.darkComfort,
     inputs: InputStyles.darkComfort,
+    cardShadow: DesignTokens.black.withAlpha((255 * 0.2).round()),
+    buttonShadow: DesignTokens.black.withAlpha((255 * 0.15).round()),
+    dialogScrim: DesignTokens.black.withAlpha((255 * 0.6).round()),
+    panelScrim: DesignTokens.gray900.withAlpha((255 * 0.8).round()),
   );
 
-  static const AppComponentStyles highContrast = AppComponentStyles(
+  static AppComponentStyles get highContrast => AppComponentStyles(
     spots: SpotStyles.highContrast,
     buttons: ButtonStyles.highContrast,
     cards: CardStyles.highContrast,
     inputs: InputStyles.highContrast,
+    cardShadow: DesignTokens.black.withAlpha((255 * 0.3).round()),
+    buttonShadow: DesignTokens.black.withAlpha((255 * 0.25).round()),
+    dialogScrim: DesignTokens.black.withAlpha((255 * 0.8).round()),
+    panelScrim: DesignTokens.black.withAlpha((255 * 0.9).round()),
   );
 
-  static const AppComponentStyles lightMode = AppComponentStyles(
+  static AppComponentStyles get lightMode => AppComponentStyles(
     spots: SpotStyles.lightMode,
     buttons: ButtonStyles.lightMode,
     cards: CardStyles.lightMode,
     inputs: InputStyles.lightMode,
+    cardShadow: DesignTokens.gray500.withAlpha((255 * 0.15).round()),
+    buttonShadow: DesignTokens.gray400.withAlpha((255 * 0.1).round()),
+    dialogScrim: DesignTokens.black.withAlpha((255 * 0.4).round()),
+    panelScrim: DesignTokens.white.withAlpha((255 * 0.7).round()),
   );
 }
 
@@ -607,29 +615,25 @@ class InputStyles {
   );
 }
 
-/// Defines the visual style for areas on the map
+/// Defines the styles for geographic areas on the map
 class MapAreaStyles {
-  // Unvisited
   final Color unvisitedFill;
   final Color unvisitedBorder;
   final double unvisitedBorderWidth;
 
-  // In Progress
   final Color inProgressFill;
   final Color inProgressBorder;
   final double inProgressBorderWidth;
 
-  // Completed
   final Color completedFill;
   final Color completedBorder;
   final double completedBorderWidth;
 
-  // Selected
   final Color selectedFill;
   final Color selectedBorder;
   final double selectedBorderWidth;
 
-  const MapAreaStyles({
+  MapAreaStyles({
     required this.unvisitedFill,
     required this.unvisitedBorder,
     required this.unvisitedBorderWidth,
@@ -644,66 +648,60 @@ class MapAreaStyles {
     required this.selectedBorderWidth,
   });
 
-  static MapAreaStyles get darkComfort {
-    return MapAreaStyles(
-      unvisitedFill: DesignTokens.gray900.withOpacity(0.1),
-      unvisitedBorder: DesignTokens.gray900,
-      unvisitedBorderWidth: 1.0,
-      inProgressFill: DesignTokens.electricGreen.withOpacity(0.25),
-      inProgressBorder: DesignTokens.electricGreen.withOpacity(0.8),
-      inProgressBorderWidth: 1.5,
-      completedFill: DesignTokens.electricGreen.withOpacity(0.4),
-      completedBorder: DesignTokens.electricGreen,
-      completedBorderWidth: 1.5,
-      selectedFill: DesignTokens.electricOrange.withOpacity(0.3),
-      selectedBorder: DesignTokens.electricOrange,
-      selectedBorderWidth: 2.5,
-    );
-  }
+  static MapAreaStyles get darkComfort => MapAreaStyles(
+    unvisitedFill: DesignTokens.gray900.withAlpha((255 * 0.1).round()),
+    unvisitedBorder: DesignTokens.gray900,
+    unvisitedBorderWidth: 1.0,
+    inProgressFill: DesignTokens.electricGreen.withAlpha((255 * 0.25).round()),
+    inProgressBorder: DesignTokens.electricGreen.withAlpha((255 * 0.8).round()),
+    inProgressBorderWidth: 1.5,
+    completedFill: DesignTokens.electricGreen.withAlpha((255 * 0.4).round()),
+    completedBorder: DesignTokens.electricGreen,
+    completedBorderWidth: 1.5,
+    selectedFill: DesignTokens.electricOrange.withAlpha((255 * 0.3).round()),
+    selectedBorder: DesignTokens.electricOrange,
+    selectedBorderWidth: 2.5,
+  );
 
-  static MapAreaStyles get highContrast {
-    return MapAreaStyles(
-      unvisitedFill: DesignTokens.gray400.withOpacity(0.15),
-      unvisitedBorder: DesignTokens.gray400,
-      unvisitedBorderWidth: 1.5,
-      inProgressFill: DesignTokens.neonGreen.withOpacity(0.3),
-      inProgressBorder: DesignTokens.neonGreen,
-      inProgressBorderWidth: 2.0,
-      completedFill: DesignTokens.neonGreen.withOpacity(0.5),
-      completedBorder: DesignTokens.neonGreen,
-      completedBorderWidth: 2.0,
-      selectedFill: DesignTokens.neonOrange.withOpacity(0.4),
-      selectedBorder: DesignTokens.neonOrange,
-      selectedBorderWidth: 3.0,
-    );
-  }
+  static MapAreaStyles get highContrast => MapAreaStyles(
+    unvisitedFill: DesignTokens.gray400.withAlpha((255 * 0.15).round()),
+    unvisitedBorder: DesignTokens.gray400,
+    unvisitedBorderWidth: 1.5,
+    inProgressFill: DesignTokens.neonGreen.withAlpha((255 * 0.3).round()),
+    inProgressBorder: DesignTokens.neonGreen,
+    inProgressBorderWidth: 2.0,
+    completedFill: DesignTokens.neonGreen.withAlpha((255 * 0.5).round()),
+    completedBorder: DesignTokens.neonGreen,
+    completedBorderWidth: 2.0,
+    selectedFill: DesignTokens.neonOrange.withAlpha((255 * 0.4).round()),
+    selectedBorder: DesignTokens.neonOrange,
+    selectedBorderWidth: 3.0,
+  );
 
-  static MapAreaStyles get lightMode {
-    return MapAreaStyles(
-      unvisitedFill: DesignTokens.gray300.withOpacity(0.1),
-      unvisitedBorder: DesignTokens.gray300,
-      unvisitedBorderWidth: 1.0,
-      inProgressFill: DesignTokens.darken(
-        DesignTokens.electricGreen,
-        0.1,
-      ).withOpacity(0.2),
-      inProgressBorder: DesignTokens.darken(
-        DesignTokens.electricGreen,
-        0.1,
-      ).withOpacity(0.8),
-      inProgressBorderWidth: 1.5,
-      completedFill: DesignTokens.darken(
-        DesignTokens.electricGreen,
-        0.1,
-      ).withOpacity(0.3),
-      completedBorder: DesignTokens.darken(DesignTokens.electricGreen, 0.1),
-      completedBorderWidth: 1.5,
-      selectedFill: DesignTokens.darken(
-        DesignTokens.electricOrange,
-        0.1,
-      ).withOpacity(0.25),
-      selectedBorder: DesignTokens.darken(DesignTokens.electricOrange, 0.1),
-      selectedBorderWidth: 2.5,
-    );
-  }
+  static MapAreaStyles get lightMode => MapAreaStyles(
+    unvisitedFill: DesignTokens.gray300.withAlpha((255 * 0.1).round()),
+    unvisitedBorder: DesignTokens.gray300,
+    unvisitedBorderWidth: 1.0,
+    inProgressFill: DesignTokens.darken(
+      DesignTokens.electricGreen,
+      0.1,
+    ).withAlpha((255 * 0.2).round()),
+    inProgressBorder: DesignTokens.darken(
+      DesignTokens.electricGreen,
+      0.1,
+    ).withAlpha((255 * 0.8).round()),
+    inProgressBorderWidth: 1.5,
+    completedFill: DesignTokens.darken(
+      DesignTokens.electricGreen,
+      0.1,
+    ).withAlpha((255 * 0.3).round()),
+    completedBorder: DesignTokens.darken(DesignTokens.electricGreen, 0.1),
+    completedBorderWidth: 1.5,
+    selectedFill: DesignTokens.darken(
+      DesignTokens.electricOrange,
+      0.1,
+    ).withAlpha((255 * 0.25).round()),
+    selectedBorder: DesignTokens.darken(DesignTokens.electricOrange, 0.1),
+    selectedBorderWidth: 2.5,
+  );
 }

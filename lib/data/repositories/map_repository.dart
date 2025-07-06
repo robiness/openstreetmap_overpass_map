@@ -20,17 +20,7 @@ abstract class MapRepository {
     int cityAdminLevel = 6,
   });
 
-  Future<List<Spot>> getSpots({
-    required String cityName,
-    List<String> categories = const [
-      'restaurant',
-      'cafe',
-      'bar',
-      'biergarten',
-      'viewpoint',
-      'shop',
-    ],
-  });
+  Future<List<Spot>> getSpots();
 
   // New method to get available cities
   Future<List<AvailableCity>> getAvailableCities({

@@ -15,13 +15,409 @@ final _privateConstructorUsedError = UnsupportedError(
   'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
 );
 
+Spot _$SpotFromJson(Map<String, dynamic> json) {
+  return _Spot.fromJson(json);
+}
+
+/// @nodoc
+mixin _$Spot {
+  String get id => throw _privateConstructorUsedError;
+  int get osmId => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  String get category => throw _privateConstructorUsedError;
+  @LatLngConverter()
+  LatLng get location => throw _privateConstructorUsedError;
+  String? get description => throw _privateConstructorUsedError;
+  List<String> get tags => throw _privateConstructorUsedError;
+  DateTime get createdAt => throw _privateConstructorUsedError;
+  String? get createdBy => throw _privateConstructorUsedError;
+  Map<String, dynamic> get properties => throw _privateConstructorUsedError;
+  String? get parentAreaId => throw _privateConstructorUsedError;
+
+  /// Serializes this Spot to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of Spot
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $SpotCopyWith<Spot> get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SpotCopyWith<$Res> {
+  factory $SpotCopyWith(Spot value, $Res Function(Spot) then) =
+      _$SpotCopyWithImpl<$Res, Spot>;
+  @useResult
+  $Res call({
+    String id,
+    int osmId,
+    String name,
+    String category,
+    @LatLngConverter() LatLng location,
+    String? description,
+    List<String> tags,
+    DateTime createdAt,
+    String? createdBy,
+    Map<String, dynamic> properties,
+    String? parentAreaId,
+  });
+}
+
+/// @nodoc
+class _$SpotCopyWithImpl<$Res, $Val extends Spot>
+    implements $SpotCopyWith<$Res> {
+  _$SpotCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of Spot
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? osmId = null,
+    Object? name = null,
+    Object? category = null,
+    Object? location = null,
+    Object? description = freezed,
+    Object? tags = null,
+    Object? createdAt = null,
+    Object? createdBy = freezed,
+    Object? properties = null,
+    Object? parentAreaId = freezed,
+  }) {
+    return _then(
+      _value.copyWith(
+            id: null == id
+                ? _value.id
+                : id // ignore: cast_nullable_to_non_nullable
+                      as String,
+            osmId: null == osmId
+                ? _value.osmId
+                : osmId // ignore: cast_nullable_to_non_nullable
+                      as int,
+            name: null == name
+                ? _value.name
+                : name // ignore: cast_nullable_to_non_nullable
+                      as String,
+            category: null == category
+                ? _value.category
+                : category // ignore: cast_nullable_to_non_nullable
+                      as String,
+            location: null == location
+                ? _value.location
+                : location // ignore: cast_nullable_to_non_nullable
+                      as LatLng,
+            description: freezed == description
+                ? _value.description
+                : description // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            tags: null == tags
+                ? _value.tags
+                : tags // ignore: cast_nullable_to_non_nullable
+                      as List<String>,
+            createdAt: null == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime,
+            createdBy: freezed == createdBy
+                ? _value.createdBy
+                : createdBy // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            properties: null == properties
+                ? _value.properties
+                : properties // ignore: cast_nullable_to_non_nullable
+                      as Map<String, dynamic>,
+            parentAreaId: freezed == parentAreaId
+                ? _value.parentAreaId
+                : parentAreaId // ignore: cast_nullable_to_non_nullable
+                      as String?,
+          )
+          as $Val,
+    );
+  }
+}
+
+/// @nodoc
+abstract class _$$SpotImplCopyWith<$Res> implements $SpotCopyWith<$Res> {
+  factory _$$SpotImplCopyWith(
+    _$SpotImpl value,
+    $Res Function(_$SpotImpl) then,
+  ) = __$$SpotImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({
+    String id,
+    int osmId,
+    String name,
+    String category,
+    @LatLngConverter() LatLng location,
+    String? description,
+    List<String> tags,
+    DateTime createdAt,
+    String? createdBy,
+    Map<String, dynamic> properties,
+    String? parentAreaId,
+  });
+}
+
+/// @nodoc
+class __$$SpotImplCopyWithImpl<$Res>
+    extends _$SpotCopyWithImpl<$Res, _$SpotImpl>
+    implements _$$SpotImplCopyWith<$Res> {
+  __$$SpotImplCopyWithImpl(_$SpotImpl _value, $Res Function(_$SpotImpl) _then)
+    : super(_value, _then);
+
+  /// Create a copy of Spot
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? osmId = null,
+    Object? name = null,
+    Object? category = null,
+    Object? location = null,
+    Object? description = freezed,
+    Object? tags = null,
+    Object? createdAt = null,
+    Object? createdBy = freezed,
+    Object? properties = null,
+    Object? parentAreaId = freezed,
+  }) {
+    return _then(
+      _$SpotImpl(
+        id: null == id
+            ? _value.id
+            : id // ignore: cast_nullable_to_non_nullable
+                  as String,
+        osmId: null == osmId
+            ? _value.osmId
+            : osmId // ignore: cast_nullable_to_non_nullable
+                  as int,
+        name: null == name
+            ? _value.name
+            : name // ignore: cast_nullable_to_non_nullable
+                  as String,
+        category: null == category
+            ? _value.category
+            : category // ignore: cast_nullable_to_non_nullable
+                  as String,
+        location: null == location
+            ? _value.location
+            : location // ignore: cast_nullable_to_non_nullable
+                  as LatLng,
+        description: freezed == description
+            ? _value.description
+            : description // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        tags: null == tags
+            ? _value._tags
+            : tags // ignore: cast_nullable_to_non_nullable
+                  as List<String>,
+        createdAt: null == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime,
+        createdBy: freezed == createdBy
+            ? _value.createdBy
+            : createdBy // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        properties: null == properties
+            ? _value._properties
+            : properties // ignore: cast_nullable_to_non_nullable
+                  as Map<String, dynamic>,
+        parentAreaId: freezed == parentAreaId
+            ? _value.parentAreaId
+            : parentAreaId // ignore: cast_nullable_to_non_nullable
+                  as String?,
+      ),
+    );
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$SpotImpl implements _Spot {
+  const _$SpotImpl({
+    required this.id,
+    required this.osmId,
+    required this.name,
+    required this.category,
+    @LatLngConverter() required this.location,
+    this.description,
+    final List<String> tags = const [],
+    required this.createdAt,
+    this.createdBy,
+    final Map<String, dynamic> properties = const {},
+    this.parentAreaId,
+  }) : _tags = tags,
+       _properties = properties;
+
+  factory _$SpotImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SpotImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final int osmId;
+  @override
+  final String name;
+  @override
+  final String category;
+  @override
+  @LatLngConverter()
+  final LatLng location;
+  @override
+  final String? description;
+  final List<String> _tags;
+  @override
+  @JsonKey()
+  List<String> get tags {
+    if (_tags is EqualUnmodifiableListView) return _tags;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_tags);
+  }
+
+  @override
+  final DateTime createdAt;
+  @override
+  final String? createdBy;
+  final Map<String, dynamic> _properties;
+  @override
+  @JsonKey()
+  Map<String, dynamic> get properties {
+    if (_properties is EqualUnmodifiableMapView) return _properties;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_properties);
+  }
+
+  @override
+  final String? parentAreaId;
+
+  @override
+  String toString() {
+    return 'Spot(id: $id, osmId: $osmId, name: $name, category: $category, location: $location, description: $description, tags: $tags, createdAt: $createdAt, createdBy: $createdBy, properties: $properties, parentAreaId: $parentAreaId)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SpotImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.osmId, osmId) || other.osmId == osmId) &&
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
+            (identical(other.location, location) ||
+                other.location == location) &&
+            (identical(other.description, description) ||
+                other.description == description) &&
+            const DeepCollectionEquality().equals(other._tags, _tags) &&
+            (identical(other.createdAt, createdAt) ||
+                other.createdAt == createdAt) &&
+            (identical(other.createdBy, createdBy) ||
+                other.createdBy == createdBy) &&
+            const DeepCollectionEquality().equals(
+              other._properties,
+              _properties,
+            ) &&
+            (identical(other.parentAreaId, parentAreaId) ||
+                other.parentAreaId == parentAreaId));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+    runtimeType,
+    id,
+    osmId,
+    name,
+    category,
+    location,
+    description,
+    const DeepCollectionEquality().hash(_tags),
+    createdAt,
+    createdBy,
+    const DeepCollectionEquality().hash(_properties),
+    parentAreaId,
+  );
+
+  /// Create a copy of Spot
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SpotImplCopyWith<_$SpotImpl> get copyWith =>
+      __$$SpotImplCopyWithImpl<_$SpotImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SpotImplToJson(this);
+  }
+}
+
+abstract class _Spot implements Spot {
+  const factory _Spot({
+    required final String id,
+    required final int osmId,
+    required final String name,
+    required final String category,
+    @LatLngConverter() required final LatLng location,
+    final String? description,
+    final List<String> tags,
+    required final DateTime createdAt,
+    final String? createdBy,
+    final Map<String, dynamic> properties,
+    final String? parentAreaId,
+  }) = _$SpotImpl;
+
+  factory _Spot.fromJson(Map<String, dynamic> json) = _$SpotImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  int get osmId;
+  @override
+  String get name;
+  @override
+  String get category;
+  @override
+  @LatLngConverter()
+  LatLng get location;
+  @override
+  String? get description;
+  @override
+  List<String> get tags;
+  @override
+  DateTime get createdAt;
+  @override
+  String? get createdBy;
+  @override
+  Map<String, dynamic> get properties;
+  @override
+  String? get parentAreaId;
+
+  /// Create a copy of Spot
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$SpotImplCopyWith<_$SpotImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
 UserSpotData _$UserSpotDataFromJson(Map<String, dynamic> json) {
   return _UserSpotData.fromJson(json);
 }
 
 /// @nodoc
 mixin _$UserSpotData {
-  int get spotId => throw _privateConstructorUsedError;
+  String get spotId => throw _privateConstructorUsedError;
   int get visitCount => throw _privateConstructorUsedError;
   bool get isFavorite => throw _privateConstructorUsedError;
   bool get isCheckedIn => throw _privateConstructorUsedError;
@@ -47,7 +443,7 @@ abstract class $UserSpotDataCopyWith<$Res> {
   ) = _$UserSpotDataCopyWithImpl<$Res, UserSpotData>;
   @useResult
   $Res call({
-    int spotId,
+    String spotId,
     int visitCount,
     bool isFavorite,
     bool isCheckedIn,
@@ -85,7 +481,7 @@ class _$UserSpotDataCopyWithImpl<$Res, $Val extends UserSpotData>
             spotId: null == spotId
                 ? _value.spotId
                 : spotId // ignore: cast_nullable_to_non_nullable
-                      as int,
+                      as String,
             visitCount: null == visitCount
                 ? _value.visitCount
                 : visitCount // ignore: cast_nullable_to_non_nullable
@@ -126,7 +522,7 @@ abstract class _$$UserSpotDataImplCopyWith<$Res>
   @override
   @useResult
   $Res call({
-    int spotId,
+    String spotId,
     int visitCount,
     bool isFavorite,
     bool isCheckedIn,
@@ -163,7 +559,7 @@ class __$$UserSpotDataImplCopyWithImpl<$Res>
         spotId: null == spotId
             ? _value.spotId
             : spotId // ignore: cast_nullable_to_non_nullable
-                  as int,
+                  as String,
         visitCount: null == visitCount
             ? _value.visitCount
             : visitCount // ignore: cast_nullable_to_non_nullable
@@ -210,7 +606,7 @@ class _$UserSpotDataImpl implements _UserSpotData {
       _$$UserSpotDataImplFromJson(json);
 
   @override
-  final int spotId;
+  final String spotId;
   @override
   @JsonKey()
   final int visitCount;
@@ -282,7 +678,7 @@ class _$UserSpotDataImpl implements _UserSpotData {
 
 abstract class _UserSpotData implements UserSpotData {
   const factory _UserSpotData({
-    required final int spotId,
+    required final String spotId,
     final int visitCount,
     final bool isFavorite,
     final bool isCheckedIn,
@@ -295,7 +691,7 @@ abstract class _UserSpotData implements UserSpotData {
       _$UserSpotDataImpl.fromJson;
 
   @override
-  int get spotId;
+  String get spotId;
   @override
   int get visitCount;
   @override

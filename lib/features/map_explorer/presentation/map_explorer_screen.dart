@@ -44,77 +44,74 @@ class MapExplorerScreen extends StatelessWidget {
       child: BlocBuilder<MapBloc, MapState>(
         builder: (context, state) {
           return state.when(
-            initial: () => Container(color: Colors.black),
-            loadInProgress: () => Container(
-              color: Colors.black,
-              child: Center(
-                child: FractionallySizedBox(
-                  heightFactor: 0.5,
-                  child: Image.asset(
-                    'assets/splash_screen.jpeg',
-                    fit: BoxFit.fitHeight,
-                  ),
-                ),
-              ),
-            ),
+            initial: () => const Center(child: CircularProgressIndicator()),
+            loadInProgress: () =>
+                const Center(child: CircularProgressIndicator()),
             loadSuccess:
                 (
                   boundaryData,
                   spots,
-                  selectedArea,
-                  selectedSpot,
                   userVisitData,
                   userSpotVisitData,
-                ) {
-                  return Scaffold(
-                    appBar: AppBar(
-                      backgroundColor: appTheme.background,
-                      elevation: 0,
-                      actions: const [
-                        Padding(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: UserProfileButton(),
-                        ),
-                      ],
-                    ),
+                  selectedArea,
+                  selectedSpot,
+                ) => Scaffold(
+                  appBar: AppBar(
                     backgroundColor: appTheme.background,
-                    body: ResponsiveLayout(
-                      mobile: MobileLayout(
-                        boundaryData: boundaryData,
-                        spots: spots,
-                        selectedArea: selectedArea,
-                        selectedSpot: selectedSpot,
-                        userSpotVisitData: userSpotVisitData,
-                        userAreaVisitData: userVisitData,
+                    elevation: 0,
+                    actions: const [
+                      Padding(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: UserProfileButton(),
                       ),
-                      tablet: MobileLayout(
-                        boundaryData: boundaryData,
-                        spots: spots,
-                        selectedArea: selectedArea,
-                        selectedSpot: selectedSpot,
-                        userSpotVisitData: userSpotVisitData,
-                        userAreaVisitData: userVisitData,
+                    ],
+                  ),
+                  backgroundColor: appTheme.background,
+                  body: ResponsiveLayout(
+                    mobile: MobileLayout(
+                      boundaryData: boundaryData,
+                      spots: spots,
+                      selectedArea: selectedArea,
+                      selectedSpot: selectedSpot,
+                      userSpotVisitData: userSpotVisitData,
+                      userAreaVisitData: userVisitData,
+                      onAreaSelected: (area) => context.read<MapBloc>().add(
+                        MapEvent.areaSelected(area: area),
                       ),
-                      desktop: DesktopLayout(
-                        boundaryData: boundaryData,
-                        spots: spots,
-                        selectedArea: selectedArea,
-                        selectedSpot: selectedSpot,
-                        userAreaData: userVisitData,
-                        userSpotVisitData: userSpotVisitData,
-                        onAreaTapped: (area) {
-                          print('Area tapped in DesktopLayout: ${area.name}');
-                          context.read<MapBloc>().add(
-                            MapEvent.areaSelected(area: area),
-                          );
-                        },
-                        onSpotTapped: (spot) => context.read<MapBloc>().add(
-                          MapEvent.spotSelected(spot: spot),
-                        ),
+                      onSpotSelected: (spot) => context.read<MapBloc>().add(
+                        MapEvent.spotSelected(spot: spot),
                       ),
                     ),
-                  );
-                },
+                    tablet: MobileLayout(
+                      boundaryData: boundaryData,
+                      spots: spots,
+                      selectedArea: selectedArea,
+                      selectedSpot: selectedSpot,
+                      userSpotVisitData: userSpotVisitData,
+                      userAreaVisitData: userVisitData,
+                      onAreaSelected: (area) => context.read<MapBloc>().add(
+                        MapEvent.areaSelected(area: area),
+                      ),
+                      onSpotSelected: (spot) => context.read<MapBloc>().add(
+                        MapEvent.spotSelected(spot: spot),
+                      ),
+                    ),
+                    desktop: DesktopLayout(
+                      boundaryData: boundaryData,
+                      spots: spots,
+                      selectedArea: selectedArea,
+                      selectedSpot: selectedSpot,
+                      userAreaData: userVisitData,
+                      userSpotVisitData: userSpotVisitData,
+                      onAreaTapped: (area) => context.read<MapBloc>().add(
+                        MapEvent.areaSelected(area: area),
+                      ),
+                      onSpotTapped: (spot) => context.read<MapBloc>().add(
+                        MapEvent.spotSelected(spot: spot),
+                      ),
+                    ),
+                  ),
+                ),
             loadFailure: (error) => Scaffold(
               backgroundColor: appTheme.background,
               body: Center(

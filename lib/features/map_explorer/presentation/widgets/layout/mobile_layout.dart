@@ -11,8 +11,10 @@ class MobileLayout extends StatefulWidget {
   final List<Spot> spots;
   final GeographicArea? selectedArea;
   final Spot? selectedSpot;
-  final Map<int, UserSpotData> userSpotVisitData;
-  final Map<int, UserAreaData> userAreaVisitData;
+  final Map<String, UserSpotData> userSpotVisitData;
+  final Map<String, UserAreaData> userAreaVisitData;
+  final Function(GeographicArea) onAreaSelected;
+  final Function(Spot) onSpotSelected;
 
   const MobileLayout({
     super.key,
@@ -22,6 +24,8 @@ class MobileLayout extends StatefulWidget {
     this.selectedSpot,
     this.userSpotVisitData = const {},
     this.userAreaVisitData = const {},
+    required this.onAreaSelected,
+    required this.onSpotSelected,
   });
 
   @override

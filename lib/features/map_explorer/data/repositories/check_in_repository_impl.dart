@@ -33,7 +33,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
   }
 
   @override
-  Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, int spotId) {
+  Stream<List<CheckIn>> watchUserCheckInsForSpot(String userId, String spotId) {
     return (_db.select(_db.checkIns)
           ..where((tbl) => tbl.userId.equals(userId))
           ..where((tbl) => tbl.spotId.equals(spotId))
@@ -43,7 +43,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
   @override
   Future<void> createCheckIn({
-    required int spotId,
+    required String spotId,
     required String userId,
   }) async {
     final newCheckIn = CheckInsCompanion(
@@ -60,7 +60,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
   @override
   Future<void> deleteCheckInsForSpot({
-    required int spotId,
+    required String spotId,
     required String userId,
   }) async {
     // Soft delete: mark as deleted instead of hard deleting
@@ -100,32 +100,37 @@ class CheckInRepositoryImpl implements CheckInRepository {
       _db.spots,
     )..where((s) => s.id.isIn(checkedInSpotIds))).get();
 
-    final areaIdsToUpdate = spots.map((s) => s.parentAreaId).toSet();
+    final areaIdsToUpdate = spots
+        .map((s) => s.parentAreaId)
+        .whereType<String>()
+        .toSet();
 
     for (final areaId in areaIdsToUpdate) {
-      // This is a bit inefficient, but it's the simplest way to reuse the
-      // existing logic. We find one spot in the area and trigger the update.
-      final spotInArea = spots.firstWhere((s) => s.parentAreaId == areaId);
+      // Find one spot in the area to trigger the update.
+      final spotInArea = spots.firstWhere(
+        (s) => s.parentAreaId == areaId,
+        orElse: () => throw Exception('Spot not found for area $areaId'),
+      );
       await _updateAreaStats(spotInArea.id, userId);
     }
   }
 
   /// Updates area completion stats for the area containing the given spot
-  Future<void> _updateAreaStats(int spotId, String userId) async {
+  Future<void> _updateAreaStats(String spotId, String userId) async {
     try {
       // Get the spot and its parent area
       final spot = await (_db.select(
         _db.spots,
       )..where((s) => s.id.equals(spotId))).getSingleOrNull();
 
-      if (spot == null) {
+      if (spot == null || spot.parentAreaId == null) {
         print(
-          '⚠️ Spot $spotId not found in database, skipping area stats update',
+          '⚠️ Spot $spotId not found or has no parent area, skipping stats update',
         );
         return;
       }
 
-      final areaId = spot.parentAreaId;
+      final areaId = spot.parentAreaId!;
 
       // Calculate total spots in this area
       final totalSpots =
@@ -149,7 +154,7 @@ class CheckInRepositoryImpl implements CheckInRepository {
       // Count unique spots that have been visited in this area
       final visitedSpotIds = allUserCheckIns
           .map((checkIn) => checkIn.spotId)
-          .where((spotId) => spotIdsInArea.contains(spotId))
+          .where((id) => spotIdsInArea.contains(id))
           .toSet();
       final visitedSpots = visitedSpotIds.length;
 

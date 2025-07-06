@@ -10,7 +10,7 @@ class CustomSpotPainter extends CustomPainter {
   final List<Spot> spots;
   final MapCamera camera;
   final Spot? selectedSpot;
-  final Map<int, UserSpotData> userSpotVisitData;
+  final Map<String, UserSpotData> userSpotVisitData;
 
   CustomSpotPainter({
     required this.spots,

@@ -13,7 +13,7 @@ class CustomAreaPainter extends CustomPainter {
   final MapCamera camera;
   final AppThemeData theme;
   final GeographicArea? selectedArea;
-  final Map<int, UserAreaData> userVisitData;
+  final Map<String, UserAreaData> userVisitData;
 
   CustomAreaPainter({
     required this.areas,
@@ -27,7 +27,7 @@ class CustomAreaPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // First pass: draw shadows for areas with data
     for (final area in areas) {
-      final areaVisitData = userVisitData[area.id];
+      final areaVisitData = userVisitData[area.id.toString()];
       if (areaVisitData != null &&
           (areaVisitData.status == AreaExplorationStatus.completed ||
               areaVisitData.status == AreaExplorationStatus.partial)) {
@@ -93,7 +93,7 @@ class CustomAreaPainter extends CustomPainter {
     GeographicArea area,
     bool isSelected,
   ) {
-    final areaVisitData = userVisitData[area.id];
+    final areaVisitData = userVisitData[area.id.toString()];
 
     // Convert coordinates to screen points and draw
     for (final coordinateRing in area.coordinates) {

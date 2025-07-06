@@ -9,7 +9,7 @@ class CheckIns extends Table {
   TextColumn get userId => text()();
 
   /// The ID of the spot that was visited.
-  IntColumn get spotId => integer()();
+  TextColumn get spotId => text()();
 
   /// The timestamp when this record was last modified locally.
   /// This is automatically set on creation.

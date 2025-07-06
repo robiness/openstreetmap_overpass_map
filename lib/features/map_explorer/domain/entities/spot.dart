@@ -4,127 +4,48 @@ import 'package:latlong2/latlong.dart';
 part 'spot.freezed.dart';
 part 'spot.g.dart';
 
-class Spot {
-  final int id;
-  final String name;
-  final String category;
-  final LatLng location;
-  final String? description;
-  final List<String> tags;
-  final DateTime createdAt;
-  final String? createdBy;
-  final Map<String, dynamic> properties; // For flexible OSM data
+// Custom converter for LatLng
+class LatLngConverter implements JsonConverter<LatLng, Map<String, dynamic>> {
+  const LatLngConverter();
 
-  // Optional area association
-  final int? parentAreaId; // Which Stadtteil/Bezirk this spot belongs to
-
-  Spot({
-    required this.id,
-    required this.name,
-    required this.category,
-    required this.location,
-    this.description,
-    this.tags = const [],
-    required this.createdAt,
-    this.createdBy,
-    this.properties = const {},
-    this.parentAreaId,
-  });
-
-  factory Spot.fromOsmNode(Map<String, dynamic> osmData) {
-    final tags = Map<String, dynamic>.from(osmData['tags'] ?? {});
-
-    return Spot(
-      id: osmData['id'] as int,
-      name: tags['name'] ?? 'Unnamed Spot',
-      category: _categorizeFromTags(tags),
-      location: LatLng(
-        osmData['lat'] as double,
-        osmData['lon'] as double,
-      ),
-      description: tags['description'],
-      tags: _extractRelevantTags(tags),
-      createdAt: DateTime.now(), // Or parse from OSM timestamp
-      properties: tags,
-    );
+  @override
+  LatLng fromJson(Map<String, dynamic> json) {
+    return LatLng(json['lat'] as double, json['lon'] as double);
   }
 
-  static String _categorizeFromTags(Map<String, dynamic> tags) {
-    // Priority-based categorization logic
-    if (tags.containsKey('amenity')) {
-      final amenity = tags['amenity'];
-      switch (amenity) {
-        case 'restaurant':
-          return 'restaurant';
-        case 'bar':
-          return 'bar';
-        case 'cafe':
-          return 'cafe';
-        case 'biergarten':
-          return 'biergarten';
-        case 'fast_food':
-          return 'fast_food';
-        case 'pub':
-          return 'pub';
-        default:
-          return 'amenity';
-      }
-    }
-    if (tags.containsKey('tourism')) {
-      return 'viewpoint';
-    }
-    if (tags.containsKey('shop')) {
-      return 'shop';
-    }
-    return 'other';
+  @override
+  Map<String, dynamic> toJson(LatLng object) {
+    return {
+      'lat': object.latitude,
+      'lon': object.longitude,
+    };
   }
+}
 
-  static List<String> _extractRelevantTags(Map<String, dynamic> tags) {
-    final relevantKeys = [
-      'cuisine',
-      'outdoor_seating',
-      'beer_garden',
-      'wheelchair',
-    ];
-    return relevantKeys
-        .where((key) => tags.containsKey(key))
-        .map((key) => '$key:${tags[key]}')
-        .toList();
-  }
+@freezed
+class Spot with _$Spot {
+  const factory Spot({
+    required String id,
+    required int osmId,
+    required String name,
+    required String category,
+    @LatLngConverter() required LatLng location,
+    String? description,
+    @Default([]) List<String> tags,
+    required DateTime createdAt,
+    String? createdBy,
+    @Default({}) Map<String, dynamic> properties,
+    String? parentAreaId,
+  }) = _Spot;
 
-  Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'category': category,
-    'lat': location.latitude,
-    'lon': location.longitude,
-    'description': description,
-    'tags': tags,
-    'createdAt': createdAt.toIso8601String(),
-    'createdBy': createdBy,
-    'properties': properties,
-    'parentAreaId': parentAreaId,
-  };
-
-  factory Spot.fromJson(Map<String, dynamic> json) => Spot(
-    id: json['id'] as int,
-    name: json['name'] as String,
-    category: json['category'] as String,
-    location: LatLng(json['lat'] as double, json['lon'] as double),
-    description: json['description'] as String?,
-    tags: List<String>.from(json['tags'] ?? []),
-    createdAt: DateTime.parse(json['createdAt'] as String),
-    createdBy: json['createdBy'] as String?,
-    properties: Map<String, dynamic>.from(json['properties'] ?? {}),
-    parentAreaId: json['parentAreaId'] as int?,
-  );
+  factory Spot.fromJson(Map<String, dynamic> json) => _$SpotFromJson(json);
 }
 
 // User interaction data for spots
 @freezed
 class UserSpotData with _$UserSpotData {
   const factory UserSpotData({
-    required int spotId,
+    required String spotId,
     @Default(0) int visitCount,
     @Default(false) bool isFavorite,
     @Default(false) bool isCheckedIn,
@@ -145,7 +66,7 @@ class DisplayableSpot {
   DisplayableSpot({required this.spot, required this.userData});
 
   // Convenience getters
-  int get id => spot.id;
+  String get id => spot.id;
   String get name => spot.name;
   String get category => spot.category;
   LatLng get location => spot.location;
