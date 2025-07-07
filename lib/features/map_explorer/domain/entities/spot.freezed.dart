@@ -22,7 +22,6 @@ Spot _$SpotFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$Spot {
   String get id => throw _privateConstructorUsedError;
-  int get osmId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   @LatLngConverter()
@@ -50,7 +49,6 @@ abstract class $SpotCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    int osmId,
     String name,
     String category,
     @LatLngConverter() LatLng location,
@@ -79,7 +77,6 @@ class _$SpotCopyWithImpl<$Res, $Val extends Spot>
   @override
   $Res call({
     Object? id = null,
-    Object? osmId = null,
     Object? name = null,
     Object? category = null,
     Object? location = null,
@@ -96,10 +93,6 @@ class _$SpotCopyWithImpl<$Res, $Val extends Spot>
                 ? _value.id
                 : id // ignore: cast_nullable_to_non_nullable
                       as String,
-            osmId: null == osmId
-                ? _value.osmId
-                : osmId // ignore: cast_nullable_to_non_nullable
-                      as int,
             name: null == name
                 ? _value.name
                 : name // ignore: cast_nullable_to_non_nullable
@@ -152,7 +145,6 @@ abstract class _$$SpotImplCopyWith<$Res> implements $SpotCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    int osmId,
     String name,
     String category,
     @LatLngConverter() LatLng location,
@@ -178,7 +170,6 @@ class __$$SpotImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? osmId = null,
     Object? name = null,
     Object? category = null,
     Object? location = null,
@@ -195,10 +186,6 @@ class __$$SpotImplCopyWithImpl<$Res>
             ? _value.id
             : id // ignore: cast_nullable_to_non_nullable
                   as String,
-        osmId: null == osmId
-            ? _value.osmId
-            : osmId // ignore: cast_nullable_to_non_nullable
-                  as int,
         name: null == name
             ? _value.name
             : name // ignore: cast_nullable_to_non_nullable
@@ -245,7 +232,6 @@ class __$$SpotImplCopyWithImpl<$Res>
 class _$SpotImpl implements _Spot {
   const _$SpotImpl({
     required this.id,
-    required this.osmId,
     required this.name,
     required this.category,
     @LatLngConverter() required this.location,
@@ -263,8 +249,6 @@ class _$SpotImpl implements _Spot {
 
   @override
   final String id;
-  @override
-  final int osmId;
   @override
   final String name;
   @override
@@ -301,7 +285,7 @@ class _$SpotImpl implements _Spot {
 
   @override
   String toString() {
-    return 'Spot(id: $id, osmId: $osmId, name: $name, category: $category, location: $location, description: $description, tags: $tags, createdAt: $createdAt, createdBy: $createdBy, properties: $properties, parentAreaId: $parentAreaId)';
+    return 'Spot(id: $id, name: $name, category: $category, location: $location, description: $description, tags: $tags, createdAt: $createdAt, createdBy: $createdBy, properties: $properties, parentAreaId: $parentAreaId)';
   }
 
   @override
@@ -310,7 +294,6 @@ class _$SpotImpl implements _Spot {
         (other.runtimeType == runtimeType &&
             other is _$SpotImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.osmId, osmId) || other.osmId == osmId) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.category, category) ||
                 other.category == category) &&
@@ -336,7 +319,6 @@ class _$SpotImpl implements _Spot {
   int get hashCode => Object.hash(
     runtimeType,
     id,
-    osmId,
     name,
     category,
     location,
@@ -365,7 +347,6 @@ class _$SpotImpl implements _Spot {
 abstract class _Spot implements Spot {
   const factory _Spot({
     required final String id,
-    required final int osmId,
     required final String name,
     required final String category,
     @LatLngConverter() required final LatLng location,
@@ -381,8 +362,6 @@ abstract class _Spot implements Spot {
 
   @override
   String get id;
-  @override
-  int get osmId;
   @override
   String get name;
   @override

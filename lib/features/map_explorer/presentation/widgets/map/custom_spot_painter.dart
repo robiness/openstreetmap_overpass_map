@@ -1,5 +1,5 @@
-import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -1012,15 +1012,16 @@ class CustomSpotPainter extends CustomPainter {
   }
 
   SpotColors _getBaseCategoryColors(String category) {
+    print(category);
     switch (category.toLowerCase()) {
-      case 'restaurant':
+      case 'Kultur & Geschichte':
         return SpotColors(Colors.red.shade600, Colors.white);
-      case 'cafe':
+      case 'Genuss & Kulinarik':
         return SpotColors(Colors.brown.shade600, Colors.white);
-      case 'bar':
+      case 'Natur & Ausblick':
       case 'pub':
         return SpotColors(Colors.purple.shade600, Colors.white);
-      case 'biergarten':
+      case 'Architektur & Besonderes':
         return SpotColors(Colors.amber.shade600, Colors.white);
       case 'viewpoint':
       case 'aussichtspunkt':
@@ -1031,7 +1032,7 @@ class CustomSpotPainter extends CustomPainter {
         return SpotColors(Colors.purple.shade700, Colors.white);
       case 'natur':
         return SpotColors(Colors.green.shade600, Colors.white);
-      case 'erholung':
+      case 'Natur & Ausblick':
         return SpotColors(Colors.cyan.shade600, Colors.white);
       case 'geschichte':
         return SpotColors(Colors.brown.shade700, Colors.white);
@@ -1143,8 +1144,7 @@ class CustomSpotPainter extends CustomPainter {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared &&
-          distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle

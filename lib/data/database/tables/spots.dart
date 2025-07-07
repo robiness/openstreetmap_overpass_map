@@ -4,7 +4,6 @@ import 'package:overpass_map/data/database/app_database.dart';
 @DataClassName('SpotData')
 class Spots extends Table {
   TextColumn get id => text()();
-  IntColumn get osmId => integer()();
   TextColumn get name => text()();
   TextColumn get category => text()();
   RealColumn get lat => real()();

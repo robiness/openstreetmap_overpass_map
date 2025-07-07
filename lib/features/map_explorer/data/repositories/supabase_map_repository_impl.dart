@@ -1,13 +1,12 @@
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/database/app_database.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/map_explorer/data/models/boundary_data.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseMapRepositoryImpl implements MapRepository {
   final SupabaseClient _supabaseClient;
@@ -50,9 +49,7 @@ class SupabaseMapRepositoryImpl implements MapRepository {
           .order('admin_level');
 
       // Also fetch any grandchildren (stadtteile under bezirke)
-      final childIds = childAreasResponse
-          .map((area) => area['id'] as int)
-          .toList();
+      final childIds = childAreasResponse.map((area) => area['id'] as int).toList();
       List<dynamic> grandChildAreasResponse = [];
 
       if (childIds.isNotEmpty) {
@@ -117,22 +114,17 @@ class SupabaseMapRepositoryImpl implements MapRepository {
 
           // Convert categories array to single category string
           final categories = spotData['categories'] as List<dynamic>?;
-          final category = categories?.isNotEmpty == true
-              ? categories!.first.toString()
-              : 'unknown';
+          final category = categories?.isNotEmpty == true ? categories!.first.toString() : 'unknown';
 
           // Create Spot object directly
           final spot = Spot(
             id: spotData['id'] as String,
-            osmId: spotData['osm_id'] as int? ?? 0,
             name: spotData['name'] as String? ?? 'Unknown',
             category: category,
             location: LatLng(lat ?? 0.0, lon ?? 0.0),
             description: spotData['description'] as String?,
             tags: [], // Default empty tags
-            createdAt:
-                DateTime.tryParse(spotData['created_at'] as String? ?? '') ??
-                DateTime.now(),
+            createdAt: DateTime.tryParse(spotData['created_at'] as String? ?? '') ?? DateTime.now(),
             createdBy: null,
             properties: {},
             parentAreaId: spotData['parent_area_id']?.toString(),
@@ -243,7 +235,6 @@ class SupabaseMapRepositoryImpl implements MapRepository {
   SpotData _mapSpotEntityToData(Spot spot) {
     return SpotData(
       id: spot.id,
-      osmId: spot.osmId,
       name: spot.name,
       category: spot.category,
       lat: spot.location.latitude,
@@ -261,7 +252,6 @@ class SupabaseMapRepositoryImpl implements MapRepository {
   Spot _mapSpotDataToEntity(SpotData spotData) {
     return Spot(
       id: spotData.id,
-      osmId: spotData.osmId,
       name: spotData.name,
       category: spotData.category,
       location: LatLng(spotData.lat, spotData.lon),

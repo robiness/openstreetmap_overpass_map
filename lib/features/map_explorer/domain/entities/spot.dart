@@ -26,7 +26,6 @@ class LatLngConverter implements JsonConverter<LatLng, Map<String, dynamic>> {
 class Spot with _$Spot {
   const factory Spot({
     required String id,
-    required int osmId,
     required String name,
     required String category,
     @LatLngConverter() required LatLng location,
@@ -54,8 +53,7 @@ class UserSpotData with _$UserSpotData {
     String? userNotes,
   }) = _UserSpotData;
 
-  factory UserSpotData.fromJson(Map<String, dynamic> json) =>
-      _$UserSpotDataFromJson(json);
+  factory UserSpotData.fromJson(Map<String, dynamic> json) => _$UserSpotDataFromJson(json);
 }
 
 // Displayable spot combining spot data with user data
