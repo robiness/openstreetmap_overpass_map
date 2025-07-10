@@ -336,8 +336,28 @@ class CustomSpotPainter extends CustomPainter {
     double spotSize,
     Color iconColor,
   ) {
-    // Choose icon based on category
+    print('🎯 Drawing icon for category: "$category"');
+    // Choose icon based on actual database categories
     switch (category.toLowerCase()) {
+      case 'kultur & geschichte':
+        _drawEnhancedKulturIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'genuss & kulinarik':
+        _drawEnhancedRestaurantIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'architektur & besonderes':
+        _drawEnhancedArchitekturIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'architektur & geschichte':
+        _drawEnhancedGeschichteIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'natur & ausblick':
+        _drawEnhancedViewpointIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      case 'natur & geschichte':
+        _drawEnhancedNaturIcon(canvas, center, spotSize * 0.5, iconColor);
+        break;
+      // Legacy categories (for backward compatibility)
       case 'restaurant':
         _drawEnhancedRestaurantIcon(canvas, center, spotSize * 0.5, iconColor);
         break;
@@ -1012,16 +1032,20 @@ class CustomSpotPainter extends CustomPainter {
   }
 
   SpotColors _getBaseCategoryColors(String category) {
-    print(category);
+    print('🎨 Category color lookup for: "$category"');
     switch (category.toLowerCase()) {
-      case 'Kultur & Geschichte':
-        return SpotColors(Colors.red.shade600, Colors.white);
-      case 'Genuss & Kulinarik':
-        return SpotColors(Colors.brown.shade600, Colors.white);
-      case 'pub':
+      case 'kultur & geschichte':
         return SpotColors(Colors.purple.shade600, Colors.white);
-      case 'Architektur & Besonderes':
+      case 'genuss & kulinarik':
+        return SpotColors(Colors.orange.shade600, Colors.white);
+      case 'architektur & besonderes':
         return SpotColors(Colors.amber.shade600, Colors.white);
+      case 'architektur & geschichte':
+        return SpotColors(Colors.brown.shade600, Colors.white);
+      case 'natur & ausblick':
+        return SpotColors(Colors.green.shade600, Colors.white);
+      case 'natur & geschichte':
+        return SpotColors(Colors.teal.shade600, Colors.white);
       case 'viewpoint':
       case 'aussichtspunkt':
         return SpotColors(Colors.teal.shade600, Colors.white);
