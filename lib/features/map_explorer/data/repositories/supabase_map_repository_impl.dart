@@ -84,10 +84,11 @@ class SupabaseMapRepositoryImpl implements MapRepository {
     final cachedSpots = await _db.select(_db.spots).get();
     print('📱 Found ${cachedSpots.length} cached spots in local database');
 
-    if (cachedSpots.isNotEmpty) {
-      print('✅ Using cached spots');
-      return cachedSpots.map((s) => _mapSpotDataToEntity(s)).toList();
-    }
+    // Temporarily bypass cache to get fresh coordinates
+    // if (cachedSpots.isNotEmpty) {
+    //   print('✅ Using cached spots');
+    //   return cachedSpots.map((s) => _mapSpotDataToEntity(s)).toList();
+    // }
 
     // If cache is empty or stale, fetch all spots from Supabase
     print('🌐 Fetching spots from Supabase...');
@@ -114,6 +115,9 @@ class SupabaseMapRepositoryImpl implements MapRepository {
           // Extract coordinates from separate latitude/longitude columns
           final lat = (spotData['latitude'] as num?)?.toDouble();
           final lon = (spotData['longitude'] as num?)?.toDouble();
+          print(
+            '📍 Spot "${spotData['name'] ?? 'Unknown'}" coordinates: lat=$lat, lon=$lon (raw: lat=${spotData['latitude']}, lon=${spotData['longitude']})',
+          );
 
           // Get category directly as string
           final category = spotData['category'] as String? ?? 'unknown';
@@ -246,22 +250,6 @@ class SupabaseMapRepositoryImpl implements MapRepository {
       createdBy: spot.createdBy,
       properties: spot.properties,
       parentAreaId: spot.parentAreaId,
-    );
-  }
-
-  // Helper to map from Drift's SpotData to Spot entity
-  Spot _mapSpotDataToEntity(SpotData spotData) {
-    return Spot(
-      id: spotData.id,
-      name: spotData.name,
-      category: spotData.category,
-      location: LatLng(spotData.lat, spotData.lon),
-      description: spotData.description,
-      tags: spotData.tags,
-      createdAt: spotData.createdAt,
-      createdBy: spotData.createdBy,
-      properties: spotData.properties,
-      parentAreaId: spotData.parentAreaId,
     );
   }
 }
