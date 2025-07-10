@@ -19,7 +19,9 @@ class CustomSpotLayer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('🏗️ CustomSpotLayer.build() called with ${spots.length} spots');
     final camera = MapCamera.of(context);
+    print('🏗️ MapCamera: ${camera.center}, zoom: ${camera.zoom}');
     return GestureDetector(
       behavior: HitTestBehavior.deferToChild,
       onTapUp: (details) {
@@ -32,14 +34,21 @@ class CustomSpotLayer extends StatelessWidget {
         }
         // If no spot was hit, don't consume the event - let it pass through
       },
-      child: CustomPaint(
-        painter: CustomSpotPainter(
-          spots: spots,
-          camera: camera,
-          selectedSpot: selectedSpot,
-          userSpotVisitData: userSpotVisitData,
-        ),
-        size: Size.infinite,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          print('🏗️ LayoutBuilder constraints: $constraints');
+          final painter = CustomSpotPainter(
+            spots: spots,
+            camera: camera,
+            selectedSpot: selectedSpot,
+            userSpotVisitData: userSpotVisitData,
+          );
+          print('🏗️ Created CustomSpotPainter with ${spots.length} spots');
+          return CustomPaint(
+            painter: painter,
+            size: Size.infinite,
+          );
+        },
       ),
     );
   }

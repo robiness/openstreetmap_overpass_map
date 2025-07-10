@@ -94,11 +94,11 @@ class SupabaseMapRepositoryImpl implements MapRepository {
     try {
       final response = await _supabaseClient
           .from('spots')
-          .select('*');
+          .select('id, name, category, description, created_at, parent_area_id, latitude, longitude');
 
-      print('📡 Supabase response: ${response?.length ?? 0} spots received');
+      print('📡 Supabase response: ${response.length} spots received');
 
-      if (response == null || response.isEmpty) {
+      if (response.isEmpty) {
         print('❌ No spots received from Supabase');
         return [];
       }
@@ -111,9 +111,9 @@ class SupabaseMapRepositoryImpl implements MapRepository {
           final spotData = Map<String, dynamic>.from(json);
           print('🔍 Available columns: ${spotData.keys.toList()}');
 
-          // Extract coordinates
-          final lat = spotData['lat'] as double?;
-          final lon = spotData['lon'] as double?;
+          // Extract coordinates from separate latitude/longitude columns
+          final lat = (spotData['latitude'] as num?)?.toDouble();
+          final lon = (spotData['longitude'] as num?)?.toDouble();
 
           // Get category directly as string
           final category = spotData['category'] as String? ?? 'unknown';
@@ -150,7 +150,6 @@ class SupabaseMapRepositoryImpl implements MapRepository {
             mode: InsertMode.insertOrReplace,
           );
         });
-        print('✅ Successfully saved spots to local database');
       }
 
       print('🎯 Returning ${spots.length} spots');

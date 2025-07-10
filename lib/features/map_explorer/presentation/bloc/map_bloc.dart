@@ -108,31 +108,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     }
   }
 
-  Future<void> _onMapViewChanged(
-    Emitter<MapState> emit,
-  ) async {
-    print('🗺️ MapBloc: _onMapViewChanged called');
-    // Avoid refetching if we are already in a success state
-    if (state is! _LoadSuccess) {
-      print('⚠️ MapBloc: Not in success state, skipping map view change');
-      return;
-    }
-
-    final currentState = state as _LoadSuccess;
-    print('🔄 MapBloc: Current state has ${currentState.spots.length} spots');
-
-    try {
-      print('🎯 MapBloc: Fetching spots for map view change...');
-      final spots = await _mapRepository.getSpots();
-      print('✅ MapBloc: Fetched ${spots.length} spots, emitting updated state');
-      emit(currentState.copyWith(spots: spots));
-    } catch (e) {
-      // We can choose to notify the user or just log the error
-      // For now, we'll just print it and not change the state
-      print('❌ MapBloc: Error fetching spots for new view: $e');
-    }
-  }
-
   /// Loads user area completion data from the database
   Future<Map<String, UserAreaData>> _loadUserAreaData(String userId) async {
     try {

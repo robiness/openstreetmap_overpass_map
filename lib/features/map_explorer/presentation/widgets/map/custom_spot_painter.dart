@@ -1018,7 +1018,6 @@ class CustomSpotPainter extends CustomPainter {
         return SpotColors(Colors.red.shade600, Colors.white);
       case 'Genuss & Kulinarik':
         return SpotColors(Colors.brown.shade600, Colors.white);
-      case 'Natur & Ausblick':
       case 'pub':
         return SpotColors(Colors.purple.shade600, Colors.white);
       case 'Architektur & Besonderes':
@@ -1030,8 +1029,6 @@ class CustomSpotPainter extends CustomPainter {
         return SpotColors(Colors.blue.shade600, Colors.white);
       case 'kultur':
         return SpotColors(Colors.purple.shade700, Colors.white);
-      case 'natur':
-        return SpotColors(Colors.green.shade600, Colors.white);
       case 'Natur & Ausblick':
         return SpotColors(Colors.cyan.shade600, Colors.white);
       case 'geschichte':
