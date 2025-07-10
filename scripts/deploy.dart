@@ -8,17 +8,18 @@ void main(List<String> args) async {
   print('🚀 Starting Overpass Map Explorer deployment...\n');
 
   try {
-    // Step 1: Clean previous build
+    // Step 2: Clean previous build
     await _runCommand('flutter', ['clean'], 'Cleaning previous build');
 
-    // Step 2: Get dependencies
+    // Step 3: Get dependencies
     await _runCommand('flutter', ['pub', 'get'], 'Getting dependencies');
 
-    // Step 3: Build for web
+    // Step 4: Build for web (credentials loaded from .env file)
     await _runCommand('flutter', [
       'build',
       'web',
       '--release',
+      '--wasm',
     ], 'Building Flutter web app');
 
     // Step 4: Deploy to Netlify

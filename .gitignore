@@ -49,3 +49,4 @@ app.*.map.json
 
 # Secrets
 web/client_secret_*.json
+.env

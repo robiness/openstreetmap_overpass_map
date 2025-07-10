@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:overpass_map/app/theme/app_theme.dart';
+import 'package:overpass_map/config/app_config.dart';
 import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/data/repositories/map_repository.dart';
 import 'package:overpass_map/features/auth/data/repositories/auth_repository_impl.dart';
@@ -23,14 +25,19 @@ import 'package:uuid/uuid.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Load environment variables from .env file
+  await dotenv.load(fileName: ".env");
+
   // Initialize ThemeProvider
   final themeProvider = ThemeProvider();
   await themeProvider.initialize();
 
+  // Validate configuration before initializing Supabase
+  AppConfig.validateConfig();
+  
   await Supabase.initialize(
-    url: 'https://qltlkwnhhomfjdwosbhn.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsdGxrd25oaG9tZmpkd29zYmhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExMzc3NTEsImV4cCI6MjA2NjcxMzc1MX0.N0iIz79hGhlOth2jRTsUbrtrzp2M1pWjdi8nGwBfmMk',
+    url: AppConfig.supabaseUrl,
+    anonKey: AppConfig.supabaseAnonKey,
   );
 
   // --- Data Layer Setup ---

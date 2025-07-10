@@ -38,7 +38,7 @@ class StatusCard extends StatelessWidget {
                 Icon(icon, color: color),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: Text(
+                  child: SelectableText(
                     message,
                     style: TextStyle(color: color, fontWeight: FontWeight.bold),
                   ),

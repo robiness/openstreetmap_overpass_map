@@ -92,7 +92,9 @@ class SupabaseMapRepositoryImpl implements MapRepository {
     // If cache is empty or stale, fetch all spots from Supabase
     print('🌐 Fetching spots from Supabase...');
     try {
-      final response = await _supabaseClient.rpc('get_all_spots');
+      final response = await _supabaseClient
+          .from('spots')
+          .select('*');
 
       print('📡 Supabase response: ${response?.length ?? 0} spots received');
 
@@ -107,14 +109,14 @@ class SupabaseMapRepositoryImpl implements MapRepository {
         try {
           // Convert Supabase data directly to Spot object
           final spotData = Map<String, dynamic>.from(json);
+          print('🔍 Available columns: ${spotData.keys.toList()}');
 
           // Extract coordinates
           final lat = spotData['lat'] as double?;
           final lon = spotData['lon'] as double?;
 
-          // Convert categories array to single category string
-          final categories = spotData['categories'] as List<dynamic>?;
-          final category = categories?.isNotEmpty == true ? categories!.first.toString() : 'unknown';
+          // Get category directly as string
+          final category = spotData['category'] as String? ?? 'unknown';
 
           // Create Spot object directly
           final spot = Spot(
