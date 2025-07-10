@@ -5,6 +5,7 @@ import 'package:overpass_map/features/map_explorer/data/models/osm_models.dart';
 import 'package:overpass_map/features/map_explorer/data/models/user_area_data.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/map_view.dart';
+import 'package:overpass_map/features/map_explorer/presentation/widgets/panel/spot_detail_panel.dart';
 
 class MobileLayout extends StatefulWidget {
   final BoundaryData boundaryData;
@@ -38,13 +39,33 @@ class _MobileLayoutState extends State<MobileLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MapView(
-        boundaryData: widget.boundaryData,
-        spots: widget.spots,
-        selectedArea: widget.selectedArea,
-        selectedSpot: widget.selectedSpot,
-        userSpotVisitData: widget.userSpotVisitData,
-        userAreaVisitData: widget.userAreaVisitData,
+      body: Stack(
+        children: [
+          MapView(
+            boundaryData: widget.boundaryData,
+            spots: widget.spots,
+            selectedArea: widget.selectedArea,
+            selectedSpot: widget.selectedSpot,
+            userSpotVisitData: widget.userSpotVisitData,
+            userAreaVisitData: widget.userAreaVisitData,
+          ),
+          
+          // Spot Detail Panel (overlay for mobile)
+          if (widget.selectedSpot != null)
+            Positioned(
+              top: 60,
+              left: 20,
+              right: 20,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                ),
+                child: SpotDetailPanel(
+                  spot: widget.selectedSpot!,
+                ),
+              ),
+            ),
+        ],
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
