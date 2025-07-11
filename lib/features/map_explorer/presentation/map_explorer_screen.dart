@@ -45,8 +45,7 @@ class MapExplorerScreen extends StatelessWidget {
         builder: (context, state) {
           return state.when(
             initial: () => const Center(child: CircularProgressIndicator()),
-            loadInProgress: () =>
-                const Center(child: CircularProgressIndicator()),
+            loadInProgress: () => const Center(child: CircularProgressIndicator()),
             loadSuccess:
                 (
                   boundaryData,

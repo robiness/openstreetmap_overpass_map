@@ -12,17 +12,17 @@ import 'app_theme_data.dart';
 /// Use ThemeProvider and AppThemeData directly for new code
 @Deprecated('Use ThemeProvider and AppThemeData directly')
 class AppTheme {
-  /// Get the current dark theme (legacy support)
-  static ThemeData get lightTheme => AppThemeData.lightMode.toMaterialTheme();
+  /// Get the current light theme (legacy support)
+  static ThemeData get lightTheme => AppThemeData.daylightExplorer.toMaterialTheme();
 
   /// Get the current dark theme (legacy support)
-  static ThemeData get darkTheme => AppThemeData.darkComfort.toMaterialTheme();
+  static ThemeData get darkTheme => AppThemeData.nightExplorer.toMaterialTheme();
 
   /// Primary color for legacy support
-  static Color get primaryColor => AppThemeData.darkComfort.navigation;
+  static Color get primaryColor => AppThemeData.nightExplorer.accent;
 
   /// Surface color for legacy support
-  static Color get surfaceColor => AppThemeData.darkComfort.surface;
+  static Color get surfaceColor => AppThemeData.nightExplorer.surface;
 }
 
 /// Extension to convert AppThemeData to MaterialTheme

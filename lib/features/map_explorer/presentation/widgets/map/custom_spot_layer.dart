@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 import 'package:overpass_map/features/map_explorer/presentation/widgets/map/custom_spot_painter.dart';
 
@@ -40,6 +41,7 @@ class CustomSpotLayer extends StatelessWidget {
           final painter = CustomSpotPainter(
             spots: spots,
             camera: camera,
+            theme: context.appTheme,
             selectedSpot: selectedSpot,
             userSpotVisitData: userSpotVisitData,
           );
@@ -130,8 +132,7 @@ class CustomSpotLayer extends StatelessWidget {
     // If innerRadius is specified, test for ring (between inner and outer radius)
     if (innerRadius != null) {
       final innerRadiusSquared = innerRadius * innerRadius;
-      return distanceSquared <= radiusSquared &&
-          distanceSquared >= innerRadiusSquared;
+      return distanceSquared <= radiusSquared && distanceSquared >= innerRadiusSquared;
     }
 
     // Otherwise test for filled circle

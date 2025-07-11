@@ -7,16 +7,15 @@ import 'app_theme_data.dart';
 class ThemeProvider extends ChangeNotifier {
   static const String _themeKey = 'app_theme';
 
-  AppThemeData _currentTheme = AppThemeData.darkComfort;
+  AppThemeData _currentTheme = AppThemeData.nightExplorer;
 
   /// Get the current theme
   AppThemeData get currentTheme => _currentTheme;
 
   /// Get all available themes
   List<AppThemeData> get availableThemes => [
-    AppThemeData.darkComfort,
-    AppThemeData.highContrast,
-    AppThemeData.lightMode,
+    AppThemeData.nightExplorer,
+    AppThemeData.daylightExplorer,
   ];
 
   /// Initialize the theme provider by loading saved preference
@@ -27,7 +26,7 @@ class ThemeProvider extends ChangeNotifier {
     if (savedThemeName != null) {
       final theme = availableThemes.firstWhere(
         (theme) => theme.name == savedThemeName,
-        orElse: () => AppThemeData.darkComfort,
+        orElse: () => AppThemeData.nightExplorer,
       );
       _currentTheme = theme;
       notifyListeners();
@@ -64,7 +63,7 @@ class ThemeProvider extends ChangeNotifier {
     await setTheme(availableThemes[nextIndex]);
   }
 
-  /// Auto-switch based on ambient light (future feature)
+  /// Auto-switch based on ambient light or time of day
   /// This could integrate with device sensors or time of day
   Future<void> autoSwitchForConditions({
     bool? isOutdoors,
@@ -73,15 +72,12 @@ class ThemeProvider extends ChangeNotifier {
   }) async {
     AppThemeData targetTheme;
 
-    if (isOutdoors == true || (ambientLightLevel != null && ambientLightLevel > 10000)) {
-      // High contrast for outdoor/bright conditions
-      targetTheme = AppThemeData.highContrast;
-    } else if (isDaylight == true && isOutdoors != true) {
-      // Light mode for daytime indoor
-      targetTheme = AppThemeData.lightMode;
+    if (isDaylight == true) {
+      // Daylight Explorer for daytime use
+      targetTheme = AppThemeData.daylightExplorer;
     } else {
-      // Dark comfort for evening/indoor
-      targetTheme = AppThemeData.darkComfort;
+      // Night Explorer for evening/indoor/dark conditions
+      targetTheme = AppThemeData.nightExplorer;
     }
 
     await setTheme(targetTheme);

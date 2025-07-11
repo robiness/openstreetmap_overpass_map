@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:overpass_map/app/theme/app_theme.dart';
 import 'package:overpass_map/features/map_explorer/domain/entities/spot.dart';
 
 /// A custom painter for drawing spots (POIs) on the map with modern, beautiful styling
@@ -11,10 +12,12 @@ class CustomSpotPainter extends CustomPainter {
   final MapCamera camera;
   final Spot? selectedSpot;
   final Map<String, UserSpotData> userSpotVisitData;
+  final AppThemeData theme;
 
   CustomSpotPainter({
     required this.spots,
     required this.camera,
+    required this.theme,
     this.selectedSpot,
     this.userSpotVisitData = const {},
   });
@@ -170,7 +173,7 @@ class CustomSpotPainter extends CustomPainter {
     // Create multiple glow layers for depth
     for (int i = 3; i >= 1; i--) {
       final glowPaint = Paint()
-        ..color = Colors.orange.withValues(alpha: 0.1 * i)
+        ..color = theme.currentState.withValues(alpha: 0.1 * i)
         ..maskFilter = ui.MaskFilter.blur(ui.BlurStyle.normal, i * 2.0);
 
       canvas.drawCircle(center, radius + (i * 2), glowPaint);
@@ -188,13 +191,13 @@ class CustomSpotPainter extends CustomPainter {
       -outerRadius * 0.6,
     );
 
-    // Draw modern gradient background
+    // Draw modern gradient background using theme colors
     final bgGradient = ui.Gradient.radial(
       indicatorCenter,
       indicatorSize + 2,
       [
-        Colors.orange.shade400,
-        Colors.orange.shade600,
+        theme.currentState.withValues(alpha: 0.8),
+        theme.currentState,
       ],
       [0.0, 1.0],
     );
@@ -204,7 +207,7 @@ class CustomSpotPainter extends CustomPainter {
       indicatorCenter,
       indicatorSize + 3,
       Paint()
-        ..color = Colors.orange.withValues(alpha: 0.3)
+        ..color = theme.currentState.withValues(alpha: 0.3)
         ..maskFilter = const ui.MaskFilter.blur(ui.BlurStyle.normal, 2.0),
     );
 
@@ -230,13 +233,13 @@ class CustomSpotPainter extends CustomPainter {
       -outerRadius * 0.6,
     );
 
-    // Green gradient background
+    // Progress gradient background using theme colors
     final bgGradient = ui.Gradient.radial(
       indicatorCenter,
       indicatorSize + 1,
       [
-        Colors.green.shade400,
-        Colors.green.shade600,
+        theme.progress.withValues(alpha: 0.8),
+        theme.progress,
       ],
       [0.0, 1.0],
     );
@@ -261,9 +264,9 @@ class CustomSpotPainter extends CustomPainter {
     Offset center,
     double outerRadius,
   ) {
-    // Animated ring effect
+    // Animated ring effect using theme navigation color
     final ringPaint = Paint()
-      ..color = Colors.blue.shade500
+      ..color = theme.navigation
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0;
 
@@ -275,7 +278,7 @@ class CustomSpotPainter extends CustomPainter {
       center,
       outerRadius + 2,
       Paint()
-        ..color = Colors.blue.shade300.withValues(alpha: 0.5)
+        ..color = theme.navigation.withValues(alpha: 0.5)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.0,
     );
@@ -1015,9 +1018,9 @@ class CustomSpotPainter extends CustomPainter {
     final baseColors = _getBaseCategoryColors(category);
 
     if (isCheckedIn) {
-      // Bright, vibrant colors for checked-in spots
+      // Use current state color for checked-in spots
       return SpotColors(
-        Colors.orange,
+        theme.currentState,
         Colors.white,
       );
     } else if (isVisited) {
@@ -1033,53 +1036,54 @@ class CustomSpotPainter extends CustomPainter {
 
   SpotColors _getBaseCategoryColors(String category) {
     print('🎨 Category color lookup for: "$category"');
+    
     switch (category.toLowerCase()) {
       case 'kultur & geschichte':
-        return SpotColors(Colors.purple.shade600, Colors.white);
+        return SpotColors(theme.accent, Colors.white);
       case 'genuss & kulinarik':
-        return SpotColors(Colors.orange.shade600, Colors.white);
+        return SpotColors(theme.opportunities, Colors.white);
       case 'architektur & besonderes':
-        return SpotColors(Colors.amber.shade600, Colors.white);
+        return SpotColors(theme.navigation, Colors.white);
       case 'architektur & geschichte':
-        return SpotColors(Colors.brown.shade600, Colors.white);
+        return SpotColors(theme.accent, Colors.white);
       case 'natur & ausblick':
-        return SpotColors(Colors.green.shade600, Colors.white);
+        return SpotColors(theme.progress, Colors.white);
       case 'natur & geschichte':
-        return SpotColors(Colors.teal.shade600, Colors.white);
+        return SpotColors(theme.progress, Colors.white);
       case 'viewpoint':
       case 'aussichtspunkt':
-        return SpotColors(Colors.teal.shade600, Colors.white);
+        return SpotColors(theme.progress, Colors.white);
       case 'shop':
-        return SpotColors(Colors.blue.shade600, Colors.white);
+        return SpotColors(theme.navigation, Colors.white);
       case 'kultur':
-        return SpotColors(Colors.purple.shade700, Colors.white);
+        return SpotColors(theme.accent, Colors.white);
       case 'Natur & Ausblick':
-        return SpotColors(Colors.cyan.shade600, Colors.white);
+        return SpotColors(theme.progress, Colors.white);
       case 'geschichte':
-        return SpotColors(Colors.brown.shade700, Colors.white);
+        return SpotColors(theme.accent, Colors.white);
       case 'architektur':
-        return SpotColors(Colors.orange.shade700, Colors.white);
+        return SpotColors(theme.navigation, Colors.white);
       case 'sport':
-        return SpotColors(Colors.blue.shade700, Colors.white);
+        return SpotColors(theme.navigation, Colors.white);
       case 'bildung':
-        return SpotColors(Colors.indigo.shade600, Colors.white);
+        return SpotColors(theme.accent, Colors.white);
       case 'soziales':
       case 'gemeinschaft':
-        return SpotColors(Colors.pink.shade400, Colors.white);
+        return SpotColors(theme.opportunities, Colors.white);
       case 'infrastruktur':
       case 'verwaltung':
       case 'technik':
-        return SpotColors(Colors.blueGrey.shade600, Colors.white);
+        return SpotColors(theme.navigation, Colors.white);
       case 'wirtschaft':
-        return SpotColors(Colors.deepOrange.shade600, Colors.white);
+        return SpotColors(theme.opportunities, Colors.white);
       case 'gesundheit':
-        return SpotColors(Colors.red.shade400, Colors.white);
+        return SpotColors(theme.error, Colors.white);
       case 'ökologie':
-        return SpotColors(Colors.lightGreen.shade600, Colors.white);
+        return SpotColors(theme.progress, Colors.white);
       case 'wissenschaft':
-        return SpotColors(Colors.deepPurple.shade600, Colors.white);
+        return SpotColors(theme.accent, Colors.white);
       default:
-        return SpotColors(Colors.grey.shade600, Colors.white);
+        return SpotColors(theme.onSurfaceVariant, Colors.white);
     }
   }
 
@@ -1088,7 +1092,8 @@ class CustomSpotPainter extends CustomPainter {
     return oldDelegate.spots != spots ||
         oldDelegate.camera != camera ||
         oldDelegate.selectedSpot != selectedSpot ||
-        oldDelegate.userSpotVisitData != userSpotVisitData;
+        oldDelegate.userSpotVisitData != userSpotVisitData ||
+        oldDelegate.theme != theme;
   }
 
   @override

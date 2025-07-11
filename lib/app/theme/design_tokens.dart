@@ -5,12 +5,23 @@ import 'package:flutter/material.dart';
 class DesignTokens {
   // === COLOR TOKENS ===
 
-  // Brand Colors
-  static const Color electricOrange = Color(0xFFFF6B35);
-  static const Color brightYellow = Color(0xFFFFD23F);
-  static const Color brightBlue = Color(0xFF118AB2);
-  static const Color electricGreen = Color(0xFFC80616);
-  static const Color vibrantPurple = Color(0xFF7209B7);
+  // === URBAN EXPLORER BRAND COLORS ===
+  
+  // Primary Brand Colors
+  static const Color explorerGreen = Color(0xFF059669);      // Deep green - trustworthy exploration
+  static const Color explorerGreenBright = Color(0xFF10B981); // Bright green - for dark theme
+  static const Color discoveryAmber = Color(0xFFF59E0B);     // Warm amber - energy & discovery
+  static const Color discoveryAmberBright = Color(0xFFFBBF24); // Bright amber - for dark theme
+  static const Color navigationBlue = Color(0xFF1E40AF);     // Deep blue - navigation & clarity
+  static const Color navigationBlueBright = Color(0xFF3B82F6); // Electric blue - for dark theme
+  
+  // Semantic Action Colors
+  static const Color currentOrange = Color(0xFFEA580C);      // Current/Selected - immediate attention
+  static const Color currentOrangeBright = Color(0xFFFB923C); // Bright orange - for dark theme
+  static const Color opportunityYellow = Color(0xFFEAB308);  // Opportunities - inviting
+  static const Color opportunityYellowBright = Color(0xFFFDE047); // Bright yellow - for dark theme
+  static const Color progressGreen = Color(0xFF059669);      // Progress/Visited - achievement
+  static const Color progressGreenBright = Color(0xFF10B981); // Emerald green - for dark theme
 
   // Neutral Colors
   static const Color gray900 = Color(0xFF0F172A);
@@ -26,18 +37,15 @@ class DesignTokens {
   static const Color white = Color(0xFFFFFFFF);
   static const Color black = Color(0xFF000000);
 
-  // High Contrast Colors (for outdoor visibility)
-  static const Color neonOrange = Color(0xFFFF4500);
-  static const Color neonYellow = Color(0xFFFFFF00);
-  static const Color neonBlue = Color(0xFF00BFFF);
-  static const Color neonGreen = Color(0xFF00FF7F);
-  static const Color neonPink = Color(0xFFFF1493);
-
-  // Status Colors
-  static const Color errorRed = Color(0xFFDC2626);
-  static const Color warningAmber = Color(0xFFF59E0B);
-  static const Color successGreen = Color(0xFF059669);
-  static const Color infoBlue = Color(0xFF0284C7);
+  // Status & Feedback Colors
+  static const Color errorRed = Color(0xFFDC2626);          // Clear error indication
+  static const Color errorRedBright = Color(0xFFEF4444);    // Bright red - for dark theme
+  static const Color warningAmber = Color(0xFFF59E0B);      // Warning indication
+  static const Color warningAmberBright = Color(0xFFFBBF24); // Bright amber - for dark theme
+  static const Color successGreen = Color(0xFF059669);      // Success indication (same as progress)
+  static const Color successGreenBright = Color(0xFF10B981); // Bright green - for dark theme
+  static const Color infoBlue = Color(0xFF0284C7);          // Information indication
+  static const Color infoBlueBright = Color(0xFF38BDF8);    // Sky blue - for dark theme
 
   // === SPACING TOKENS ===
   static const double space2 = 2.0;

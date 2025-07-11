@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/database/app_database.dart';
 import 'package:overpass_map/features/auth/domain/entities/user_profile.dart';
 import 'package:overpass_map/features/auth/domain/repositories/auth_repository.dart';
+import 'package:overpass_map/features/location/domain/entities/location_data.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
 import 'package:overpass_map/services/api_client.dart';
 import 'package:overpass_map/services/sync_service.dart';
@@ -87,6 +89,18 @@ class FakeCheckInRepository implements CheckInRepository {
 
   @override
   Stream<String> get areaStatsUpdated => throw UnimplementedError();
+
+  @override
+  Future<void> createCheckInWithLocation({
+    required String spotId,
+    required String userId,
+    required LocationData userLocation,
+    required LatLng spotLocation,
+    bool isDebugMode = false,
+  }) {
+    // TODO: implement createCheckInWithLocation
+    throw UnimplementedError();
+  }
 }
 
 class FakeAuthRepository implements AuthRepository {

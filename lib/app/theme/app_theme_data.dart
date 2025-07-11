@@ -93,18 +93,18 @@ class AppThemeData {
     required this.mapStyles,
   });
 
-  /// Dark Comfort Theme - Primary theme for evening/indoor use
-  static AppThemeData get darkComfort => AppThemeData(
-    name: 'Dark Comfort',
-    description: 'Optimized for evening and indoor exploration',
+  /// Night Explorer Theme - Primary dark theme for evening exploration
+  static AppThemeData get nightExplorer => AppThemeData(
+    name: 'Night Explorer',
+    description: 'Modern dark theme optimized for evening exploration',
     brightness: Brightness.dark,
 
-    // Status Colors
-    currentState: DesignTokens.electricOrange,
-    opportunities: DesignTokens.brightYellow,
-    navigation: DesignTokens.brightBlue,
-    progress: DesignTokens.electricGreen,
-    accent: DesignTokens.vibrantPurple,
+    // Semantic Action Colors (bright versions for dark theme)
+    currentState: DesignTokens.currentOrangeBright,
+    opportunities: DesignTokens.opportunityYellowBright,
+    navigation: DesignTokens.navigationBlueBright,
+    progress: DesignTokens.progressGreenBright,
+    accent: DesignTokens.explorerGreenBright,
 
     // Contextual Colors
     background: DesignTokens.gray900,
@@ -128,89 +128,37 @@ class AppThemeData {
     pressed: DesignTokens.white.withAlpha(
       (255 * DesignTokens.opacityLight).round(),
     ),
-    focused: DesignTokens.brightBlue.withAlpha(
+    focused: DesignTokens.navigationBlueBright.withAlpha(
       (255 * DesignTokens.opacityLight).round(),
     ),
     disabled: DesignTokens.gray600,
     disabledContent: DesignTokens.gray500,
 
-    // Feedback Colors
-    success: DesignTokens.successGreen,
-    warning: DesignTokens.warningAmber,
-    error: DesignTokens.errorRed,
-    info: DesignTokens.infoBlue,
+    // Feedback Colors (bright versions for dark theme)
+    success: DesignTokens.successGreenBright,
+    warning: DesignTokens.warningAmberBright,
+    error: DesignTokens.errorRedBright,
+    info: DesignTokens.infoBlueBright,
 
     typography: AppTypography.standard,
     spacing: AppSpacing.standard,
-    components: AppComponentStyles.darkComfort,
-    mapStyles: MapAreaStyles.darkComfort,
+    components: AppComponentStyles.nightExplorer,
+    mapStyles: MapAreaStyles.nightExplorer,
   );
 
-  /// High Contrast Theme - For outdoor use and bright sunlight
-  static AppThemeData get highContrast => AppThemeData(
-    name: 'High Contrast',
-    description: 'Maximum visibility for outdoor exploration',
-    brightness: Brightness.dark,
 
-    // Status Colors (enhanced for outdoor visibility)
-    currentState: DesignTokens.neonOrange,
-    opportunities: DesignTokens.neonYellow,
-    navigation: DesignTokens.neonBlue,
-    progress: DesignTokens.neonGreen,
-    accent: DesignTokens.neonPink,
-
-    // Contextual Colors (high contrast)
-    background: DesignTokens.black,
-    surface: DesignTokens.gray900,
-    surfaceVariant: DesignTokens.gray800,
-    outline: DesignTokens.gray400,
-    shadow: DesignTokens.black.withAlpha(
-      (255 * DesignTokens.opacityHeavy).round(),
-    ),
-
-    // Content Colors (maximum contrast)
-    onBackground: DesignTokens.white,
-    onSurface: DesignTokens.white,
-    onSurfaceVariant: DesignTokens.gray200,
-    onSurfaceSubtle: DesignTokens.gray300,
-
-    // Interactive States
-    hover: DesignTokens.white.withAlpha(
-      (255 * DesignTokens.opacityLight).round(),
-    ),
-    pressed: DesignTokens.white.withAlpha(
-      (255 * DesignTokens.opacityMedium).round(),
-    ),
-    focused: DesignTokens.neonBlue.withAlpha(
-      (255 * DesignTokens.opacityMedium).round(),
-    ),
-    disabled: DesignTokens.gray700,
-    disabledContent: DesignTokens.gray600,
-
-    // Feedback Colors (enhanced visibility)
-    success: DesignTokens.neonGreen,
-    warning: DesignTokens.neonYellow,
-    error: DesignTokens.neonOrange,
-    info: DesignTokens.neonBlue,
-
-    typography: AppTypography.standard,
-    spacing: AppSpacing.standard,
-    components: AppComponentStyles.highContrast,
-    mapStyles: MapAreaStyles.highContrast,
-  );
-
-  /// Light Mode Theme - For daytime indoor use
-  static AppThemeData get lightMode => AppThemeData(
-    name: 'Light Mode',
-    description: 'Clean and bright for daytime indoor use',
+  /// Daylight Explorer Theme - Clean light theme for daytime exploration
+  static AppThemeData get daylightExplorer => AppThemeData(
+    name: 'Daylight Explorer',
+    description: 'Clean and modern light theme for daytime exploration',
     brightness: Brightness.light,
 
-    // Status Colors (adapted for light background)
-    currentState: DesignTokens.darken(DesignTokens.electricOrange, 0.1),
-    opportunities: DesignTokens.darken(DesignTokens.brightYellow, 0.2),
-    navigation: DesignTokens.darken(DesignTokens.brightBlue, 0.1),
-    progress: DesignTokens.darken(DesignTokens.electricGreen, 0.1),
-    accent: DesignTokens.darken(DesignTokens.vibrantPurple, 0.1),
+    // Semantic Action Colors (standard versions for light theme)
+    currentState: DesignTokens.currentOrange,
+    opportunities: DesignTokens.opportunityYellow,
+    navigation: DesignTokens.navigationBlue,
+    progress: DesignTokens.progressGreen,
+    accent: DesignTokens.explorerGreen,
 
     // Contextual Colors
     background: DesignTokens.white,
@@ -234,13 +182,13 @@ class AppThemeData {
     pressed: DesignTokens.gray600.withAlpha(
       (255 * DesignTokens.opacityLight).round(),
     ),
-    focused: DesignTokens.brightBlue.withAlpha(
+    focused: DesignTokens.navigationBlue.withAlpha(
       (255 * DesignTokens.opacityLight).round(),
     ),
     disabled: DesignTokens.gray300,
     disabledContent: DesignTokens.gray400,
 
-    // Feedback Colors
+    // Feedback Colors (standard versions for light theme)
     success: DesignTokens.successGreen,
     warning: DesignTokens.warningAmber,
     error: DesignTokens.errorRed,
@@ -248,8 +196,8 @@ class AppThemeData {
 
     typography: AppTypography.standard,
     spacing: AppSpacing.standard,
-    components: AppComponentStyles.lightMode,
-    mapStyles: MapAreaStyles.lightMode,
+    components: AppComponentStyles.daylightExplorer,
+    mapStyles: MapAreaStyles.daylightExplorer,
   );
 }
 
@@ -404,33 +352,22 @@ class AppComponentStyles {
     required this.panelScrim,
   });
 
-  static AppComponentStyles get darkComfort => AppComponentStyles(
-    spots: SpotStyles.darkComfort,
-    buttons: ButtonStyles.darkComfort,
-    cards: CardStyles.darkComfort,
-    inputs: InputStyles.darkComfort,
+  static AppComponentStyles get nightExplorer => AppComponentStyles(
+    spots: SpotStyles.nightExplorer,
+    buttons: ButtonStyles.nightExplorer,
+    cards: CardStyles.nightExplorer,
+    inputs: InputStyles.nightExplorer,
     cardShadow: DesignTokens.black.withAlpha((255 * 0.2).round()),
     buttonShadow: DesignTokens.black.withAlpha((255 * 0.15).round()),
     dialogScrim: DesignTokens.black.withAlpha((255 * 0.6).round()),
     panelScrim: DesignTokens.gray900.withAlpha((255 * 0.8).round()),
   );
 
-  static AppComponentStyles get highContrast => AppComponentStyles(
-    spots: SpotStyles.highContrast,
-    buttons: ButtonStyles.highContrast,
-    cards: CardStyles.highContrast,
-    inputs: InputStyles.highContrast,
-    cardShadow: DesignTokens.black.withAlpha((255 * 0.3).round()),
-    buttonShadow: DesignTokens.black.withAlpha((255 * 0.25).round()),
-    dialogScrim: DesignTokens.black.withAlpha((255 * 0.8).round()),
-    panelScrim: DesignTokens.black.withAlpha((255 * 0.9).round()),
-  );
-
-  static AppComponentStyles get lightMode => AppComponentStyles(
-    spots: SpotStyles.lightMode,
-    buttons: ButtonStyles.lightMode,
-    cards: CardStyles.lightMode,
-    inputs: InputStyles.lightMode,
+  static AppComponentStyles get daylightExplorer => AppComponentStyles(
+    spots: SpotStyles.daylightExplorer,
+    buttons: ButtonStyles.daylightExplorer,
+    cards: CardStyles.daylightExplorer,
+    inputs: InputStyles.daylightExplorer,
     cardShadow: DesignTokens.gray500.withAlpha((255 * 0.15).round()),
     buttonShadow: DesignTokens.gray400.withAlpha((255 * 0.1).round()),
     dialogScrim: DesignTokens.black.withAlpha((255 * 0.4).round()),
@@ -458,7 +395,7 @@ class SpotStyles {
     required this.glowRadius,
   });
 
-  static const SpotStyles darkComfort = SpotStyles(
+  static const SpotStyles nightExplorer = SpotStyles(
     currentLocationSize: DesignTokens.spotHuge, // 18px
     selectedSize: DesignTokens.spotLarge, // 16px
     opportunitySize: DesignTokens.spotMedium, // 14px
@@ -468,17 +405,7 @@ class SpotStyles {
     glowRadius: 4.0,
   );
 
-  static const SpotStyles highContrast = SpotStyles(
-    currentLocationSize: DesignTokens.spotHuge + 2, // 20px
-    selectedSize: DesignTokens.spotLarge + 2, // 18px
-    opportunitySize: DesignTokens.spotMedium + 2, // 16px
-    completedSize: DesignTokens.spotRegular + 2, // 14px
-    regularSize: DesignTokens.spotSmall + 2, // 12px
-    borderWidth: 3.0,
-    glowRadius: 6.0,
-  );
-
-  static const SpotStyles lightMode = SpotStyles(
+  static const SpotStyles daylightExplorer = SpotStyles(
     currentLocationSize: DesignTokens.spotHuge, // 18px
     selectedSize: DesignTokens.spotLarge, // 16px
     opportunitySize: DesignTokens.spotMedium, // 14px
@@ -503,7 +430,7 @@ class ButtonStyles {
     required this.elevation,
   });
 
-  static const ButtonStyles darkComfort = ButtonStyles(
+  static const ButtonStyles nightExplorer = ButtonStyles(
     height: 48.0,
     borderRadius: DesignTokens.radiusMedium,
     padding: EdgeInsets.symmetric(
@@ -513,17 +440,7 @@ class ButtonStyles {
     elevation: DesignTokens.elevationLow,
   );
 
-  static const ButtonStyles highContrast = ButtonStyles(
-    height: 52.0,
-    borderRadius: DesignTokens.radiusLarge,
-    padding: EdgeInsets.symmetric(
-      horizontal: DesignTokens.space24,
-      vertical: DesignTokens.space16,
-    ),
-    elevation: DesignTokens.elevationMedium,
-  );
-
-  static const ButtonStyles lightMode = ButtonStyles(
+  static const ButtonStyles daylightExplorer = ButtonStyles(
     height: 44.0,
     borderRadius: DesignTokens.radiusMedium,
     padding: EdgeInsets.symmetric(
@@ -548,21 +465,14 @@ class CardStyles {
     required this.borderWidth,
   });
 
-  static const CardStyles darkComfort = CardStyles(
+  static const CardStyles nightExplorer = CardStyles(
     borderRadius: DesignTokens.radiusLarge,
     padding: EdgeInsets.all(DesignTokens.space16),
     elevation: DesignTokens.elevationLow,
     borderWidth: 0.0,
   );
 
-  static const CardStyles highContrast = CardStyles(
-    borderRadius: DesignTokens.radiusMedium,
-    padding: EdgeInsets.all(DesignTokens.space20),
-    elevation: DesignTokens.elevationMedium,
-    borderWidth: 2.0,
-  );
-
-  static const CardStyles lightMode = CardStyles(
+  static const CardStyles daylightExplorer = CardStyles(
     borderRadius: DesignTokens.radiusLarge,
     padding: EdgeInsets.all(DesignTokens.space16),
     elevation: DesignTokens.elevationLow,
@@ -584,7 +494,7 @@ class InputStyles {
     required this.height,
   });
 
-  static const InputStyles darkComfort = InputStyles(
+  static const InputStyles nightExplorer = InputStyles(
     borderRadius: DesignTokens.radiusMedium,
     padding: EdgeInsets.symmetric(
       horizontal: DesignTokens.space16,
@@ -594,17 +504,7 @@ class InputStyles {
     height: 48.0,
   );
 
-  static const InputStyles highContrast = InputStyles(
-    borderRadius: DesignTokens.radiusMedium,
-    padding: EdgeInsets.symmetric(
-      horizontal: DesignTokens.space20,
-      vertical: DesignTokens.space16,
-    ),
-    borderWidth: 2.0,
-    height: 52.0,
-  );
-
-  static const InputStyles lightMode = InputStyles(
+  static const InputStyles daylightExplorer = InputStyles(
     borderRadius: DesignTokens.radiusMedium,
     padding: EdgeInsets.symmetric(
       horizontal: DesignTokens.space16,
@@ -648,60 +548,37 @@ class MapAreaStyles {
     required this.selectedBorderWidth,
   });
 
-  static MapAreaStyles get darkComfort => MapAreaStyles(
+  static MapAreaStyles get nightExplorer => MapAreaStyles(
     unvisitedFill: DesignTokens.gray900.withAlpha((255 * 0.1).round()),
-    unvisitedBorder: DesignTokens.gray900,
+    unvisitedBorder: DesignTokens.gray700,
     unvisitedBorderWidth: 1.0,
-    inProgressFill: DesignTokens.electricGreen.withAlpha((255 * 0.25).round()),
-    inProgressBorder: DesignTokens.electricGreen.withAlpha((255 * 0.8).round()),
+    inProgressFill: DesignTokens.progressGreenBright.withAlpha((255 * 0.3).round()),
+    inProgressBorder: DesignTokens.progressGreenBright,
     inProgressBorderWidth: 1.5,
-    completedFill: DesignTokens.electricGreen.withAlpha((255 * 0.4).round()),
-    completedBorder: DesignTokens.electricGreen,
-    completedBorderWidth: 1.5,
-    selectedFill: DesignTokens.electricOrange.withAlpha((255 * 0.3).round()),
-    selectedBorder: DesignTokens.electricOrange,
-    selectedBorderWidth: 2.5,
-  );
-
-  static MapAreaStyles get highContrast => MapAreaStyles(
-    unvisitedFill: DesignTokens.gray400.withAlpha((255 * 0.15).round()),
-    unvisitedBorder: DesignTokens.gray400,
-    unvisitedBorderWidth: 1.5,
-    inProgressFill: DesignTokens.neonGreen.withAlpha((255 * 0.3).round()),
-    inProgressBorder: DesignTokens.neonGreen,
-    inProgressBorderWidth: 2.0,
-    completedFill: DesignTokens.neonGreen.withAlpha((255 * 0.5).round()),
-    completedBorder: DesignTokens.neonGreen,
+    // Completed areas: Deep green solid border + transparent green fill
+    completedFill: DesignTokens.progressGreenBright.withAlpha((255 * 0.3).round()),
+    completedBorder: DesignTokens.progressGreenBright, // Solid border
     completedBorderWidth: 2.0,
-    selectedFill: DesignTokens.neonOrange.withAlpha((255 * 0.4).round()),
-    selectedBorder: DesignTokens.neonOrange,
+    // Selected areas: Deep orange solid border + transparent lighter orange fill  
+    selectedFill: DesignTokens.currentOrangeBright.withAlpha((255 * 0.3).round()),
+    selectedBorder: DesignTokens.currentOrangeBright, // Solid border
     selectedBorderWidth: 3.0,
   );
 
-  static MapAreaStyles get lightMode => MapAreaStyles(
+  static MapAreaStyles get daylightExplorer => MapAreaStyles(
     unvisitedFill: DesignTokens.gray300.withAlpha((255 * 0.1).round()),
     unvisitedBorder: DesignTokens.gray300,
     unvisitedBorderWidth: 1.0,
-    inProgressFill: DesignTokens.darken(
-      DesignTokens.electricGreen,
-      0.1,
-    ).withAlpha((255 * 0.2).round()),
-    inProgressBorder: DesignTokens.darken(
-      DesignTokens.electricGreen,
-      0.1,
-    ).withAlpha((255 * 0.8).round()),
+    inProgressFill: DesignTokens.progressGreen.withAlpha((255 * 0.25).round()),
+    inProgressBorder: DesignTokens.progressGreen,
     inProgressBorderWidth: 1.5,
-    completedFill: DesignTokens.darken(
-      DesignTokens.electricGreen,
-      0.1,
-    ).withAlpha((255 * 0.3).round()),
-    completedBorder: DesignTokens.darken(DesignTokens.electricGreen, 0.1),
-    completedBorderWidth: 1.5,
-    selectedFill: DesignTokens.darken(
-      DesignTokens.electricOrange,
-      0.1,
-    ).withAlpha((255 * 0.25).round()),
-    selectedBorder: DesignTokens.darken(DesignTokens.electricOrange, 0.1),
-    selectedBorderWidth: 2.5,
+    // Completed areas: Deep green solid border + transparent green fill
+    completedFill: DesignTokens.progressGreen.withAlpha((255 * 0.3).round()),
+    completedBorder: DesignTokens.progressGreen, // Solid border
+    completedBorderWidth: 2.0,
+    // Selected areas: Deep orange solid border + transparent lighter orange fill
+    selectedFill: DesignTokens.currentOrange.withAlpha((255 * 0.3).round()),
+    selectedBorder: DesignTokens.currentOrange, // Solid border
+    selectedBorderWidth: 3.0,
   );
 }
