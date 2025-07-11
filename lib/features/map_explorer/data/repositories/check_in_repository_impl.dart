@@ -1,8 +1,12 @@
 import 'dart:async';
 
 import 'package:drift/drift.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:overpass_map/data/database/app_database.dart';
+import 'package:overpass_map/features/location/domain/entities/location_data.dart';
+import 'package:overpass_map/features/map_explorer/domain/exceptions/check_in_exception.dart';
 import 'package:overpass_map/features/map_explorer/domain/repositories/check_in_repository.dart';
+import 'package:overpass_map/services/distance_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// The concrete implementation of the [CheckInRepository].
@@ -56,6 +60,33 @@ class CheckInRepositoryImpl implements CheckInRepository {
 
     // Update area stats after check-in
     await _updateAreaStats(spotId, userId);
+  }
+
+  @override
+  Future<void> createCheckInWithLocation({
+    required String spotId,
+    required String userId,
+    required LocationData userLocation,
+    required LatLng spotLocation,
+    bool isDebugMode = false,
+  }) async {
+    // Skip proximity validation in debug mode
+    if (!isDebugMode) {
+      // Validate user is within check-in range
+      if (!DistanceService.isWithinCheckInRange(userLocation, spotLocation)) {
+        final distance = DistanceService.calculateDistanceToSpot(userLocation, spotLocation);
+        final formattedDistance = DistanceService.formatDistance(distance);
+        final requiredDistance = DistanceService.formatDistance(DistanceService.checkInRadiusMeters);
+        
+        throw CheckInException(
+          'You are too far away from this spot. You are $formattedDistance away, but you need to be within $requiredDistance.',
+          CheckInErrorType.tooFarAway,
+        );
+      }
+    }
+
+    // If validation passes (or is bypassed), create the check-in
+    await createCheckIn(spotId: spotId, userId: userId);
   }
 
   @override

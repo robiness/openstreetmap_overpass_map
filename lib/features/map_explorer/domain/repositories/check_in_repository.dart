@@ -1,4 +1,7 @@
 import 'package:overpass_map/data/database/app_database.dart';
+import 'package:overpass_map/features/location/domain/entities/location_data.dart';
+import 'package:overpass_map/features/map_explorer/domain/exceptions/check_in_exception.dart';
+import 'package:latlong2/latlong.dart';
 
 /// An abstract repository to handle data operations for user check-ins.
 ///
@@ -28,6 +31,21 @@ abstract class CheckInRepository {
   Future<void> createCheckIn({
     required String spotId,
     required String userId,
+  });
+
+  /// Creates a new check-in with location validation.
+  ///
+  /// Validates that the user is within the required proximity to the spot
+  /// before allowing the check-in. In debug mode, proximity validation is bypassed.
+  ///
+  /// Throws [CheckInException] if the user is too far from the spot or if
+  /// location validation fails.
+  Future<void> createCheckInWithLocation({
+    required String spotId,
+    required String userId,
+    required LocationData userLocation,
+    required LatLng spotLocation,
+    bool isDebugMode = false,
   });
 
   /// Deletes all check-ins for a specific spot for a given user.

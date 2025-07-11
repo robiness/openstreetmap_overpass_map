@@ -270,12 +270,43 @@ class DebugPanelView extends StatelessWidget {
                           style: appTheme.typography.bodyMedium,
                         ),
                         const SizedBox(height: 8),
-                        ElevatedButton(
-                          child: const Text('Check In'),
-                          onPressed: () {
-                            context.read<CheckInRepository>().createCheckIn(
-                              userId: userId,
-                              spotId: selectedSpot.id,
+                        BlocBuilder<LocationBloc, LocationState>(
+                          builder: (context, locationState) {
+                            return ElevatedButton(
+                              child: const Text('Check In'),
+                              onPressed: () async {
+                                try {
+                                  // Debug check-in bypasses proximity restrictions
+                                  await context.read<CheckInRepository>().createCheckInWithLocation(
+                                    userId: userId,
+                                    spotId: selectedSpot.id,
+                                    userLocation: locationState.maybeWhen(
+                                      locationReceived: (location) => location,
+                                      orElse: () => throw Exception('Location not available'),
+                                    ),
+                                    spotLocation: selectedSpot.location,
+                                    isDebugMode: true, // Bypass proximity validation
+                                  );
+                                  
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Debug check-in successful!'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('Debug check-in failed: $e'),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
                             );
                           },
                         ),
