@@ -339,7 +339,6 @@ class CustomSpotPainter extends CustomPainter {
     double spotSize,
     Color iconColor,
   ) {
-    print('🎯 Drawing icon for category: "$category"');
     // Choose icon based on actual database categories
     switch (category.toLowerCase()) {
       case 'kultur & geschichte':
@@ -1035,8 +1034,6 @@ class CustomSpotPainter extends CustomPainter {
   }
 
   SpotColors _getBaseCategoryColors(String category) {
-    print('🎨 Category color lookup for: "$category"');
-    
     switch (category.toLowerCase()) {
       case 'kultur & geschichte':
         return SpotColors(theme.accent, Colors.white);

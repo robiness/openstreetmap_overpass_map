@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,8 +26,17 @@ import 'package:uuid/uuid.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables from .env file
-  await dotenv.load(fileName: ".env");
+  // Load environment variables from .env file (only for non-web platforms)
+  if (!kIsWeb) {
+    try {
+      await dotenv.load(fileName: ".env");
+      print('✅ Loaded .env file for native platform');
+    } catch (e) {
+      print('Warning: Could not load .env file: $e');
+    }
+  } else {
+    print('🌐 Web platform detected - using built-in configuration');
+  }
 
   // Initialize ThemeProvider
   final themeProvider = ThemeProvider();
